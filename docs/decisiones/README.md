@@ -19,3 +19,14 @@ Este índice no se escribe a mano: se regenera con `python -I -X utf8 tools/indi
 
 | Nº | Fecha | Decisión |
 | --- | --- | --- |
+| 11 | 2026-10-30 | [Para segundo de DAM: videojuegos y Servicios y Procesos](011-2026-10-30-para-segundo-de-dam-videojuegos-y-servicios-y-procesos.md) |
+| 10 | 2026-10-30 | [Dos hojas de sprites: pato y explosión](010-2026-10-30-dos-hojas-de-sprites-pato-y-explosion.md) |
+| 9 | 2026-10-30 | [Clases de la demo con Viewer](009-2026-10-30-clases-de-la-demo-con-viewer.md) |
+| 8 | 2026-10-30 | [Arrastrar los sprites con el ratón](008-2026-10-30-arrastrar-los-sprites-con-el-raton.md) |
+| 7 | 2026-10-30 | [HUD de velocidades ajustable con la rueda del ratón](007-2026-10-30-hud-de-velocidades-ajustable-con-la-rueda-del-raton.md) |
+| 6 | 2026-10-30 | [Velocidad de renderización frente a velocidad de animación](006-2026-10-30-velocidad-de-renderizacion-frente-a-velocidad-de-animacion.md) |
+| 5 | 2026-10-30 | [Clases de la demo e interfaces MVP](005-2026-10-30-clases-de-la-demo-e-interfaces-mvp.md) (sustituida) |
+| 4 | 2026-10-30 | [Ejemplo mínimo de clases y código](004-2026-10-30-ejemplo-minimo-de-clases-y-codigo.md) |
+| 3 | 2026-10-30 | [Un hilo por sprite y un hilo de pintado](003-2026-10-30-un-hilo-por-sprite-y-un-hilo-de-pintado.md) |
+| 2 | 2026-10-30 | [Swing y Java2D como librería gráfica](002-2026-10-30-swing-y-java2d-como-libreria-grafica.md) |
+| 1 | 2026-10-30 | [Material de consulta sobre sprites y MVP para FP](001-2026-10-30-material-de-consulta-sobre-sprites-y-mvp-para-fp.md) (sustituida) |
