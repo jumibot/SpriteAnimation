@@ -5,3 +5,5 @@
 .sf/historial.jsonl
 .sf/copias/
 .claude/worktrees/
+.sf/subagentes.json
+docs/decisiones/README.html
