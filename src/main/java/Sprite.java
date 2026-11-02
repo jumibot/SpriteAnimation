@@ -1,12 +1,8 @@
 import java.awt.image.BufferedImage;
 
 /**
- * Una animación con su propio hilo. El hilo avanza el fotograma según el tiempo que ha pasado,
- * así que el ritmo es el mismo en cualquier equipo y no depende de lo rápido que se pinte.
- *
- * Los campos que escribe un hilo y lee otro son volatile, para que cada hilo vea el último
- * valor escrito: el fotograma lo escribe el hilo del sprite; la velocidad y la posición,
- * el hilo de eventos de Swing (rueda y arrastre); y todos los lee el hilo de pintado.
+ * Una animación del modelo, con su propio hilo que va cambiando de fotograma.
+ * El ritmo depende del tiempo que pasa, no de lo rápido que se pinte.
  */
 public class Sprite implements Runnable {
 
@@ -14,9 +10,12 @@ public class Sprite implements Runnable {
 
     private final String name;
     private final BufferedImage[] frames;
-    private volatile int frame;
-    private volatile int fps;
-    private volatile int x;
+
+    // Estos campos los escribe un hilo y los lee otro (el de pintado).
+    // volatile hace que cada hilo vea siempre el último valor escrito.
+    private volatile int frameIndex;   // lo cambia el hilo del sprite
+    private volatile int fps;          // lo cambia la rueda del ratón
+    private volatile int x;            // x e y: los cambia el arrastre
     private volatile int y;
     private volatile boolean running;
     private Thread thread;
@@ -30,9 +29,8 @@ public class Sprite implements Runnable {
     }
 
     public String name() { return name; }
-    public BufferedImage frame() { return frames[frame]; }
-    public int frameIndex() { return frame; }
-    public int frameCount() { return frames.length; }
+    public BufferedImage frame() { return frames[frameIndex]; }
+    public int frameIndex() { return frameIndex; }
     public int width() { return frames[0].getWidth(); }
     public int height() { return frames[0].getHeight(); }
     public int fps() { return fps; }
@@ -40,8 +38,8 @@ public class Sprite implements Runnable {
     public int x() { return x; }
     public int y() { return y; }
 
-    /** Mueve el sprite. Si el hilo de pintado lee entre las dos escrituras, verá un paso a medias:
-     *  durante un fotograma, nada grave. Por eso basta con volatile y no hace falta sincronizar. */
+    /** Mueve el sprite. Si se pinta justo entre las dos líneas, se verá a medio mover
+     *  durante un fotograma: nada grave, así que no hace falta sincronizar. */
     public void moveTo(int x, int y) {
         this.x = x;
         this.y = y;
@@ -57,25 +55,29 @@ public class Sprite implements Runnable {
     /** Para el hilo y espera a que termine. */
     public void stop() {
         running = false;
-        if (thread == null) return;
+        if (thread == null) {
+            return;   // nunca se arrancó
+        }
         thread.interrupt();            // lo despierta si está dormido en sleep
         try {
             thread.join();             // espera a que salga de run()
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            Thread.currentThread().interrupt();   // conserva el aviso de interrupción
         }
     }
 
+    /** Lo que hace el hilo del sprite: cada poco, avanza los fotogramas que tocan por el tiempo pasado. */
     @Override
     public void run() {
         long previous = System.nanoTime();
         double pending = 0;            // fotogramas que tocaba avanzar y aún no se han avanzado
         while (running) {
             long now = System.nanoTime();
-            pending += (now - previous) / 1_000_000_000.0 * fps;
+            double seconds = (now - previous) / 1_000_000_000.0;
+            pending += seconds * fps;
             previous = now;
             while (pending >= 1) {
-                frame = (frame + 1) % frames.length;
+                frameIndex = (frameIndex + 1) % frames.length;   // tras el último, vuelve al primero
                 pending--;
             }
             try {

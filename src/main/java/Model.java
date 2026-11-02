@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-/** El estado de la aplicación: los sprites. No sabe que existe una ventana. */
+/** El modelo de MVP: el estado de la aplicación, los sprites. No sabe que existe una ventana. */
 public class Model implements AnimationContract.Model {
 
     private final List<Sprite> sprites = new ArrayList<>();
@@ -19,12 +19,16 @@ public class Model implements AnimationContract.Model {
 
     @Override
     public void start() {
-        for (Sprite sprite : sprites) sprite.start();
+        for (Sprite sprite : sprites) {
+            sprite.start();
+        }
     }
 
     @Override
     public void stop() {
-        for (Sprite sprite : sprites) sprite.stop();
+        for (Sprite sprite : sprites) {
+            sprite.stop();
+        }
     }
 
     @Override

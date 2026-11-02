@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-/** El intermediario: traduce el modelo a lo que la vista pinta y aplica las reglas a cada gesto. */
+/** El presentador de MVP: traduce el modelo a lo que la vista pinta y aplica las reglas a cada gesto. */
 public class Presenter implements AnimationContract.Presenter {
 
     static final int MIN_FPS = 1;
@@ -50,7 +50,9 @@ public class Presenter implements AnimationContract.Presenter {
             Sprite s = model.sprite(i);
             boolean inside = x >= s.x() && x < s.x() + s.width()
                           && y >= s.y() && y < s.y() + s.height();
-            if (inside) return i;
+            if (inside) {
+                return i;
+            }
         }
         return -1;
     }
@@ -66,7 +68,14 @@ public class Presenter implements AnimationContract.Presenter {
         view.stop();    // luego el de pintado y la ventana
     }
 
+    /** Deja la velocidad entre MIN_FPS y MAX_FPS. */
     private static int limit(int fps) {
-        return Math.max(MIN_FPS, Math.min(MAX_FPS, fps));
+        if (fps < MIN_FPS) {
+            return MIN_FPS;
+        }
+        if (fps > MAX_FPS) {
+            return MAX_FPS;
+        }
+        return fps;
     }
 }

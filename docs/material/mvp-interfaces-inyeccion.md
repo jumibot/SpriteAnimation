@@ -290,7 +290,7 @@ public interface AnimationContract {
 }
 
 public class Model implements AnimationContract.Model { … }
-public class View implements AnimationContract.View { … }
+public class View extends JFrame implements AnimationContract.View { … }
 public class Presenter implements AnimationContract.Presenter { … }
 ```
 
@@ -626,10 +626,15 @@ En código, el recorrido es corto. La vista solo averigua sobre qué línea del 
 // View: el evento llega por el hilo de eventos de Swing
 public void mouseWheelMoved(MouseWheelEvent e) {
     int line = (e.getY() - HUD_Y + HUD_LINE) / HUD_LINE;   // 0: pintado; 1, 2…: sprites
-    int delta = -e.getWheelRotation();
-    // … si el ratón está fuera del HUD, no hace nada
-    if (line == 0) presenter.changeRenderSpeed(delta);
-    else presenter.changeSpriteSpeed(line - 1, delta);
+    int delta = -e.getWheelRotation();                      // rueda hacia arriba: sube
+    if (!insideHud(e.getX(), e.getY(), line)) {
+        return;                                              // fuera del HUD, no hace nada
+    }
+    if (line == 0) {
+        presenter.changeRenderSpeed(delta);
+    } else {
+        presenter.changeSpriteSpeed(line - 1, delta);
+    }
 }
 
 // Presenter: aplica la regla

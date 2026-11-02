@@ -9,25 +9,23 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 /**
- * La vista: crea la ventana, tiene el hilo de pintado y escucha el ratón sobre el Viewer.
- * No toma decisiones: pinta lo que le da el presentador y le avisa de lo que hace el usuario.
+ * La vista de MVP: es la ventana. Pinta lo que le da el presentador y le avisa de lo que hace el usuario.
+ * No toma decisiones.
  *
- * Hay tres clases de hilos que tocan esta clase:
- *  - el de main, que la construye;
- *  - el de pintado (renderLoop), que pide al presentador qué pintar y pinta;
- *  - el de eventos de Swing, que trae la rueda, el arrastre y el cierre de la ventana.
+ * La usan tres hilos: el de main, que la construye; el de pintado (renderLoop);
+ * y el de eventos de Swing, que trae el ratón y el cierre de la ventana.
  */
-public class View implements AnimationContract.View {
+public class View extends JFrame implements AnimationContract.View {
 
-    static final int WIDTH = 640;
-    static final int HEIGHT = 400;
+    // Tamaño del lienzo. (WIDTH y HEIGHT ya existen en JFrame: por eso estos nombres.)
+    static final int CANVAS_WIDTH = 640;
+    static final int CANVAS_HEIGHT = 400;
 
     // El HUD: una línea por velocidad. HUD_Y es la base de la primera línea (la de pintado).
     static final int HUD_X = 16;
@@ -42,7 +40,6 @@ public class View implements AnimationContract.View {
     private static final Font HUD_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 15);
     private static final Font HUD_FONT_BOLD = HUD_FONT.deriveFont(Font.BOLD);
 
-    private final JFrame frame;
     private final Viewer viewer;
     private AnimationContract.Presenter presenter;
 
@@ -52,20 +49,24 @@ public class View implements AnimationContract.View {
     private Thread renderThread;
 
     // Estado del arrastre: solo lo usa el hilo de eventos, así que no necesita volatile.
-    private int dragged = -1;
-    private int dragDx;
-    private int dragDy;
+    private int dragged = -1;   // qué sprite se arrastra (-1: ninguno)
+    private int grabX;          // dónde se ha cogido, medido desde la esquina del sprite
+    private int grabY;
 
     public View() {
-        viewer = new Viewer(WIDTH, HEIGHT);   // parte interna de la vista: la crea ella
-        frame = new JFrame("SpriteAnimation");
-        frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);   // cerramos nosotros, en orden
-        frame.add(viewer);
-        frame.pack();
-        frame.setResizable(false);
-        frame.setLocationRelativeTo(null);
-        listenToMouse();
-        frame.addWindowListener(new WindowAdapter() {
+        super("SpriteAnimation");   // el título de la ventana
+        viewer = new Viewer(CANVAS_WIDTH, CANVAS_HEIGHT);   // parte interna de la vista: la crea ella
+        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);   // cerramos nosotros, en orden
+        add(viewer);
+        pack();
+        setResizable(false);
+        setLocationRelativeTo(null);   // centrada en la pantalla
+
+        MouseHandler mouse = new MouseHandler();
+        viewer.addMouseListener(mouse);
+        viewer.addMouseMotionListener(mouse);
+        viewer.addMouseWheelListener(mouse);
+        addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 presenter.close();
@@ -91,28 +92,31 @@ public class View implements AnimationContract.View {
 
     @Override
     public void start() {
-        // Mostrar la ventana es cosa del hilo de eventos de Swing: se lo pedimos y esperamos.
-        onSwingThread(() -> {
-            frame.setVisible(true);
+        // Lo que toca la ventana debe hacerlo el hilo de eventos de Swing.
+        // invokeLater le pasa la tarea; él la hará en cuanto pueda.
+        SwingUtilities.invokeLater(() -> {
+            setVisible(true);
             viewer.createBufferStrategy(2);   // dos búferes: se pinta en uno mientras se ve el otro
+            // Ya hay donde pintar: arranca el hilo de pintado.
+            running = true;
+            renderThread = new Thread(() -> renderLoop(), "Render");
+            renderThread.start();
         });
-        running = true;
-        renderThread = new Thread(this::renderLoop, "Render");
-        renderThread.start();
     }
 
+    /** Llega por el hilo de eventos de Swing, al cerrar la ventana. */
     @Override
     public void stop() {
         running = false;
-        if (renderThread != null && renderThread != Thread.currentThread()) {
+        if (renderThread != null) {
             renderThread.interrupt();
             try {
                 renderThread.join();   // que no pinte en una ventana cerrada
             } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+                Thread.currentThread().interrupt();   // conserva el aviso de interrupción
             }
         }
-        SwingUtilities.invokeLater(frame::dispose);   // al cerrar la última ventana, Swing termina
+        dispose();   // al cerrar la última ventana, Swing termina
     }
 
     // ---------------------------------------------------------------- pintado
@@ -122,25 +126,21 @@ public class View implements AnimationContract.View {
         BufferStrategy buffers = viewer.getBufferStrategy();
         while (running) {
             long start = System.nanoTime();
+
             List<AnimationContract.Presenter.SpriteState> sprites = presenter.sprites();   // la foto fija
-            do {
-                do {
-                    Graphics2D g = (Graphics2D) buffers.getDrawGraphics();
-                    try {
-                        paint(g, sprites);
-                    } finally {
-                        g.dispose();
-                    }
-                } while (buffers.contentsRestored());
-                buffers.show();
-            } while (buffers.contentsLost());
+            Graphics2D g = (Graphics2D) buffers.getDrawGraphics();   // el búfer que no se ve
+            paintScene(g, sprites);
+            g.dispose();
+            buffers.show();                       // ahora se ve lo que acabamos de pintar
             Toolkit.getDefaultToolkit().sync();   // en algunos sistemas, que se vea ya
 
-            long period = 1_000_000_000L / renderFps;
-            long wait = (period - (System.nanoTime() - start)) / 1_000_000;
-            if (wait > 0) {
+            // Espera lo que falte para que cada vuelta dure 1/renderFps segundos.
+            long periodNs = 1_000_000_000L / renderFps;
+            long elapsedNs = System.nanoTime() - start;
+            long waitMs = (periodNs - elapsedNs) / 1_000_000;
+            if (waitMs > 0) {
                 try {
-                    Thread.sleep(wait);
+                    Thread.sleep(waitMs);
                 } catch (InterruptedException e) {
                     return;   // nos piden parar
                 }
@@ -148,9 +148,9 @@ public class View implements AnimationContract.View {
         }
     }
 
-    private void paint(Graphics2D g, List<AnimationContract.Presenter.SpriteState> sprites) {
+    private void paintScene(Graphics2D g, List<AnimationContract.Presenter.SpriteState> sprites) {
         g.setColor(BACKGROUND);
-        g.fillRect(0, 0, WIDTH, HEIGHT);
+        g.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         for (AnimationContract.Presenter.SpriteState s : sprites) {
             g.drawImage(s.frame(), s.x(), s.y(), null);
         }
@@ -175,7 +175,7 @@ public class View implements AnimationContract.View {
         g.setFont(HUD_FONT_BOLD);
         g.setColor(HUD_LABEL);
         g.drawString(label, HUD_X, y);
-        int x = HUD_X + g.getFontMetrics().stringWidth(label);
+        int x = HUD_X + g.getFontMetrics().stringWidth(label);   // el valor, justo detrás de la etiqueta
         g.setFont(HUD_FONT);
         g.setColor(HUD_TEXT);
         g.drawString(" · " + value, x, y);
@@ -183,53 +183,54 @@ public class View implements AnimationContract.View {
 
     // ---------------------------------------------------------------- ratón
 
-    /** Los eventos del ratón llegan por el hilo de eventos de Swing. La vista solo avisa. */
-    private void listenToMouse() {
-        MouseAdapter mouse = new MouseAdapter() {
-            @Override
-            public void mouseWheelMoved(MouseWheelEvent e) {
-                if (e.getX() < HUD_X - 8 || e.getX() >= HUD_X - 8 + HUD_WIDTH) return;   // fuera del HUD
-                if (e.getY() < HUD_Y - HUD_LINE) return;
-                int line = (e.getY() - HUD_Y + HUD_LINE) / HUD_LINE;   // 0: pintado; 1, 2…: sprites
-                if (line > presenter.sprites().size()) return;
-                int delta = -e.getWheelRotation();                      // rueda hacia arriba: sube
-                if (line == 0) presenter.changeRenderSpeed(delta);
-                else presenter.changeSpriteSpeed(line - 1, delta);
-            }
+    /** Escucha el ratón sobre el lienzo. Swing llama a estos métodos desde su hilo de eventos. */
+    private class MouseHandler extends MouseAdapter {
 
-            @Override
-            public void mousePressed(MouseEvent e) {
-                dragged = presenter.spriteAt(e.getX(), e.getY());
-                if (dragged < 0) return;
-                // Guardamos dónde se ha cogido el sprite, para que no salte al puntero.
-                AnimationContract.Presenter.SpriteState s = presenter.sprites().get(dragged);
-                dragDx = e.getX() - s.x();
-                dragDy = e.getY() - s.y();
+        @Override
+        public void mouseWheelMoved(MouseWheelEvent e) {
+            int line = (e.getY() - HUD_Y + HUD_LINE) / HUD_LINE;   // 0: pintado; 1, 2…: sprites
+            int delta = -e.getWheelRotation();                      // rueda hacia arriba: sube
+            if (!insideHud(e.getX(), e.getY(), line)) {
+                return;                                              // fuera del HUD, no hace nada
             }
-
-            @Override
-            public void mouseDragged(MouseEvent e) {
-                if (dragged >= 0) presenter.moveSprite(dragged, e.getX() - dragDx, e.getY() - dragDy);
+            if (line == 0) {
+                presenter.changeRenderSpeed(delta);
+            } else {
+                presenter.changeSpriteSpeed(line - 1, delta);
             }
+        }
 
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                dragged = -1;
+        @Override
+        public void mousePressed(MouseEvent e) {
+            dragged = presenter.spriteAt(e.getX(), e.getY());
+            if (dragged < 0) {
+                return;   // no hay sprite bajo el puntero
             }
-        };
-        viewer.addMouseListener(mouse);
-        viewer.addMouseMotionListener(mouse);
-        viewer.addMouseWheelListener(mouse);
-    }
+            // Guardamos dónde se ha cogido el sprite, para que no salte al puntero.
+            AnimationContract.Presenter.SpriteState s = presenter.sprites().get(dragged);
+            grabX = e.getX() - s.x();
+            grabY = e.getY() - s.y();
+        }
 
-    /** Ejecuta la tarea en el hilo de eventos de Swing y espera a que termine. */
-    private static void onSwingThread(Runnable task) {
-        try {
-            SwingUtilities.invokeAndWait(task);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        } catch (InvocationTargetException e) {
-            throw new IllegalStateException(e.getCause());
+        @Override
+        public void mouseDragged(MouseEvent e) {
+            if (dragged >= 0) {
+                presenter.moveSprite(dragged, e.getX() - grabX, e.getY() - grabY);
+            }
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+            dragged = -1;
+        }
+
+        /** Si el punto (x, y) cae sobre alguna línea del HUD. */
+        private boolean insideHud(int x, int y, int line) {
+            int left = HUD_X - 8;
+            int top = HUD_Y - HUD_LINE;
+            int lastLine = presenter.sprites().size();
+            return x >= left && x < left + HUD_WIDTH
+                && y >= top && line <= lastLine;
         }
     }
 }

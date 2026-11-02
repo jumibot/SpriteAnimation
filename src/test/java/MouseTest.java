@@ -6,7 +6,6 @@ import java.awt.event.InputEvent;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.concurrent.atomic.AtomicBoolean;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -85,7 +84,7 @@ public class MouseTest {
         }
         // Fuera del HUD la rueda no hace nada.
         int render = view.renderFps();
-        moveTo(View.WIDTH - 40, View.HEIGHT - 40);
+        moveTo(View.CANVAS_WIDTH - 40, View.CANVAS_HEIGHT - 40);
         robot.mouseWheel(-3);
         robot.delay(300);
         Check.equal("la rueda fuera del HUD no cambia nada", render, view.renderFps());
@@ -93,7 +92,10 @@ public class MouseTest {
 
     /** Línea 0: velocidad de pintado; 1, 2…: velocidad de cada sprite. */
     static int speed(int line) {
-        return line == 0 ? view.renderFps() : model.sprite(line - 1).fps();
+        if (line == 0) {
+            return view.renderFps();
+        }
+        return model.sprite(line - 1).fps();
     }
 
     // ---------------------------------------------------------------- arrastre
@@ -139,11 +141,10 @@ public class MouseTest {
     // ---------------------------------------------------------------- sigue respondiendo
 
     static void stillResponds() throws Exception {
-        AtomicBoolean answered = new AtomicBoolean();
         long start = System.nanoTime();
-        SwingUtilities.invokeAndWait(() -> answered.set(true));
+        SwingUtilities.invokeAndWait(() -> {});   // una tarea vacía: vuelve en cuanto el hilo de eventos la hace
         long ms = (System.nanoTime() - start) / 1_000_000;
-        Check.that("el hilo de eventos de Swing responde (" + ms + " ms)", answered.get() && ms < 1000);
+        Check.that("el hilo de eventos de Swing responde (" + ms + " ms)", ms < 1000);
         Check.that("el hilo de pintado sigue vivo", alive("Render"));
         Check.that("los hilos de los sprites siguen vivos", alive("Sprite Pato") && alive("Sprite Explosión"));
         Check.that("la explosión sigue avanzando fotogramas", changesFrame(model.sprite(1), 300));
@@ -170,10 +171,13 @@ public class MouseTest {
     private static Viewer findViewer() throws Exception {
         for (int i = 0; i < 50; i++) {
             for (Frame f : Frame.getFrames()) {
-                if (f.isShowing() && f instanceof JFrame jf
-                        && jf.getContentPane().getComponentCount() > 0
-                        && jf.getContentPane().getComponent(0) instanceof Viewer v) {
-                    return v;
+                if (!f.isShowing() || !(f instanceof JFrame)) {
+                    continue;
+                }
+                JFrame window = (JFrame) f;
+                if (window.getContentPane().getComponentCount() > 0
+                        && window.getContentPane().getComponent(0) instanceof Viewer) {
+                    return (Viewer) window.getContentPane().getComponent(0);
                 }
             }
             Thread.sleep(100);
@@ -189,7 +193,7 @@ public class MouseTest {
             window.toFront();
         });
         robot.delay(300);
-        moveTo(View.WIDTH - 20, View.HEIGHT - 20);   // un clic en una zona vacía, para darle el foco
+        moveTo(View.CANVAS_WIDTH - 20, View.CANVAS_HEIGHT - 20);   // un clic en una zona vacía, para darle el foco
         robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
         robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
     }
@@ -233,8 +237,12 @@ public class MouseTest {
     }
 
     private static boolean alive(String threadName) {
-        return Thread.getAllStackTraces().keySet().stream()
-                     .anyMatch(t -> t.getName().equals(threadName) && t.isAlive());
+        for (Thread t : Thread.getAllStackTraces().keySet()) {
+            if (t.getName().equals(threadName) && t.isAlive()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static void capture(String file) throws Exception {

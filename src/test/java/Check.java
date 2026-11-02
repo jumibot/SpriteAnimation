@@ -7,8 +7,7 @@ final class Check {
     private Check() {}
 
     static void equal(String what, Object expected, Object actual) {
-        that(what + " (esperado " + expected + ", obtenido " + actual + ")",
-             expected == null ? actual == null : expected.equals(actual));
+        that(what + " (esperado " + expected + ", obtenido " + actual + ")", expected.equals(actual));
     }
 
     static void that(String what, boolean ok) {

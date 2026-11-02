@@ -20,9 +20,13 @@ public class SpriteSheetTest {
     }
 
     private static boolean differ(BufferedImage a, BufferedImage b) {
-        for (int y = 0; y < a.getHeight(); y++)
-            for (int x = 0; x < a.getWidth(); x++)
-                if (a.getRGB(x, y) != b.getRGB(x, y)) return true;
+        for (int y = 0; y < a.getHeight(); y++) {
+            for (int x = 0; x < a.getWidth(); x++) {
+                if (a.getRGB(x, y) != b.getRGB(x, y)) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 }

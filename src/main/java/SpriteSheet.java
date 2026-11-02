@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import javax.imageio.ImageIO;
 
-/** Carga una hoja de sprites y la recorta en fotogramas. */
+/** Ayuda del modelo: carga una hoja de sprites y la recorta en fotogramas. */
 public final class SpriteSheet {
 
     private SpriteSheet() {}   // solo tiene métodos estáticos: no se crean objetos
@@ -18,14 +18,18 @@ public final class SpriteSheet {
      */
     public static BufferedImage[] load(String resource, int frameWidth, int frameHeight, int scale) {
         BufferedImage sheet = read(resource);
-        int columns = sheet.getWidth() / frameWidth;
-        int rows = sheet.getHeight() / frameHeight;
+        int columns = sheet.getWidth() / frameWidth;    // cuántos fotogramas caben a lo ancho
+        int rows = sheet.getHeight() / frameHeight;     // y cuántos a lo alto
         BufferedImage[] frames = new BufferedImage[columns * rows];
+        int next = 0;                                   // posición del siguiente fotograma en el array
         for (int row = 0; row < rows; row++) {
             for (int column = 0; column < columns; column++) {
-                BufferedImage cut = sheet.getSubimage(column * frameWidth, row * frameHeight,
-                                                      frameWidth, frameHeight);
-                frames[row * columns + column] = enlarge(cut, scale);
+                // La esquina del fotograma en la hoja: tantos anchos y altos como columnas y filas haya antes.
+                int x = column * frameWidth;
+                int y = row * frameHeight;
+                BufferedImage cut = sheet.getSubimage(x, y, frameWidth, frameHeight);
+                frames[next] = enlarge(cut, scale);
+                next++;
             }
         }
         return frames;
