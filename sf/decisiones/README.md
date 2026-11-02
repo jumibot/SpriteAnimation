@@ -19,6 +19,7 @@ Este índice no se escribe a mano: se regenera con `python -I -X utf8 tools/indi
 
 | Nº | Fecha | Decisión |
 | --- | --- | --- |
+| 46 | 2026-11-02 | [Visión y fundacional al día en su versión 0.2, con la fase 1 medida por claridad](046-2026-11-02-vision-y-fundacional-al-dia-en-su-version-0-2-con-la-fase-1-medida-por-claridad.md) |
 | 45 | 2026-11-02 | [HUD arcade, diana de mira y escala entera con la rueda](045-2026-11-02-hud-arcade-diana-de-mira-y-escala-entera-con-la-rueda.md) |
 | 44 | 2026-11-02 | [Documento de la estructura de la demo en docs/material](044-2026-11-02-documento-de-la-estructura-de-la-demo-en-docs-material.md) |
 | 43 | 2026-11-02 | [El record Picture se llama SpriteView y la rueda pide spriteCount()](043-2026-11-02-el-record-picture-se-llama-spriteview-y-la-rueda-pide-spritecount.md) |
