@@ -19,6 +19,7 @@ Este índice no se escribe a mano: se regenera con `python -I -X utf8 tools/indi
 
 | Nº | Fecha | Decisión |
 | --- | --- | --- |
+| 31 | 2026-11-02 | [Valores por defecto en la configuración y nombres completos](031-2026-11-02-valores-por-defecto-en-la-configuracion-y-nombres-completos.md) |
 | 30 | 2026-11-02 | [Sin clases anónimas ni lambdas](030-2026-11-02-sin-clases-anonimas-ni-lambdas.md) |
 | 29 | 2026-11-02 | [El proyecto sigue el principio KISS](029-2026-11-02-el-proyecto-sigue-el-principio-kiss.md) |
 | 28 | 2026-11-02 | [La configuración que solo usa main queda fuera de los contratos](028-2026-11-02-la-configuracion-que-solo-usa-main-queda-fuera-de-los-contratos.md) |
