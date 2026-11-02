@@ -59,9 +59,9 @@ code --install-extension vscjava.vscode-java-pack
 ## Estructura del repositorio
 
 ```text
+sf/decisiones/   Por qué la demo es como es, una decisión por archivo
 docs/
   material/      Documento para alumnos (MVP, interfaces, inyección, hilos)
-  decisiones/    Por qué la demo es como es, una decisión por archivo
   specs/vision/  Visión y documento fundacional del proyecto
   identidad/     Estilos de los documentos HTML
   imagenes/      Imágenes de este README

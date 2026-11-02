@@ -241,4 +241,4 @@ Las cifras del HUD (60 repintados, 8 fotogramas del pato y 12 de la explosión p
 - Glenn Fiedler, «[Fix Your Timestep!](https://gafferongames.com/post/fix_your_timestep/)».
 - IES Historiador Chabás, [programación del módulo 0490, Programación de Servicios y Procesos, de 2.º de DAM](https://portal.edu.gva.es/ieschabas/wp-content/uploads/sites/1291/2023/12/2DAM_M0490_PROGRAMACIO_DE_SERVICIS_23_24.pdf), curso 2023-24. El título de DAM lo establece el [Real Decreto 450/2010](https://www.boe.es/eli/es/rd/2010/04/16).
 
-Comparación con lo que ya existe consultada el 30 de octubre de 2026. Las decisiones que sostienen este documento están en [docs/decisiones](../../decisiones/README.md).
+Comparación con lo que ya existe consultada el 30 de octubre de 2026. Las decisiones que sostienen este documento están en [sf/decisiones](../../../sf/decisiones/README.md).

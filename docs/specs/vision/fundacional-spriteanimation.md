@@ -302,7 +302,7 @@ Las fuentes se revisaron el 30 de octubre de 2026. C es currículo; T, técnica;
 **[R2] Pavel Kutejnikov.** «Explosion». OpenGameArt, CC0. [Enlace](https://opengameart.org/node/132621)
 {: #src-R2}
 
-**[M1] SpriteAnimation.** Decisiones del proyecto, en `docs/decisiones/`. [Enlace](../../decisiones/README.md)
+**[M1] SpriteAnimation.** Decisiones del proyecto, en `sf/decisiones/`. [Enlace](../../../sf/decisiones/README.md)
 {: #src-M1}
 
 **[M2] SpriteAnimation.** Documento de visión. [Enlace](vision-spriteanimation.html)
