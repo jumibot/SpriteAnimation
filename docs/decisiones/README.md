@@ -19,6 +19,7 @@ Este índice no se escribe a mano: se regenera con `python -I -X utf8 tools/indi
 
 | Nº | Fecha | Decisión |
 | --- | --- | --- |
+| 24 | 2026-11-02 | [La vista extiende JFrame](024-2026-11-02-la-vista-extiende-jframe.md) |
 | 23 | 2026-11-02 | [Paquetes main, model, view, presenter y contract](023-2026-11-02-paquetes-main-model-view-presenter-y-contract.md) |
 | 22 | 2026-11-02 | [Licencias, GitHub Pages y correo de los commits al publicar](022-2026-11-02-licencias-github-pages-y-correo-de-los-commits-al-publicar.md) |
 | 21 | 2026-11-02 | [Publicar el repositorio ya, con un README](021-2026-11-02-publicar-el-repositorio-ya-con-un-readme.md) |
