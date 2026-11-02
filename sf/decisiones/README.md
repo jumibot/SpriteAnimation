@@ -19,6 +19,7 @@ Este índice no se escribe a mano: se regenera con `python -I -X utf8 tools/indi
 
 | Nº | Fecha | Decisión |
 | --- | --- | --- |
+| 38 | 2026-11-02 | [La vista no guarda referencias a datos del presentador](038-2026-11-02-la-vista-no-guarda-referencias-a-datos-del-presentador.md) |
 | 37 | 2026-11-02 | [El modelo no deja salir los objetos de su propiedad](037-2026-11-02-el-modelo-no-deja-salir-los-objetos-de-su-propiedad.md) |
 | 36 | 2026-11-02 | [El presentador nunca pasa objetos del modelo a la vista](036-2026-11-02-el-presentador-nunca-pasa-objetos-del-modelo-a-la-vista.md) |
 | 35 | 2026-11-02 | [Los datos entre vista y modelo pasan por el presentador, son inmutables y no comparten referencias](035-2026-11-02-los-datos-entre-vista-y-modelo-pasan-por-el-presentador-son-inmutables-y-no-comparten-referencias.md) |
