@@ -28,6 +28,7 @@ public class View extends JFrame implements ViewContract {
     private final Viewer viewer;
     private final Hud hud = new Hud();   // el recuadro de las velocidades: lo pinta él
     private final MouseHandler mouse = new MouseHandler(this.hud);   // el que escucha el ratón
+    private final Target target = new Target();   // la diana sobre el sprite bajo el ratón
     private PresenterContract presenter;
 
     // Lo escribe el hilo de eventos (rueda) y lo lee el de pintado: volatile.
@@ -124,6 +125,16 @@ public class View extends JFrame implements ViewContract {
 
         for (SpriteView spriteView : spriteViews) {
             g.drawImage(spriteView.image(), spriteView.x(), spriteView.y(), null);
+        }
+
+        // La diana, encima del sprite que hay bajo el ratón (si el ratón está en el lienzo y hay alguno).
+        int mouseX = this.mouse.mouseX();
+        int mouseY = this.mouse.mouseY();
+        if (mouseX >= 0) {
+            int hovered = this.mouse.spriteAt(spriteViews, mouseX, mouseY);
+            if (hovered >= 0) {
+                this.target.paint(g, spriteViews.get(hovered));
+            }
         }
 
         this.hud.paint(g, this.renderFps, spriteViews);

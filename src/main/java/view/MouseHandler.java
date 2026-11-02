@@ -69,6 +69,8 @@ public class MouseHandler extends MouseAdapter {
 
     @Override
     public void mouseDragged(MouseEvent e) {
+        this.mouseX = e.getX();   // la diana sigue al sprite que se arrastra
+        this.mouseY = e.getY();
         if (this.draggedSprite >= 0) {
             this.presenter.moveSprite(this.draggedSprite, e.getX() - this.grabX, e.getY() - this.grabY);
         }
@@ -79,8 +81,9 @@ public class MouseHandler extends MouseAdapter {
         this.draggedSprite = -1;
     }
 
-    /** Qué sprite hay en un punto (-1 si ninguno). Busca de arriba abajo: se pinta en orden, así que el último queda encima. */
-    private int spriteAt(List<SpriteView> spriteViews, int x, int y) {
+    /** Qué sprite hay en un punto (-1 si ninguno). Busca de arriba abajo: se pinta en orden, así que el último queda encima.
+     *  No es privado: la vista lo usa también para saber dónde pintar la diana. */
+    int spriteAt(List<SpriteView> spriteViews, int x, int y) {
         for (int i = spriteViews.size() - 1; i >= 0; i--) {
             SpriteView spriteView = spriteViews.get(i);
             boolean inside = x >= spriteView.x() && x < spriteView.x() + spriteView.image().getWidth()
@@ -91,5 +94,29 @@ public class MouseHandler extends MouseAdapter {
         }
 
         return -1;
+    }
+
+    // Dónde está el ratón: lo escribe el hilo de eventos y lo lee el de pintado. -1, fuera del lienzo.
+    private volatile int mouseX = -1;
+    private volatile int mouseY = -1;
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        this.mouseX = e.getX();
+        this.mouseY = e.getY();
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+        this.mouseX = -1;
+        this.mouseY = -1;
+    }
+
+    public int mouseX() {
+        return this.mouseX;
+    }
+
+    public int mouseY() {
+        return this.mouseY;
     }
 }
