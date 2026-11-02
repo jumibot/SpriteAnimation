@@ -6,7 +6,7 @@ import view.View;
 
 /**
  * La clase principal: monta la aplicación y la arranca. Es el único sitio que crea las capas,
- * y donde se ve su configuración: los sprites, el lienzo, la velocidad de pintado y sus límites.
+ * y donde se ve su configuración: los sprites, el lienzo, la velocidad de pintado y los límites de la rueda.
  */
 public class SpriteAnimation {
 
@@ -22,6 +22,7 @@ public class SpriteAnimation {
 
         Presenter presenter = new Presenter(model, view);
         presenter.setFpsLimits(1, 120);       // la rueda no baja de 1 ni pasa de 120 por segundo
+        presenter.setScaleLimits(1, 8);       // ni encoge un sprite por debajo de 1 ni lo amplía más de 8 veces
 
         presenter.start();
         // main termina aquí; la aplicación sigue en los hilos que ha arrancado start()

@@ -17,6 +17,7 @@ public class PresenterTest {
         starts();
         renderSpeedStaysBetween1And120();
         spriteSpeedStaysBetween1And120();
+        spriteScaleStaysBetween1And8();
         spriteViewsGiveWhatTheViewShows();
         moves();
         Check.finish("PresenterTest");
@@ -64,6 +65,22 @@ public class PresenterTest {
         Check.equal("el pato no pasa de 120", 120, model.fps);
         presenter.changeSpriteSpeed(0, -500);
         Check.equal("el pato no baja de 1", 1, model.fps);
+    }
+
+    static void spriteScaleStaysBetween1And8() {
+        FakeModel model = new FakeModel();
+        Presenter presenter = new Presenter(model, new FakeView());   // sin setScaleLimits: valen los de por defecto
+
+        presenter.changeSpriteScale(0, +1);
+        Check.equal("la rueda amplía el pato de 4 a 5", 5, model.scale);
+        presenter.changeSpriteScale(0, +500);
+        Check.equal("el pato no se amplía más de 8 veces", 8, model.scale);
+        presenter.changeSpriteScale(0, -500);
+        Check.equal("ni encoge por debajo de 1", 1, model.scale);
+
+        presenter.setScaleLimits(2, 3);
+        presenter.changeSpriteScale(0, +500);
+        Check.equal("main puede cambiar los límites", 3, model.scale);
     }
 
     static void spriteViewsGiveWhatTheViewShows() {

@@ -18,7 +18,7 @@ Todo este documento gira alrededor de un solo programa: SpriteAnimation, una ven
 
 Al ejecutarlo, ves un pato que vuela y una explosión que estalla una y otra vez. Cada una va a su ritmo: el pato, a 8 fotogramas por segundo, y la explosión, a 12. Arriba, un pequeño HUD (las cifras que flotan sobre la escena) muestra tres velocidades: cuántas veces por segundo se pinta la ventana y a qué ritmo avanza cada animación.
 
-Se maneja con el ratón. Con la rueda sobre una cifra del HUD, la subes o la bajas. Y puedes arrastrar el pato o la explosión a otro sitio: mientras lo llevas, sigue animándose.
+Se maneja con el ratón. Con la rueda sobre una cifra del HUD, la subes o la bajas; sobre un sprite, lo agrandas o lo encoges. Y puedes arrastrar el pato o la explosión a otro sitio: mientras lo llevas, sigue animándose.
 
 <figure class="vertical">
 <svg viewBox="0 0 560 350" role="img" style="font-family:var(--fuente-texto);display:block">
@@ -251,8 +251,9 @@ En la demo, el modelo no pide nada: la vista pregunta al presentador cada vez qu
 
 - `start()`: poner en marcha las animaciones.
 - `spriteCount()`: decir cuántos sprites hay.
-- `frame(index)`, `x(index)`, `y(index)`, `name(index)` y `fps(index)`: dar un dato de un sprite, por su número. El fotograma va en una copia.
+- `frame(index)`, `x(index)`, `y(index)`, `name(index)`, `fps(index)` y `scale(index)`: dar un dato de un sprite, por su número. El fotograma va en una copia, ya ampliada a su escala.
 - `setFps(index, fps)`: cambiar la velocidad de un sprite.
+- `setScale(index, scale)`: cambiar su tamaño, sin mover su centro.
 - `moveTo(index, x, y)`: llevar un sprite a otro sitio.
 
 ### `ViewContract`: lo que el presentador puede pedirle a la vista
@@ -268,6 +269,7 @@ En la demo, el modelo no pide nada: la vista pregunta al presentador cada vez qu
 - `spriteCount()`: decir cuántos sprites hay, para contar las líneas del HUD.
 - `changeRenderSpeed(delta)`: subir o bajar el ritmo de pintado, sin salirse de los límites.
 - `changeSpriteSpeed(index, delta)`: lo mismo con la velocidad de un sprite.
+- `changeSpriteScale(index, delta)`: agrandar o encoger un sprite, también entre unos límites.
 - `moveSprite(index, x, y)`: llevar un sprite a otro sitio.
 - `start()`: poner en marcha la aplicación. No lo pide la vista: lo llama `main`.
 
@@ -461,12 +463,13 @@ public static void main(String[] args) {
 
     Presenter presenter = new Presenter(model, view);
     presenter.setFpsLimits(1, 120);       // la rueda no baja de 1 ni pasa de 120 por segundo
+    presenter.setScaleLimits(1, 8);       // ni encoge un sprite por debajo de 1 ni lo amplía más de 8 veces
 
     presenter.start();
 }
 ```
 
-`main` declara cada pieza con su clase, `Model`, `View` y `Presenter`, porque las configura con métodos que no son del contrato: `addSprite`, que crea cada sprite a partir de su hoja, `setCanvasSize` y `setFpsLimits`. Así la configuración queda a la vista, en un solo sitio. El presentador recibe el modelo y la vista como `ModelContract` y `ViewContract`, sin esos métodos. `setRenderFps` sí es del contrato, porque el presentador lo usa cuando giras la rueda.
+`main` declara cada pieza con su clase, `Model`, `View` y `Presenter`, porque las configura con métodos que no son del contrato: `addSprite`, que crea cada sprite a partir de su hoja, `setCanvasSize`, `setFpsLimits` y `setScaleLimits`. Así la configuración queda a la vista, en un solo sitio. El presentador recibe el modelo y la vista como `ModelContract` y `ViewContract`, sin esos métodos. `setRenderFps` sí es del contrato, porque el presentador lo usa cuando giras la rueda.
 
 Fíjate en que el presentador no sabe qué animaciones hay: trabaja con los sprites que tenga el modelo. Por eso sirve igual para dos sprites que para veinte, y cambiar las animaciones no lo toca.
 
@@ -636,13 +639,17 @@ En código, el recorrido es corto. La vista solo averigua sobre qué línea del 
 ```java
 // MouseHandler, de la vista: el evento llega por el hilo de eventos de Swing
 public void mouseWheelMoved(MouseWheelEvent e) {
+    int delta = -e.getWheelRotation();                      // rueda hacia arriba: sube
     int lines = 1 + this.presenter.spriteCount();           // la de pintado y una por sprite
     int line = this.hud.lineAt(e.getX(), e.getY(), lines);  // 0: pintado; 1, 2…: sprites
     if (line < 0) {
-        return;                                              // fuera del HUD, no hace nada
+        int sprite = this.spriteAt(this.presenter.spriteViews(), e.getX(), e.getY());
+        if (sprite >= 0) {
+            this.presenter.changeSpriteScale(sprite, delta);   // sobre un sprite: lo agranda o lo encoge
+        }
+        return;                                              // fuera del HUD y de los sprites, no hace nada
     }
 
-    int delta = -e.getWheelRotation();                      // rueda hacia arriba: sube
     if (line == 0) {
         this.presenter.changeRenderSpeed(delta);
     } else {
@@ -652,11 +659,11 @@ public void mouseWheelMoved(MouseWheelEvent e) {
 
 // Presenter: aplica la regla
 public void changeSpriteSpeed(int index, int delta) {
-    this.model.setFps(index, this.limit(this.model.fps(index) + delta));   // entre minFps y maxFps
+    this.model.setFps(index, this.limit(this.model.fps(index) + delta, this.minFps, this.maxFps));
 }
 ```
 
-Arrastrar un sprite sigue el mismo camino. Qué sprite hay bajo el puntero lo averigua la vista: al pulsar, le pide al presentador los `SpriteView` de ese momento y busca el que queda encima. No guarda los `SpriteView`: los pide cuando los necesita, los usa y los suelta. Mientras arrastras, le pide al presentador que mueva el sprite (`moveSprite`). El pato sigue aleteando todo el rato, porque su hilo no sabe nada del ratón.
+Arrastrar un sprite sigue el mismo camino. Qué sprite hay bajo el puntero lo averigua la vista: al pulsar, le pide al presentador los `SpriteView` de ese momento y busca el que queda encima. No guarda los `SpriteView`: los pide cuando los necesita, los usa y los suelta. Mientras arrastras, le pide al presentador que mueva el sprite (`moveSprite`). El pato sigue aleteando todo el rato, porque su hilo no sabe nada del ratón. Con la rueda sobre un sprite pasa lo mismo: la vista busca el sprite y avisa con `changeSpriteScale`, el presentador lo deja entre 1 y 8 y el modelo, con `setScale`, lo agranda sin mover su centro.
 
 Para enterarse de la rueda, la vista usa el patrón Observer [[R5]](#src-R5 "Refactoring.Guru, Observer"){: .ref}: se suscribe a los eventos del ratón de Swing, y Swing la avisa llamando a `mouseWheelMoved`. Entre el modelo y la vista, en cambio, la demo no lo usa: el modelo no avisa a nadie, y la vista pide los datos cuando le toca pintar. En otros MVP, el modelo sí avisa de sus cambios al presentador, y también suele hacerlo con Observer.
 

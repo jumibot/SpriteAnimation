@@ -18,7 +18,7 @@ import presenter.Presenter;
 
 /**
  * Prueba con el ratón de verdad: abre la ventana real y mueve el ratón con java.awt.Robot.
- * Gira la rueda sobre cada cifra del HUD, arrastra cada sprite y comprueba cómo se cierra.
+ * Gira la rueda sobre cada cifra del HUD y sobre cada sprite, arrastra cada sprite y comprueba cómo se cierra.
  * Durante la prueba no toques el ratón. Con -Dcaptura=carpeta guarda una captura de la ventana.
  */
 public class MouseTest {
@@ -41,6 +41,7 @@ public class MouseTest {
         view.setRenderFps(60);
         presenter = new Presenter(model, view);
         presenter.setFpsLimits(1, 120);
+        presenter.setScaleLimits(1, 8);
         presenter.start();
 
         if (System.getProperty("depurar") != null) printMouseEvents();
@@ -52,6 +53,7 @@ public class MouseTest {
         capture("captura-inicio.png");
 
         wheelOverEachHudLine();
+        wheelOverEachSprite();
         dragEachSprite();
         capture("captura-final.png");
         stillResponds();
@@ -98,7 +100,41 @@ public class MouseTest {
         moveTo(viewer.getWidth() - 40, viewer.getHeight() - 40);
         robot.mouseWheel(-3);
         robot.delay(300);
-        Check.equal("la rueda fuera del HUD no cambia nada", render, view.renderFps());
+        Check.equal("la rueda fuera del HUD y de los sprites no cambia nada", render, view.renderFps());
+    }
+
+    /** Sobre un sprite, la rueda lo amplía o lo encoge sin mover su centro. Al final lo deja como estaba. */
+    static void wheelOverEachSprite() {
+        for (int index = 0; index < presenter.spriteCount(); index++) {
+            // Hasta tres intentos, como con el HUD.
+            for (int attempt = 1; attempt <= 3; attempt++) {
+                boolean disturbedBefore = disturbed;
+                disturbed = false;
+                SpriteView before = spriteView(index);
+                int width = before.image().getWidth();
+                int centerX = before.x() + width / 2;
+                int centerY = before.y() + before.image().getHeight() / 2;
+                moveTo(centerX, centerY);
+                robot.mouseWheel(-1);   // una muesca hacia arriba: una escala más
+                robot.delay(300);
+                checkPointerAt(centerX, centerY);
+                SpriteView up = spriteView(index);
+                moveTo(centerX, centerY);
+                robot.mouseWheel(+1);   // y otra hacia abajo: vuelve
+                robot.delay(300);
+                checkPointerAt(centerX, centerY);
+                SpriteView down = spriteView(index);
+                boolean retry = disturbed && attempt < 3;
+                disturbed |= disturbedBefore;
+                if (retry) continue;
+                int grownWidth = up.image().getWidth();
+                Check.that("rueda sobre el sprite " + index + ": " + width + " → " + grownWidth + " → "
+                           + down.image().getWidth() + " px",
+                           grownWidth > width && down.image().getWidth() == width);
+                Check.equal("y crece desde su centro", centerX, up.x() + grownWidth / 2);
+                break;
+            }
+        }
     }
 
     /** Línea 0: velocidad de pintado; 1, 2…: velocidad de cada sprite. */

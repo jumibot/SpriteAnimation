@@ -12,25 +12,28 @@ class Sprite implements Runnable {
     private static final long TICK_MS = 5;   // cada cuánto mira el hilo si toca cambiar de fotograma
 
     private final String name;
-    private final BufferedImage[] frames;
+    private final BufferedImage[] frames;   // los fotogramas originales, sin ampliar
 
     // Estos campos los escribe un hilo y los lee otro (el de pintado).
     // volatile hace que cada hilo vea siempre el último valor escrito.
     private volatile int frameIndex;   // lo cambia el hilo del sprite
     private volatile int fps;          // lo cambia la rueda del ratón
+    private volatile int scale;        // cuántas veces se amplía: también lo cambia la rueda
     private volatile int x;            // x e y: los cambia el arrastre
     private volatile int y;
 
-    public Sprite(String name, BufferedImage[] frames, int fps, int x, int y) {
+    public Sprite(String name, BufferedImage[] frames, int scale, int fps, int x, int y) {
         this.name = name;
         this.frames = frames;
+        this.scale = scale;
         this.fps = fps;
         this.x = x;
         this.y = y;
     }
 
     public String name() { return this.name; }
-    public BufferedImage frame() { return this.frames[this.frameIndex]; }   // el fotograma que toca ahora
+    public BufferedImage frame() { return this.frames[this.frameIndex]; }   // el fotograma que toca ahora, sin ampliar
+    public int scale() { return this.scale; }
     public int fps() { return this.fps; }
     public void setFps(int fps) { this.fps = fps; }
     public int x() { return this.x; }
@@ -41,6 +44,17 @@ class Sprite implements Runnable {
     public void moveTo(int x, int y) {
         this.x = x;
         this.y = y;
+    }
+
+    /**
+     * Cambia la escala sin mover el centro: la esquina se aleja (o se acerca) la mitad de lo que crece.
+     * Como en moveTo, si se pinta a medio cambiar se verá así durante un fotograma.
+     */
+    public void setScale(int scale) {
+        int growth = scale - this.scale;   // cuántas veces el tamaño original crece (o encoge, si es negativo)
+        this.x -= this.frames[0].getWidth() * growth / 2;
+        this.y -= this.frames[0].getHeight() * growth / 2;
+        this.scale = scale;
     }
 
     /** Crea y arranca el hilo del sprite. Dura lo que la aplicación: al cerrar la ventana, termina con ella. */

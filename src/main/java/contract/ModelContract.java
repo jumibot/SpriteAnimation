@@ -15,5 +15,7 @@ public interface ModelContract {
     String name(int index);              // cómo se llama
     int fps(int index);                  // a cuántos fotogramas por segundo va
     void setFps(int index, int fps);     // cambiar esa velocidad
+    int scale(int index);                // cuántas veces se amplía
+    void setScale(int index, int scale); // cambiar ese tamaño, sin mover su centro
     void moveTo(int index, int x, int y);  // llevarlo a otro sitio
 }

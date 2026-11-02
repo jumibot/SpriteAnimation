@@ -9,7 +9,7 @@ import contract.ModelContract;
 
 /**
  * El modelo de MVP: el estado de la aplicación, los sprites. No sabe que existe una ventana.
- * No deja salir nada suyo: hacia fuera da números, textos y copias de los fotogramas.
+ * No deja salir nada suyo: hacia fuera da números, textos y copias ampliadas de los fotogramas.
  */
 public class Model implements ModelContract {
 
@@ -23,8 +23,8 @@ public class Model implements ModelContract {
      */
     public void addSprite(String name, String sheet, int frameWidth, int frameHeight, int scale,
                           int fps, int x, int y) {
-        BufferedImage[] frames = SpriteSheet.load(sheet, frameWidth, frameHeight, scale);
-        this.sprites.add(new Sprite(name, frames, fps, x, y));
+        BufferedImage[] frames = SpriteSheet.load(sheet, frameWidth, frameHeight);   // a su tamaño original
+        this.sprites.add(new Sprite(name, frames, scale, fps, x, y));
     }
 
     @Override
@@ -41,10 +41,14 @@ public class Model implements ModelContract {
 
     // Los datos de cada sprite, por su número. El Sprite no sale de aquí.
 
-    /** El fotograma que toca ahora, en una copia: quien lo reciba no puede cambiar el del modelo. */
+    /**
+     * El fotograma que toca ahora, en una copia ya ampliada a su escala:
+     * quien lo reciba no puede cambiar el del modelo.
+     */
     @Override
     public BufferedImage frame(int index) {
-        return copyOf(this.sprites.get(index).frame());
+        Sprite sprite = this.sprites.get(index);
+        return enlargedCopy(sprite.frame(), sprite.scale());
     }
 
     @Override public int x(int index) { return this.sprites.get(index).x(); }
@@ -52,13 +56,18 @@ public class Model implements ModelContract {
     @Override public String name(int index) { return this.sprites.get(index).name(); }
     @Override public int fps(int index) { return this.sprites.get(index).fps(); }
     @Override public void setFps(int index, int fps) { this.sprites.get(index).setFps(fps); }
+    @Override public int scale(int index) { return this.sprites.get(index).scale(); }
+    @Override public void setScale(int index, int scale) { this.sprites.get(index).setScale(scale); }
     @Override public void moveTo(int index, int x, int y) { this.sprites.get(index).moveTo(x, y); }
 
-    /** Una imagen nueva, igual que la original. */
-    private static BufferedImage copyOf(BufferedImage image) {
-        BufferedImage copy = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+    /** Una imagen nueva, scale veces más grande que la original. Sin suavizar, para que se vean los píxeles (pixel art). */
+    private static BufferedImage enlargedCopy(BufferedImage image, int scale) {
+        int width = image.getWidth() * scale;
+        int height = image.getHeight() * scale;
+
+        BufferedImage copy = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = copy.createGraphics();
-        g.drawImage(image, 0, 0, null);   // la pinta encima, píxel a píxel
+        g.drawImage(image, 0, 0, width, height, null);   // sin interpolación: vecino más próximo
         g.dispose();
         return copy;
     }

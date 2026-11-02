@@ -679,7 +679,7 @@ pre code { background: none; padding: 0; font-size: .82em; white-space: pre; }
 <div class="hoja">
   <main id="contenido" tabindex="-1"><details class="seccion" id="ejemplo" open><summary class="seccion-titulo"><span class="etiqueta">01 / El ejemplo</span><h2>Lo que vamos a construir</h2></summary><div class="seccion-cuerpo"><p class="entradilla">Todo este documento gira alrededor de un solo programa: SpriteAnimation, una ventana con dos animaciones.</p>
 <p>Al ejecutarlo, ves un pato que vuela y una explosión que estalla una y otra vez. Cada una va a su ritmo: el pato, a 8 fotogramas por segundo, y la explosión, a 12. Arriba, un pequeño HUD (las cifras que flotan sobre la escena) muestra tres velocidades: cuántas veces por segundo se pinta la ventana y a qué ritmo avanza cada animación.</p>
-<p>Se maneja con el ratón. Con la rueda sobre una cifra del HUD, la subes o la bajas. Y puedes arrastrar el pato o la explosión a otro sitio: mientras lo llevas, sigue animándose.</p>
+<p>Se maneja con el ratón. Con la rueda sobre una cifra del HUD, la subes o la bajas; sobre un sprite, lo agrandas o lo encoges. Y puedes arrastrar el pato o la explosión a otro sitio: mientras lo llevas, sigue animándose.</p>
 <figure class="vertical">
 <svg viewBox="0 0 560 350" role="img" style="font-family:var(--fuente-texto);display:block">
 <title>La ventana de SpriteAnimation: arriba, el HUD con la velocidad de pintado y la de cada sprite, que se cambian con la rueda del ratón; abajo, el pato volando, que se puede arrastrar sin que deje de aletear, y la explosión</title>
@@ -887,8 +887,9 @@ html[data-modo="oscuro"] .ej-px{filter:url(#ej-inv)}
 <ul>
 <li><code>start()</code>: poner en marcha las animaciones.</li>
 <li><code>spriteCount()</code>: decir cuántos sprites hay.</li>
-<li><code>frame(index)</code>, <code>x(index)</code>, <code>y(index)</code>, <code>name(index)</code> y <code>fps(index)</code>: dar un dato de un sprite, por su número. El fotograma va en una copia.</li>
+<li><code>frame(index)</code>, <code>x(index)</code>, <code>y(index)</code>, <code>name(index)</code>, <code>fps(index)</code> y <code>scale(index)</code>: dar un dato de un sprite, por su número. El fotograma va en una copia, ya ampliada a su escala.</li>
 <li><code>setFps(index, fps)</code>: cambiar la velocidad de un sprite.</li>
+<li><code>setScale(index, scale)</code>: cambiar su tamaño, sin mover su centro.</li>
 <li><code>moveTo(index, x, y)</code>: llevar un sprite a otro sitio.</li>
 </ul>
 </article>
@@ -908,6 +909,7 @@ html[data-modo="oscuro"] .ej-px{filter:url(#ej-inv)}
 <li><code>spriteCount()</code>: decir cuántos sprites hay, para contar las líneas del HUD.</li>
 <li><code>changeRenderSpeed(delta)</code>: subir o bajar el ritmo de pintado, sin salirse de los límites.</li>
 <li><code>changeSpriteSpeed(index, delta)</code>: lo mismo con la velocidad de un sprite.</li>
+<li><code>changeSpriteScale(index, delta)</code>: agrandar o encoger un sprite, también entre unos límites.</li>
 <li><code>moveSprite(index, x, y)</code>: llevar un sprite a otro sitio.</li>
 <li><code>start()</code>: poner en marcha la aplicación. No lo pide la vista: lo llama <code>main</code>.</li>
 </ul>
@@ -1071,11 +1073,12 @@ figure ol.vin ol.vin-acc>li::before{content:"→";position:absolute;left:0;top:0
 
     Presenter presenter = new Presenter(model, view);
     presenter.setFpsLimits(1, 120);       // la rueda no baja de 1 ni pasa de 120 por segundo
+    presenter.setScaleLimits(1, 8);       // ni encoge un sprite por debajo de 1 ni lo amplía más de 8 veces
 
     presenter.start();
 }
 </code></pre>
-<p><code>main</code> declara cada pieza con su clase, <code>Model</code>, <code>View</code> y <code>Presenter</code>, porque las configura con métodos que no son del contrato: <code>addSprite</code>, que crea cada sprite a partir de su hoja, <code>setCanvasSize</code> y <code>setFpsLimits</code>. Así la configuración queda a la vista, en un solo sitio. El presentador recibe el modelo y la vista como <code>ModelContract</code> y <code>ViewContract</code>, sin esos métodos. <code>setRenderFps</code> sí es del contrato, porque el presentador lo usa cuando giras la rueda.</p>
+<p><code>main</code> declara cada pieza con su clase, <code>Model</code>, <code>View</code> y <code>Presenter</code>, porque las configura con métodos que no son del contrato: <code>addSprite</code>, que crea cada sprite a partir de su hoja, <code>setCanvasSize</code>, <code>setFpsLimits</code> y <code>setScaleLimits</code>. Así la configuración queda a la vista, en un solo sitio. El presentador recibe el modelo y la vista como <code>ModelContract</code> y <code>ViewContract</code>, sin esos métodos. <code>setRenderFps</code> sí es del contrato, porque el presentador lo usa cuando giras la rueda.</p>
 <p>Fíjate en que el presentador no sabe qué animaciones hay: trabaja con los sprites que tenga el modelo. Por eso sirve igual para dos sprites que para veinte, y cambiar las animaciones no lo toca.</p></div></details><details class="seccion" id="conectar"><summary class="seccion-titulo"><span class="etiqueta">08 / Conectar</span><h2>Conectar antes de arrancar</h2></summary><div class="seccion-cuerpo"><p class="entradilla">Las viñetas del apartado anterior esconden dos detalles: cómo se conectan el presentador y la vista, y por qué arrancar va al final.</p>
 <p>Empieza por el paso 2. El presentador necesita la vista y la vista necesita el presentador, así que no pueden recibirse los dos por constructor: uno de los dos tiene que existir primero. La demo crea la vista, se la pasa al presentador, y el constructor del presentador, en su última línea, se presenta a la vista con <code>view.setPresenter(this)</code>. Es la única dependencia que no va por constructor.</p>
 <p>Pasar <code>this</code> desde un constructor se llama <em>dejar escapar</em> <code>this</code>, y suele ser mala práctica: otro hilo podría usar el objeto antes de que esté construido. Aquí no hay problema: es la última línea del constructor y todavía solo existe el hilo de <code>main</code>.</p>
@@ -1215,13 +1218,17 @@ public void start() {          // solo arranca
 <p>En código, el recorrido es corto. La vista solo averigua sobre qué línea del HUD está el ratón y avisa (lo hace <code>MouseHandler</code>, la parte de la vista que escucha el ratón); el presentador aplica la regla del límite y se lo pasa al modelo con <code>setFps</code>.</p>
 <pre><code class="language-java">// MouseHandler, de la vista: el evento llega por el hilo de eventos de Swing
 public void mouseWheelMoved(MouseWheelEvent e) {
+    int delta = -e.getWheelRotation();                      // rueda hacia arriba: sube
     int lines = 1 + this.presenter.spriteCount();           // la de pintado y una por sprite
     int line = this.hud.lineAt(e.getX(), e.getY(), lines);  // 0: pintado; 1, 2…: sprites
     if (line < 0) {
-        return;                                              // fuera del HUD, no hace nada
+        int sprite = this.spriteAt(this.presenter.spriteViews(), e.getX(), e.getY());
+        if (sprite >= 0) {
+            this.presenter.changeSpriteScale(sprite, delta);   // sobre un sprite: lo agranda o lo encoge
+        }
+        return;                                              // fuera del HUD y de los sprites, no hace nada
     }
 
-    int delta = -e.getWheelRotation();                      // rueda hacia arriba: sube
     if (line == 0) {
         this.presenter.changeRenderSpeed(delta);
     } else {
@@ -1231,10 +1238,10 @@ public void mouseWheelMoved(MouseWheelEvent e) {
 
 // Presenter: aplica la regla
 public void changeSpriteSpeed(int index, int delta) {
-    this.model.setFps(index, this.limit(this.model.fps(index) + delta));   // entre minFps y maxFps
+    this.model.setFps(index, this.limit(this.model.fps(index) + delta, this.minFps, this.maxFps));
 }
 </code></pre>
-<p>Arrastrar un sprite sigue el mismo camino. Qué sprite hay bajo el puntero lo averigua la vista: al pulsar, le pide al presentador los <code>SpriteView</code> de ese momento y busca el que queda encima. No guarda los <code>SpriteView</code>: los pide cuando los necesita, los usa y los suelta. Mientras arrastras, le pide al presentador que mueva el sprite (<code>moveSprite</code>). El pato sigue aleteando todo el rato, porque su hilo no sabe nada del ratón.</p>
+<p>Arrastrar un sprite sigue el mismo camino. Qué sprite hay bajo el puntero lo averigua la vista: al pulsar, le pide al presentador los <code>SpriteView</code> de ese momento y busca el que queda encima. No guarda los <code>SpriteView</code>: los pide cuando los necesita, los usa y los suelta. Mientras arrastras, le pide al presentador que mueva el sprite (<code>moveSprite</code>). El pato sigue aleteando todo el rato, porque su hilo no sabe nada del ratón. Con la rueda sobre un sprite pasa lo mismo: la vista busca el sprite y avisa con <code>changeSpriteScale</code>, el presentador lo deja entre 1 y 8 y el modelo, con <code>setScale</code>, lo agranda sin mover su centro.</p>
 <p>Para enterarse de la rueda, la vista usa el patrón Observer <a class="ref" href="#src-R5" title="Refactoring.Guru, Observer">[R5]</a>: se suscribe a los eventos del ratón de Swing, y Swing la avisa llamando a <code>mouseWheelMoved</code>. Entre el modelo y la vista, en cambio, la demo no lo usa: el modelo no avisa a nadie, y la vista pide los datos cuando le toca pintar. En otros MVP, el modelo sí avisa de sus cambios al presentador, y también suele hacerlo con Observer.</p></div></details><details class="seccion" id="balance"><summary class="seccion-titulo"><span class="etiqueta">11 / Balance</span><h2>Qué aporta MVP y qué cuesta</h2></summary><div class="seccion-cuerpo"><p class="entradilla">MVP no sale gratis. Ordena el programa, pero a cambio pide más código. Antes de usarlo, conviene saber qué ganas y qué pagas.</p>
 <div class="tarjetas cols-2">
 <article class="tarjeta">

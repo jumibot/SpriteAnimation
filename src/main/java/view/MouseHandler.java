@@ -32,15 +32,20 @@ public class MouseHandler extends MouseAdapter {
         this.presenter = presenter;
     }
 
+    /** Sobre el HUD cambia una velocidad; fuera, la escala del sprite que haya debajo. El HUD va primero: está encima. */
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
+        int delta = -e.getWheelRotation();                      // rueda hacia arriba: sube
         int lines = 1 + this.presenter.spriteCount();           // la de pintado y una por sprite
         int line = this.hud.lineAt(e.getX(), e.getY(), lines);  // 0: pintado; 1, 2…: sprites
         if (line < 0) {
-            return;                                              // fuera del HUD, no hace nada
+            int sprite = this.spriteAt(this.presenter.spriteViews(), e.getX(), e.getY());
+            if (sprite >= 0) {
+                this.presenter.changeSpriteScale(sprite, delta);   // sobre un sprite: lo agranda o lo encoge
+            }
+            return;                                              // fuera del HUD y de los sprites, no hace nada
         }
 
-        int delta = -e.getWheelRotation();                      // rueda hacia arriba: sube
         if (line == 0) {
             this.presenter.changeRenderSpeed(delta);
         } else {

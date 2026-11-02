@@ -18,6 +18,10 @@ public class Presenter implements PresenterContract {
     private int minFps = 1;
     private int maxFps = 120;
 
+    // Entre qué escalas se mueve la rueda sobre un sprite. main los cambia con setScaleLimits.
+    private int minScale = 1;
+    private int maxScale = 8;
+
     public Presenter(ModelContract model, ViewContract view) {   // las recibe, no las crea
         this.model = model;
         this.view = view;
@@ -29,6 +33,12 @@ public class Presenter implements PresenterContract {
     public void setFpsLimits(int min, int max) {
         this.minFps = min;
         this.maxFps = max;
+    }
+
+    /** Los límites de escala. No es del contrato: solo lo usa main, al montar la aplicación. */
+    public void setScaleLimits(int min, int max) {
+        this.minScale = min;
+        this.maxScale = max;
     }
 
     @Override
@@ -56,12 +66,17 @@ public class Presenter implements PresenterContract {
 
     @Override
     public void changeRenderSpeed(int delta) {
-        this.view.setRenderFps(this.limit(this.view.renderFps() + delta));
+        this.view.setRenderFps(this.limit(this.view.renderFps() + delta, this.minFps, this.maxFps));
     }
 
     @Override
     public void changeSpriteSpeed(int index, int delta) {
-        this.model.setFps(index, this.limit(this.model.fps(index) + delta));   // entre minFps y maxFps
+        this.model.setFps(index, this.limit(this.model.fps(index) + delta, this.minFps, this.maxFps));
+    }
+
+    @Override
+    public void changeSpriteScale(int index, int delta) {
+        this.model.setScale(index, this.limit(this.model.scale(index) + delta, this.minScale, this.maxScale));
     }
 
     @Override
@@ -69,14 +84,14 @@ public class Presenter implements PresenterContract {
         this.model.moveTo(index, x, y);
     }
 
-    /** Deja la velocidad entre minFps y maxFps. */
-    private int limit(int fps) {
-        if (fps < this.minFps) {
-            return this.minFps;
+    /** Deja el valor entre min y max. */
+    private int limit(int value, int min, int max) {
+        if (value < min) {
+            return min;
         }
-        if (fps > this.maxFps) {
-            return this.maxFps;
+        if (value > max) {
+            return max;
         }
-        return fps;
+        return value;
     }
 }

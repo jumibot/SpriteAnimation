@@ -8,6 +8,7 @@ public interface PresenterContract {
     int spriteCount();                            // cuántos sprites hay
     void changeRenderSpeed(int delta);            // subir o bajar el ritmo de pintado
     void changeSpriteSpeed(int index, int delta); // lo mismo con la velocidad de un sprite
+    void changeSpriteScale(int index, int delta); // agrandar o encoger un sprite
     void moveSprite(int index, int x, int y);     // llevar un sprite a otro sitio
     void start();                                 // poner en marcha la aplicación (lo llama main)
 }
