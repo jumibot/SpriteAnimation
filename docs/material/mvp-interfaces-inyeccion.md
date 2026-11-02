@@ -12,11 +12,78 @@ herramientas: buscador lectura
 ---
 # MVP, interfaces e inyección de dependencias
 
+## El ejemplo | Lo que vamos a construir {#ejemplo}
+
+Todo este documento gira alrededor de un solo programa: SpriteAnimation, una ventana con dos animaciones.
+
+Al ejecutarlo, ves un pato que vuela y una explosión que estalla una y otra vez. Cada una va a su ritmo: el pato, a 8 fotogramas por segundo, y la explosión, a 12. Arriba, un pequeño HUD (las cifras que flotan sobre la escena) muestra tres velocidades: cuántas veces por segundo se pinta la ventana y a qué ritmo avanza cada animación.
+
+Se maneja con el ratón. Con la rueda sobre una cifra del HUD, la subes o la bajas. Y puedes arrastrar el pato o la explosión a otro sitio: mientras lo llevas, sigue animándose.
+
+<figure class="vertical">
+<svg viewBox="0 0 560 350" role="img" style="font-family:var(--fuente-texto);display:block">
+<title>La ventana de SpriteAnimation: arriba, el HUD con la velocidad de pintado y la de cada sprite, que se cambian con la rueda del ratón; abajo, el pato volando, que se puede arrastrar sin que deje de aletear, y la explosión</title>
+<style>
+.ej-pato{animation:ej-pato .5s steps(4) infinite}
+.ej-expl{animation:ej-expl .667s steps(8) infinite}
+.ej-lleva{animation:ej-lleva 7s ease-in-out infinite}
+.ej-rueda{animation:ej-rueda 1.4s ease-in-out infinite}
+@keyframes ej-pato{from{transform:translateY(0)}to{transform:translateY(-64px)}}
+@keyframes ej-expl{from{transform:translateX(0)}to{transform:translateX(-384px)}}
+@keyframes ej-lleva{0%,15%{transform:translate(0,0)}45%,60%{transform:translate(110px,-18px)}90%,100%{transform:translate(0,0)}}
+@keyframes ej-rueda{0%,100%{transform:translateY(-3px)}50%{transform:translateY(3px)}}
+@media (prefers-reduced-motion:reduce){.ej-pato,.ej-expl,.ej-lleva,.ej-rueda{animation:none}}
+@media print{.ej-pato,.ej-expl,.ej-lleva,.ej-rueda{animation:none}}
+html[data-modo="oscuro"] .ej-px{filter:url(#ej-inv)}
+</style>
+<defs>
+<filter id="ej-inv" color-interpolation-filters="sRGB"><feComponentTransfer><feFuncR type="table" tableValues="1 0"/><feFuncG type="table" tableValues="1 0"/><feFuncB type="table" tableValues="1 0"/></feComponentTransfer><feColorMatrix type="hueRotate" values="180"/></filter>
+<marker id="ej-f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--texto-suave)"/></marker>
+</defs>
+<rect x="20" y="10" width="520" height="330" rx="10" style="fill:#fff;stroke:var(--oscuro)" stroke-width="2"/>
+<line x1="20" y1="42" x2="540" y2="42" style="stroke:var(--borde)" stroke-width="1.5"/>
+<text x="40" y="32" font-size="15" font-weight="700" style="fill:var(--oscuro)">SpriteAnimation</text>
+<g style="fill:var(--tenue)"><circle cx="490" cy="26" r="5"/><circle cx="506" cy="26" r="5"/><circle cx="522" cy="26" r="5"/></g>
+<rect x="40" y="58" width="300" height="84" rx="6" style="fill:var(--fondo-suave);stroke:var(--primario)" stroke-width="1.5"/>
+<g font-size="14" style="fill:var(--texto)">
+<text x="54" y="82"><tspan font-weight="700" style="fill:var(--primario)">Pintado</tspan> · 60 veces por segundo</text>
+<text x="54" y="106"><tspan font-weight="700" style="fill:var(--primario)">Pato</tspan> · 8 fotogramas por segundo</text>
+<text x="54" y="130"><tspan font-weight="700" style="fill:var(--primario)">Explosión</tspan> · 12 fotogramas por segundo</text>
+</g>
+<rect x="362" y="66" width="26" height="40" rx="13" style="fill:#fff;stroke:var(--oscuro)" stroke-width="2"/>
+<line x1="375" y1="66" x2="375" y2="82" style="stroke:var(--oscuro)" stroke-width="1.5"/>
+<rect class="ej-rueda" x="372" y="71" width="6" height="10" rx="3" style="fill:var(--acento)"/>
+<text x="398" y="84" font-size="14" style="fill:var(--texto-suave)">rueda sobre una cifra:</text>
+<text x="398" y="102" font-size="14" style="fill:var(--texto-suave)">la sube o la baja</text>
+<path d="M150 262 Q 205 228 262 244" fill="none" style="stroke:var(--texto-suave)" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ej-f)"/>
+<text x="60" y="318" font-size="14" style="fill:var(--texto-suave)">arrástralo: sigue aleteando</text>
+<g class="ej-lleva">
+<svg class="ej-px" x="86" y="190" width="72" height="72" viewBox="0 0 16 16" style="image-rendering:pixelated"><image class="ej-pato" width="16" height="64" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAABACAYAAAATffeWAAABmklEQVRYR2NkoBAwUqifgeoG/EdyEcxwZDGYNNxiFEXxG3rg+hcGlIDZcZ7yGL5ctP0h3CCQAf9fHHcGC5S/9GQAaQQZtO7IbYbAqzswNL989hUsJi7FzQAyCMUA1bUqKBpgBqgqKoDFb99/AKZhhuy8+AYeiNj8idX5MANAmhkYGBgJxcJ/UBiguwAaBmC9hAwAqQEbggxINqA5yx4eBsiayXIBWQbAXFA77SCGpcSEATgcoGGAoZ5YA3DmuVEDiEuJeAst9EAcrgUKciECKolIKlCQizD00oioAgVWsCLbipwviE3K2GIHbA6xBoxmJjy5YQQFIkUJ6b+7vgg4GH++/cFw4MkXlARITCDCDQDphNXKsIghqkQCuQBkOwwgu4JgE8dBhgcjFUANgLcP8DZxHl1+i9UAUJVPdBMH2RA5XeHREgktSIlJSCRVbXgVY5OkmwsoaiP9hyVn9JxIbL1AUm7EFk5gA2C5keLyAL1MIBQLKM7H5gpCBQqK8wemQAHZilwesAtzgB1CUp9ptImDP4cTSkgEywcABLsuSPGSfPgAAAAASUVORK5CYIIA"/></svg>
+<path d="M140 238 l0 24 l6 -6 l5 11 l4 -2 l-5 -11 l8 0 z" style="fill:#fff;stroke:var(--oscuro)" stroke-width="1.5" stroke-linejoin="round"/>
+</g>
+<g class="ej-px">
+<rect x="350" y="170" width="140" height="140" rx="8" style="fill:#1e2a30"/>
+<svg x="360" y="180" width="120" height="120" viewBox="0 0 48 48" style="image-rendering:pixelated"><image class="ej-expl" width="384" height="48" transform="translate(-144 0)" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAYAAAAAwCAYAAAAYeq1+AAAACXBIWXMAAAsTAAALEwEAmpwYAAAF8WlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxNDggNzkuMTY0MDM2LCAyMDE5LzA4LzEzLTAxOjA2OjU3ICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdEV2dD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlRXZlbnQjIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOnBob3Rvc2hvcD0iaHR0cDovL25zLmFkb2JlLmNvbS9waG90b3Nob3AvMS4wLyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgMjEuMCAoV2luZG93cykiIHhtcDpDcmVhdGVEYXRlPSIyMDIxLTExLTI2VDIxOjIxOjI2KzAzOjAwIiB4bXA6TWV0YWRhdGFEYXRlPSIyMDIxLTExLTI2VDIxOjIxOjI2KzAzOjAwIiB4bXA6TW9kaWZ5RGF0ZT0iMjAyMS0xMS0yNlQyMToyMToyNiswMzowMCIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo0YjM1YTA2Mi1mYTU0LTMzNGItOGEzNy04MjgxNGNkYzcwY2QiIHhtcE1NOkRvY3VtZW50SUQ9ImFkb2JlOmRvY2lkOnBob3Rvc2hvcDpkMjAzOTdlNi05MTViLWNiNGUtOGQ0Yi0wYTgzMjE4YTdmNWIiIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1YjdlMWI1OS1jOGYyLTZlNGItOWUxMC00MmE3MjVmMmY3ZWQiIGRjOmZvcm1hdD0iaW1hZ2UvcG5nIiBwaG90b3Nob3A6Q29sb3JNb2RlPSIzIiBwaG90b3Nob3A6SUNDUHJvZmlsZT0ic1JHQiBJRUM2MTk2Ni0yLjEiPiA8eG1wTU06SGlzdG9yeT4gPHJkZjpTZXE+IDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJjcmVhdGVkIiBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOjViN2UxYjU5LWM4ZjItNmU0Yi05ZTEwLTQyYTcyNWYyZjdlZCIgc3RFdnQ6d2hlbj0iMjAyMS0xMS0yNlQyMToyMToyNiswMzowMCIgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgUGhvdG9zaG9wIDIxLjAgKFdpbmRvd3MpIi8+IDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJzYXZlZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDo0YjM1YTA2Mi1mYTU0LTMzNGItOGEzNy04MjgxNGNkYzcwY2QiIHN0RXZ0OndoZW49IjIwMjEtMTEtMjZUMjE6MjE6MjYrMDM6MDAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBob3Rvc2hvcCAyMS4wIChXaW5kb3dzKSIgc3RFdnQ6Y2hhbmdlZD0iLyIvPiA8L3JkZjpTZXE+IDwveG1wTU06SGlzdG9yeT4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz7BrRXcAAAKmUlEQVR42u2dy5EkNRCGxxYOXDnAjSsnvMAJDMIATMAaItYEbhQ0UIQmOx9/plIqqSo7QtHLTHU9mt3/U74/juP4yFi//fhNrVq1Bq1fvv72aNfoz9W656K6/VEAqFULE09uXXkfyGf++PmrT6tAcN3fowJArVo3Ev9ZQPBeSxL/qyDQc70VLJg73H8BoNYS6yVA53v75xVF/89fvzt+//6HtxUFQVQEIgCQxP8EwOquq6jlUwAoC6DWRgB4CSr9nfQZ67jXas/nXa24n2L/gkC7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"/></svg>
+</g>
+<text x="420" y="328" font-size="14" text-anchor="middle" style="fill:var(--texto-suave)">la explosión, a su ritmo</text>
+</svg>
+<figcaption>Lo que ves al ejecutar la demo. Las cifras del HUD son de ejemplo: la rueda las cambia mientras todo se mueve.</figcaption>
+</figure>
+
+Con este ejemplo vas a aprender cuatro cosas:
+
+- **Separar el programa en piezas.** Quién guarda el pato, quién lo pinta y quién decide qué pasa al girar la rueda: es [MVP](#mvp).
+- **Las promesas entre piezas.** Qué puede pedirle la ventana a quien la gobierna, y al revés: es [el contrato](#interfaces).
+- **Quién crea a quién.** Cómo se juntan, al arrancar, la ventana, el estado y las reglas: es [la inyección de dependencias](#inyeccion).
+- **Cada animación en su hilo.** Por qué el pato y la explosión no se esperan, y la ventana pinta a su propio ritmo: es [MVP con hilos](#hilos).
+
+Todos los apartados vuelven a esta ventana: cuando leas «la demo», es ella.
+
 ## Por qué | Por qué hace falta una estructura {#estructura}
 
 Ya sabes crear clases, y no escribirías un programa entero en una sola. Pero cada programa nuevo te obliga a decidir qué clases hacen falta, qué hace cada una y cómo se hablan entre ellas. Ese diseño lo haces desde cero cada vez: gasta tiempo y casi nunca sale tan bien como algo ya pensado y probado.
 
-El ejemplo de este documento es SpriteAnimation, una ventana con un pato y una explosión animados. Arriba, un pequeño HUD (las cifras que flotan sobre la escena) muestra tres velocidades que se cambian con la rueda del ratón, y los sprites se arrastran sin dejar de animarse. Es pequeño, pero tiene todo lo que complica un programa de verdad: estado que cambia, dibujo, ratón y varios hilos.
+La demo del apartado anterior es pequeña, pero tiene todo lo que complica un programa de verdad: estado que cambia, dibujo, ratón y varios hilos.
 
 Sin un patrón, cada programa es una carretera de curvas. En cada curva tienes que pararte a decidir algo, y la respuesta es distinta cada vez:
 
@@ -178,93 +245,42 @@ Las tres promesas juntas forman el **contrato** de la aplicación:
 
 En la demo, el modelo no pide nada: la vista pregunta al presentador cada vez que pinta, así que nadie tiene que avisarla. Por eso `AnimationContract.Model` no recibe al presentador. El contrato es un solo archivo, `AnimationContract`, con las tres interfaces dentro. Son cortas a propósito: cada método es algo que la otra parte necesita de verdad.
 
-### `AnimationContract.Model`: lo que el presentador puede pedirle al modelo
+::: tarjetas 3
 
-::: tarjetas 2
+### `Model`: lo que el presentador puede pedirle al modelo
 
-#### `void start()`
+- `start()`: poner en marcha las animaciones.
+- `stop()`: pararlas al cerrar la aplicación.
+- `spriteCount()`: decir cuántos sprites hay.
+- `sprite(index)`: dar uno de los sprites, por su número.
 
-Poner en marcha las animaciones.
+### `View`: lo que el presentador puede pedirle a la vista
 
-#### `void stop()`
+- `setPresenter(presenter)`: guardar a quién pedirle qué pintar.
+- `start()`: empezar a pintar.
+- `stop()`: dejar de pintar.
+- `renderFps()`: decir cuántas veces por segundo pinta.
+- `setRenderFps(fps)`: cambiar ese ritmo.
 
-Pararlas cuando se cierra la aplicación.
+### `Presenter`: lo que la vista puede pedirle al presentador
 
-#### `int spriteCount()`
+- `sprites()`: dar la foto de todos los sprites, para pintarlos.
+- `changeRenderSpeed(delta)`: subir o bajar el ritmo de pintado, sin salirse de los límites.
+- `changeSpriteSpeed(sprite, delta)`: lo mismo con la velocidad de un sprite.
+- `spriteAt(x, y)`: decir qué sprite hay en un punto de la ventana.
+- `moveSprite(sprite, x, y)`: llevar un sprite a otro sitio.
+- `start()`: poner en marcha la aplicación. No lo pide la vista: lo llama `main`.
+- `close()`: pararlo todo al cerrar la ventana.
 
-Decir cuántos sprites hay.
-
-#### `Sprite sprite(int index)`
-
-Dar uno de los sprites, por su número.
-
-:::
-
-### `AnimationContract.View`: lo que el presentador puede pedirle a la vista
-
-::: tarjetas 2
-
-#### `void setPresenter(Presenter presenter)`
-
-Guardar a qué presentador tiene que pedirle qué pintar.
-
-#### `void start()`
-
-Empezar a pintar.
-
-#### `void stop()`
-
-Dejar de pintar.
-
-#### `int renderFps()`
-
-Decir cuántas veces por segundo pinta.
-
-#### `void setRenderFps(int fps)`
-
-Cambiar ese ritmo.
+La foto de cada sprite es un `SpriteState`: su nombre, su fotograma, su posición y su velocidad. Nadie la cambia mientras se pinta.
 
 :::
 
-### `AnimationContract.Presenter`: lo que la vista puede pedirle al presentador
+## En Java | El contrato en Java {#contrato-java}
 
-::: tarjetas 2
+Las promesas del apartado anterior se escriben en Java como interfaces, y cada clase cumple la suya.
 
-#### `record SpriteState(…)`
-
-No es un método: es la foto fija de un sprite para pintarlo, con su nombre, su fotograma, su posición y su velocidad. Nadie la cambia mientras se pinta.
-
-#### `List<SpriteState> sprites()`
-
-Dar la foto de todos los sprites, para pintarlos.
-
-#### `void changeRenderSpeed(int delta)`
-
-Subir o bajar el ritmo de pintado, sin salirse de los límites.
-
-#### `void changeSpriteSpeed(int sprite, int delta)`
-
-Lo mismo con la velocidad de un sprite.
-
-#### `int spriteAt(int x, int y)`
-
-Decir qué sprite hay en un punto de la ventana.
-
-#### `void moveSprite(int sprite, int x, int y)`
-
-Llevar un sprite a otro sitio.
-
-#### `void start()`
-
-Poner en marcha la aplicación. Este no lo pide la vista: lo llama `main`.
-
-#### `void close()`
-
-Pararlo todo cuando se cierra la ventana.
-
-:::
-
-En Java, el contrato se escribe así, y cada clase implementa su parte:
+El contrato se escribe así, y cada clase implementa su parte:
 
 ```java
 public interface AnimationContract {
@@ -316,6 +332,52 @@ Gracias al contrato, el presentador funciona igual con cualquier vista que lo cu
 
 Una clase *depende* de otra cuando la necesita para trabajar. Puede conseguirla de dos formas: crearla ella misma con `new`, o recibirla de fuera. La **inyección de dependencias** es la segunda [[R4]](#src-R4 "Wikipedia, Inyección de dependencias"){: .ref}: cada clase recibe por su constructor lo que necesita, y no lo crea ella. Así no queda atada a una clase concreta, y se le puede pasar cualquier otra que cumpla la misma interfaz, por ejemplo una falsa para probar.
 
+<figure class="vertical">
+<svg viewBox="0 0 560 370" role="img" style="font-family:var(--fuente-texto);display:block">
+<title>Dos formas de conseguir una dependencia. Crear: el presentador hace new VistaSwing dentro y queda atado a ella, sin poder usar una vista falsa. Recibir: main le pasa por el constructor cualquier clase que cumpla la interfaz Vista, la real o una falsa.</title>
+<style>
+.di-real{animation:di-real 8s ease-in-out infinite}
+.di-falsa{animation:di-falsa 8s ease-in-out infinite}
+@keyframes di-real{0%{transform:translate(0,0);opacity:0}5%{opacity:1}24%,40%{transform:translate(56px,-100px);opacity:1}44%,100%{transform:translate(56px,-100px);opacity:0}}
+@keyframes di-falsa{0%,50%{transform:translate(0,0);opacity:0}55%{opacity:1}74%,90%{transform:translate(-56px,-100px);opacity:1}94%,100%{transform:translate(-56px,-100px);opacity:0}}
+@media (prefers-reduced-motion:reduce){.di-real,.di-falsa{animation:none}}
+@media print{.di-real,.di-falsa{animation:none}}
+</style>
+<defs><marker id="di-f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--primario)"/></marker></defs>
+<line x1="280" y1="14" x2="280" y2="356" style="stroke:var(--tenue)" stroke-width="1.5" stroke-dasharray="6 5"/>
+<text x="20" y="32" font-size="18" font-weight="700" style="fill:var(--primario)">Crear</text>
+<text x="20" y="54" font-size="15" style="fill:var(--texto-suave)">la clase hace new dentro</text>
+<rect x="20" y="72" width="240" height="150" rx="10" style="fill:var(--fondo-suave);stroke:var(--primario)" stroke-width="2"/>
+<text x="36" y="98" font-size="16" font-weight="700" style="fill:var(--primario)">Presentador</text>
+<text x="36" y="126" font-size="14" style="fill:var(--oscuro);font-family:ui-monospace,Consolas,monospace">new VistaSwing()</text>
+<rect x="36" y="138" width="208" height="66" rx="8" style="fill:#fff;stroke:var(--oscuro)" stroke-width="2.5"/>
+<text x="140" y="166" font-size="16" font-weight="700" text-anchor="middle" style="fill:var(--oscuro)">VistaSwing</text>
+<text x="140" y="190" font-size="15" text-anchor="middle" style="fill:var(--texto-suave)">atada para siempre</text>
+<line x1="140" y1="252" x2="140" y2="226" style="stroke:var(--tenue)" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="140" y="244" font-size="16" font-weight="700" text-anchor="middle" style="fill:var(--texto-suave);paint-order:stroke;stroke:var(--pagina);stroke-width:5px">✕</text>
+<rect x="60" y="254" width="160" height="40" rx="8" fill="none" style="stroke:var(--tenue)" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="140" y="279" font-size="15" text-anchor="middle" style="fill:var(--texto-tenue)">VistaFalsa</text>
+<text x="140" y="318" font-size="15" text-anchor="middle" style="fill:var(--texto-suave)">no hay forma de cambiarla</text>
+<text x="300" y="32" font-size="18" font-weight="700" style="fill:var(--primario)">Recibir</text>
+<text x="300" y="54" font-size="15" style="fill:var(--texto-suave)">se la dan por el constructor</text>
+<rect x="300" y="72" width="240" height="110" rx="10" style="fill:var(--fondo-suave);stroke:var(--primario)" stroke-width="2"/>
+<text x="316" y="98" font-size="16" font-weight="700" style="fill:var(--primario)">Presentador</text>
+<text x="316" y="126" font-size="14" style="fill:var(--oscuro);font-family:ui-monospace,Consolas,monospace">Presentador(Vista v)</text>
+<rect x="372" y="166" width="96" height="32" rx="7" style="fill:var(--fondo);stroke:var(--oscuro)" stroke-width="2.5"/>
+<text x="420" y="187" font-size="15" font-weight="700" text-anchor="middle" style="fill:var(--oscuro)">«Vista»</text>
+<g style="stroke:var(--primario)" stroke-width="2" marker-end="url(#di-f)"><line x1="364" y1="260" x2="404" y2="204"/><line x1="476" y1="260" x2="436" y2="204"/></g>
+<rect x="300" y="248" width="240" height="106" rx="10" fill="none" style="stroke:var(--oscuro)" stroke-width="2"/>
+<text x="420" y="338" font-size="15" text-anchor="middle" style="fill:var(--oscuro)"><tspan font-weight="700">main</tspan> elige una y se la pasa</text>
+<rect x="314" y="264" width="100" height="40" rx="8" style="fill:#fff;stroke:var(--primario)" stroke-width="2"/>
+<text x="364" y="289" font-size="15" text-anchor="middle" style="fill:var(--texto)">VistaSwing</text>
+<rect x="426" y="264" width="100" height="40" rx="8" style="fill:#fff;stroke:var(--primario)" stroke-width="2" stroke-dasharray="5 4"/>
+<text x="476" y="289" font-size="15" text-anchor="middle" style="fill:var(--texto)">VistaFalsa</text>
+<g class="di-real" opacity="0"><rect x="314" y="264" width="100" height="40" rx="8" style="fill:var(--acento-fondo);stroke:var(--acento)" stroke-width="2.5"/><text x="364" y="289" font-size="15" font-weight="700" text-anchor="middle" style="fill:var(--acento)">VistaSwing</text></g>
+<g class="di-falsa" opacity="0"><rect x="426" y="264" width="100" height="40" rx="8" style="fill:var(--acento-fondo);stroke:var(--acento)" stroke-width="2.5"/><text x="476" y="289" font-size="15" font-weight="700" text-anchor="middle" style="fill:var(--acento)">VistaFalsa</text></g>
+</svg>
+<figcaption>A la izquierda, la clase crea lo que necesita y queda atada a esa clase concreta. A la derecha, lo recibe por el constructor a través de una interfaz, y <code>main</code> puede pasarle la vista real o una falsa para probar.</figcaption>
+</figure>
+
 En la demo, si el presentador hiciera `new View()` dentro de su constructor, quedaría atado para siempre a esa vista, y no se podría probar con una vista falsa. Por eso recibe el modelo y la vista:
 
 ```java
@@ -327,7 +389,7 @@ public class Presenter implements AnimationContract.Presenter {
     public Presenter(AnimationContract.Model model, AnimationContract.View view) {   // las recibe, no las crea
         this.model = model;
         this.view = view;
-        view.setPresenter(this);   // se conecta con la vista: lo verás en «Cómo se monta»
+        view.setPresenter(this);   // se conecta con la vista: lo verás en «Conectar antes de arrancar»
     }
     // …
 }
@@ -397,6 +459,16 @@ public static void main(String[] args) {
 
 `main` declara el modelo como `Model` porque necesita `addSprite`, que crea cada sprite a partir de su hoja. El presentador recibe ese mismo objeto como `AnimationContract.Model`, sin `addSprite`.
 
+Fíjate en que el presentador no sabe qué animaciones hay: trabaja con los sprites que tenga el modelo. Por eso sirve igual para dos sprites que para veinte, y cambiar las animaciones no lo toca.
+
+## Conectar | Conectar antes de arrancar {#conectar}
+
+Las viñetas del apartado anterior esconden dos detalles: cómo se conectan el presentador y la vista, y por qué arrancar va al final.
+
+Empieza por el paso 2. El presentador necesita la vista y la vista necesita el presentador, así que no pueden recibirse los dos por constructor: uno de los dos tiene que existir primero. La demo crea la vista, se la pasa al presentador, y el constructor del presentador, en su última línea, se presenta a la vista con `view.setPresenter(this)`. Es la única dependencia que no va por constructor.
+
+Pasar `this` desde un constructor se llama *dejar escapar* `this`, y suele ser mala práctica: otro hilo podría usar el objeto antes de que esté construido. Aquí no hay problema: es la última línea del constructor y todavía solo existe el hilo de `main`.
+
 El presentador hace de intermediario entre las capas [[R2]](#src-R2 "Refactoring.Guru, Mediator"){: .ref}, y en el montaje separa las dos fases. Su constructor, que ya has visto, guarda el modelo y la vista y se presenta a la vista: los conecta. Su método `start()` solo arranca:
 
 ```java
@@ -407,12 +479,6 @@ public void start() {          // solo arranca
 }
 ```
 
-Fíjate en que el presentador no sabe qué animaciones hay: trabaja con los sprites que tenga el modelo. Por eso sirve igual para dos sprites que para veinte, y cambiar las animaciones no lo toca.
-
-El paso 2 de las viñetas merece una explicación. El presentador necesita la vista y la vista necesita el presentador, así que no pueden recibirse los dos por constructor: uno de los dos tiene que existir primero. La demo crea la vista, se la pasa al presentador, y el constructor del presentador, en su última línea, se presenta a la vista con `view.setPresenter(this)`. Es la única dependencia que no va por constructor.
-
-Pasar `this` desde un constructor se llama *dejar escapar* `this`, y suele ser mala práctica: otro hilo podría usar el objeto antes de que esté construido. Aquí no hay problema: es la última línea del constructor y todavía solo existe el hilo de `main`.
-
 Por eso arrancar va aparte, en el paso 3. Los hilos solo nacen cuando todo está construido y conectado: si el hilo de pintado empezara antes del paso 2, le pediría qué pintar a un presentador que la vista aún no tiene.
 
 ## Hilos | MVP con hilos {#hilos}
@@ -422,24 +488,81 @@ Una aplicación con ventana suele tener varios hilos a la vez: uno atiende al us
 En la demo trabajan tres clases de hilos, y cada uno sabe qué puede tocar y qué solo puede leer:
 
 <figure class="vertical">
-<svg viewBox="0 0 560 400" role="img" style="font-family:var(--fuente-texto);display:block">
-<title>Los tres hilos de la demo y qué capa toca cada uno</title>
-<defs><marker id="m5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--oscuro)"/></marker></defs>
-<rect x="40" y="16" width="360" height="64" rx="10" fill="none" style="stroke:var(--primario)" stroke-width="2"/>
-<text x="60" y="44" font-size="18" font-weight="700" style="fill:var(--primario)">Hilo de pintado · en View</text>
-<text x="60" y="68" font-size="15" style="fill:var(--texto-suave)">pide sprites() y pinta: solo lee</text>
-<rect x="40" y="112" width="360" height="64" rx="10" fill="none" style="stroke:var(--primario)" stroke-width="2"/>
-<text x="60" y="140" font-size="18" font-weight="700" style="fill:var(--primario)">Hilo de eventos de Swing</text>
-<text x="60" y="164" font-size="15" style="fill:var(--texto-suave)">rueda y arrastre: escribe fps, x, y</text>
-<rect x="40" y="208" width="360" height="64" rx="10" fill="none" style="stroke:var(--primario)" stroke-width="2"/>
-<text x="60" y="236" font-size="18" font-weight="700" style="fill:var(--primario)">Un hilo por sprite · en Model</text>
-<text x="60" y="260" font-size="15" style="fill:var(--texto-suave)">avanza su fotograma: escribe el fotograma</text>
-<g fill="none" style="stroke:var(--oscuro)" stroke-width="2"><polyline points="402,48 500,48 500,318" marker-end="url(#m5)"/><polyline points="402,144 466,144 466,318" marker-end="url(#m5)"/><polyline points="402,240 432,240 432,318" marker-end="url(#m5)"/></g>
-<rect x="40" y="322" width="480" height="64" rx="10" fill="none" style="stroke:var(--oscuro)" stroke-width="3"/>
-<text x="60" y="350" font-size="18" font-weight="700" style="fill:var(--oscuro)">Cada Sprite</text>
-<text x="60" y="374" font-size="15" style="fill:var(--texto-suave)">frame, fps, x, y: campos volatile</text>
+<svg viewBox="0 0 560 480" role="img" style="font-family:var(--fuente-texto);display:block">
+<title>Las tres capas como zonas. En la vista viven el hilo de pintado y el de eventos de Swing; el presentador no tiene hilo propio; en el modelo vive un hilo por sprite. El pintado baja a pedir una foto y la sube; el gesto baja hasta el modelo; los hilos de los sprites nunca salen del modelo.</title>
+<style>
+.hz-gira{transform-box:fill-box;transform-origin:center;animation:hz-gira 2s linear infinite}
+.hz-gira.lento{animation-duration:3.2s}.hz-gira.rapido{animation-duration:1.3s}
+@keyframes hz-gira{to{transform:rotate(360deg)}}
+.hz-film{animation:hz-film4 2s steps(4) infinite}
+.hz-film.ocho{animation:hz-film8 2s steps(8) infinite}
+@keyframes hz-film4{from{transform:translateX(0)}to{transform:translateX(88px)}}
+@keyframes hz-film8{from{transform:translateX(0)}to{transform:translateX(176px)}}
+.hz-pide{animation:hz-pide 5s ease-in-out infinite}
+.hz-foto{animation:hz-foto 5s ease-in-out infinite}
+.hz-gesto{animation:hz-gesto 8s ease-in-out infinite}
+@keyframes hz-pide{0%{transform:translateY(0);opacity:0}4%{opacity:1}40%{transform:translateY(208px);opacity:1}44%,100%{transform:translateY(208px);opacity:0}}
+@keyframes hz-foto{0%,46%{transform:translateY(0);opacity:0}50%{opacity:1}86%{transform:translateY(-100px);opacity:1}90%,100%{transform:translateY(-100px);opacity:0}}
+@keyframes hz-gesto{0%,30%{transform:translateY(0);opacity:0}33%{opacity:1}68%{transform:translateY(208px);opacity:1}72%,100%{transform:translateY(208px);opacity:0}}
+@media (prefers-reduced-motion:reduce){.hz-gira,.hz-film,.hz-pide,.hz-foto,.hz-gesto{animation:none}}
+@media print{.hz-gira,.hz-film,.hz-pide,.hz-foto,.hz-gesto{animation:none}}
+</style>
+<defs>
+<marker id="hz-fp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--primario)"/></marker>
+<marker id="hz-fo" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--oscuro)"/></marker>
+<g id="hz-hilo"><path d="M10 0 A10 10 0 1 1 -7.1 -7.1" fill="none" style="stroke:var(--acento)" stroke-width="3" stroke-linecap="round"/><path d="M-12.5 -11 L-6 -5 L-13.5 -2.5 z" style="fill:var(--acento)"/></g>
+</defs>
+<rect x="4" y="4" width="552" height="136" rx="12" style="fill:var(--fondo-suave);stroke:var(--primario)" stroke-width="2"/>
+<rect x="4" y="176" width="552" height="88" rx="12" style="fill:var(--fondo-suave);stroke:var(--primario)" stroke-width="2"/>
+<rect x="4" y="300" width="552" height="176" rx="12" style="fill:var(--fondo-suave);stroke:var(--primario)" stroke-width="2"/>
+<g font-size="18" font-weight="700" style="fill:var(--primario)"><text x="20" y="30">View</text><text x="20" y="202">Presenter</text><text x="20" y="326">Model</text></g>
+<text x="20" y="226" font-size="15" style="fill:var(--texto-suave)">No tiene hilo propio:</text>
+<text x="20" y="246" font-size="15" style="fill:var(--texto-suave)">lo recorren los de la vista.</text>
+<g style="stroke:var(--tenue)" stroke-width="1.5" stroke-dasharray="6 5"><line x1="20" y1="158" x2="540" y2="158"/><line x1="20" y1="282" x2="540" y2="282"/></g>
+<g font-size="13" style="fill:var(--texto-tenue)"><text x="540" y="153" text-anchor="end">frontera</text><text x="540" y="277" text-anchor="end">frontera</text></g>
+<rect x="20" y="42" width="250" height="84" rx="10" style="fill:var(--acento-fondo);stroke:var(--acento)" stroke-width="2"/>
+<text x="66" y="70" font-size="16" font-weight="700" style="fill:var(--acento)">Hilo de pintado</text>
+<text x="66" y="92" font-size="14" style="fill:var(--texto-suave)">pide la foto y la pinta:</text>
+<text x="66" y="110" font-size="14" style="fill:var(--texto-suave)">solo lee</text>
+<rect x="290" y="42" width="250" height="84" rx="10" style="fill:var(--acento-fondo);stroke:var(--acento)" stroke-width="2"/>
+<text x="336" y="70" font-size="16" font-weight="700" style="fill:var(--acento)">Hilo de eventos</text>
+<text x="336" y="92" font-size="14" style="fill:var(--texto-suave)">el de Swing: atiende</text>
+<text x="336" y="110" font-size="14" style="fill:var(--texto-suave)">la rueda y el arrastre</text>
+<rect x="20" y="340" width="250" height="122" rx="10" style="fill:var(--acento-fondo);stroke:var(--acento)" stroke-width="2"/>
+<text x="66" y="368" font-size="16" font-weight="700" style="fill:var(--acento)">Hilo del pato</text>
+<text x="66" y="390" font-size="14" style="fill:var(--texto-suave)">avanza su fotograma</text>
+<g transform="translate(66 408)">
+<g style="fill:#fff;stroke:var(--tenue)" stroke-width="1.2"><rect x="0" y="0" width="22" height="22" rx="3"/><rect x="22" y="0" width="22" height="22" rx="3"/><rect x="44" y="0" width="22" height="22" rx="3"/><rect x="66" y="0" width="22" height="22" rx="3"/></g>
+<rect class="hz-film" x="0" y="0" width="22" height="22" rx="3" fill="none" style="stroke:var(--acento)" stroke-width="3"/>
+</g>
+<text x="66" y="450" font-size="13" style="fill:var(--texto-tenue)">8 por segundo</text>
+<rect x="290" y="340" width="250" height="122" rx="10" style="fill:var(--acento-fondo);stroke:var(--acento)" stroke-width="2"/>
+<text x="336" y="368" font-size="16" font-weight="700" style="fill:var(--acento)">Hilo de la explosión</text>
+<text x="336" y="390" font-size="14" style="fill:var(--texto-suave)">avanza su fotograma</text>
+<g transform="translate(336 408)">
+<g style="fill:#fff;stroke:var(--tenue)" stroke-width="1.2"><rect x="0" y="0" width="22" height="22" rx="3"/><rect x="22" y="0" width="22" height="22" rx="3"/><rect x="44" y="0" width="22" height="22" rx="3"/><rect x="66" y="0" width="22" height="22" rx="3"/><rect x="88" y="0" width="22" height="22" rx="3"/><rect x="110" y="0" width="22" height="22" rx="3"/><rect x="132" y="0" width="22" height="22" rx="3"/><rect x="154" y="0" width="22" height="22" rx="3"/></g>
+<rect class="hz-film ocho" x="0" y="0" width="22" height="22" rx="3" fill="none" style="stroke:var(--acento)" stroke-width="3"/>
+</g>
+<text x="336" y="450" font-size="13" style="fill:var(--texto-tenue)">12 por segundo</text>
+<g transform="translate(43 64)"><g class="hz-gira rapido"><use href="#hz-hilo"/></g></g>
+<g transform="translate(313 64)"><g class="hz-gira lento"><use href="#hz-hilo"/></g></g>
+<g transform="translate(43 362)"><g class="hz-gira"><use href="#hz-hilo"/></g></g>
+<g transform="translate(313 362)"><g class="hz-gira rapido"><use href="#hz-hilo"/></g></g>
+<line x1="200" y1="128" x2="200" y2="336" style="stroke:var(--primario)" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#hz-fp)"/>
+<line x1="240" y1="230" x2="240" y2="130" style="stroke:var(--primario)" stroke-width="2.5" marker-end="url(#hz-fp)"/>
+<line x1="470" y1="128" x2="470" y2="336" style="stroke:var(--oscuro)" stroke-width="2.5" marker-end="url(#hz-fo)"/>
+<g font-size="13">
+<text x="194" y="296" text-anchor="end" style="fill:var(--primario)">lee</text>
+<text x="194" y="172" text-anchor="end" style="fill:var(--primario)">pide</text>
+<text x="248" y="172" style="fill:var(--primario)">foto</text>
+<text x="464" y="172" text-anchor="end" style="fill:var(--oscuro)">gesto</text>
+<text x="464" y="296" text-anchor="end" style="fill:var(--oscuro)">cambia fps, x, y</text>
+</g>
+<circle class="hz-pide" cx="200" cy="128" r="7" opacity="0" style="fill:var(--primario)"/>
+<rect class="hz-foto" x="231" y="224" width="18" height="14" rx="2" opacity="0" style="fill:var(--fondo);stroke:var(--primario)" stroke-width="2"/>
+<circle class="hz-gesto" cx="470" cy="128" r="7" opacity="0" style="fill:var(--oscuro)"/>
 </svg>
-<figcaption>Los tres hilos acaban en los mismos datos de cada sprite. Por eso esos campos son <code>volatile</code>.</figcaption>
+<figcaption>Cada hilo vive en su capa. Los de los sprites nunca salen del modelo. El de pintado baja a pedir una foto de los sprites y la sube, sin tocarlos. El de eventos lleva el gesto hasta el modelo.</figcaption>
 </figure>
 
 Cada `Sprite` tiene su hilo, que avanza el fotograma según el tiempo que ha pasado. Por eso su ritmo es el mismo en cualquier equipo, y no depende de lo rápido que se pinte.
@@ -519,6 +642,32 @@ public void changeSpriteSpeed(int sprite, int delta) {
 Arrastrar un sprite sigue el mismo camino. La vista pregunta al presentador qué sprite hay bajo el puntero (`spriteAt`) y, mientras arrastras, le pide que lo mueva (`moveSprite`). El pato sigue aleteando todo el rato, porque su hilo no sabe nada del ratón.
 
 Para enterarse de la rueda, la vista usa el patrón Observer [[R5]](#src-R5 "Refactoring.Guru, Observer"){: .ref}: se suscribe a los eventos del ratón de Swing, y Swing la avisa llamando a `mouseWheelMoved`. Entre el modelo y la vista, en cambio, la demo no lo usa: el modelo no avisa a nadie, y la vista pide los datos cuando le toca pintar. En otros MVP, el modelo sí avisa de sus cambios al presentador, y también suele hacerlo con Observer.
+
+## Balance | Qué aporta MVP y qué cuesta {#balance}
+
+MVP no sale gratis. Ordena el programa, pero a cambio pide más código. Antes de usarlo, conviene saber qué ganas y qué pagas.
+
+::: tarjetas 2
+
+### A favor
+
+- **Cada pieza, una tarea.** El modelo guarda, la vista pinta y el presentador decide. Cada cambio tiene su sitio.
+- **La vista se cambia sola.** Otra ventana, o una de texto, no toca el presentador ni el modelo.
+- **Se prueba sin ventana.** Con una vista falsa, el presentador se prueba solo.
+- **Cada uno, en su pieza.** Con el contrato acordado, una persona puede hacer la vista y otra el presentador, a la vez.
+
+### En contra
+
+- **Más código y más archivos.** Interfaces, contrato y montaje en `main`, para hacer lo mismo.
+- **Más piezas que entender.** Al principio cuesta seguir un gesto que pasa por tres clases.
+- **Puede sobrar.** En un programa muy pequeño, el patrón pesa más que lo que ordena.
+
+:::
+
+En la demo, el precio se puede contar. El contrato declara 16 métodos: 4 del modelo, 5 de la vista y 7 del presentador. Cada uno se escribe dos veces, en la interfaz y en la clase que lo cumple. Sin MVP, el pato y la explosión cabrían en una sola clase de ventana que guarda los sprites, los pinta y escucha el ratón. Haría lo mismo con menos código, pero no podrías cambiar ni probar una parte sin las demás.
+
+> **Cuándo compensa**
+> Cuando el programa va a crecer, va a cambiar de interfaz o necesita pruebas. Para un ejercicio de una tarde, una sola clase basta.
 
 ## Errores | Errores frecuentes {#errores}
 
