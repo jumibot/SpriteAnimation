@@ -141,6 +141,9 @@ Un patrón de arquitectura como MVP es una autopista: esas preguntas ya tienen r
 
 La estructura, además, se nota después. Otra hoja de sprites solo afecta a `SpriteSheet`, y otra ventana solo a la vista. También se puede probar el presentador sin abrir ninguna ventana, como verás en «Para practicar».
 
+> **Para quedarse**
+> Un patrón de arquitectura ya responde a las preguntas de siempre: qué clases hay, qué hace cada una y cómo se hablan. Tú solo decides lo propio de tu programa.
+
 ## MVP | Las tres piezas de MVP {#mvp}
 
 MVP significa modelo, vista y presentador (en inglés, *Model-View-Presenter*) [[R1]](#src-R1 "Wikipedia, Modelo–vista–presentador"){: .ref}. Cada pieza tiene un papel, y lo que define el patrón es tanto lo que cada una sabe como lo que no sabe.
@@ -215,6 +218,9 @@ Fíjate en que la flecha que baja la mueve siempre la vista. Nadie empuja datos 
 
 El presentador hace de intermediario: la vista y el modelo no se hablan nunca, y todo lo que uno necesita del otro pasa por él. Es la idea del patrón Mediator [[R2]](#src-R2 "Refactoring.Guru, Mediator"){: .ref}, que quita dependencias entre objetos obligándolos a colaborar a través de uno solo.
 
+> **Para quedarse**
+> El modelo guarda el estado, la vista pinta y escucha, y el presentador decide. La vista y el modelo no se hablan nunca: todo pasa por el presentador.
+
 ## Interfaces | El contrato: las interfaces {#interfaces}
 
 En MVP, las piezas no se conocen por su clase, sino por una interfaz: una promesa de qué se pueden pedir, sin decir cómo se hace. Si una pieza conociera la clase de otra, dependería de cómo está hecha por dentro, y cada cambio en esa clase la obligaría a cambiar también. Con interfaces, cada pieza se puede cambiar o sustituir sin tocar las demás, se puede programar por separado, y el compilador no deja pedir nada que no esté prometido.
@@ -282,6 +288,9 @@ Lo que se enseña de cada sprite es un `SpriteView`: una copia de su fotograma, 
 
 :::
 
+> **Para quedarse**
+> Cada pieza conoce a las demás por una interfaz, no por su clase. Las tres interfaces juntas son el contrato, y entre capas solo viajan datos que nadie puede cambiar.
+
 ## En Java | El contrato en Java {#contrato-java}
 
 Las promesas del apartado anterior se escriben en Java como interfaces, y cada clase cumple la suya.
@@ -336,6 +345,9 @@ Gracias al contrato, el presentador funciona igual con cualquier vista que lo cu
 </svg>
 <figcaption>En trazo continuo, la vista que trae la demo; en discontinuo, las que puedes escribir tú sin tocar el presentador.</figcaption>
 </figure>
+
+> **Para quedarse**
+> Cada interfaz en su archivo y cada clase cumple la suya. El contrato solo lleva lo que la otra pieza necesita, y la vista y el modelo no se importan nunca entre sí.
 
 ## Inyección | Quién crea a quién: la inyección de dependencias {#inyeccion}
 
@@ -409,6 +421,9 @@ Fíjate en el tipo de los dos parámetros: son interfaces, no clases. Eso se lla
 
 No todo se inyecta. Lo que es parte interna de una pieza lo crea ella: la vista crea su lienzo (`Viewer`), su HUD (`Hud`) y la clase que escucha el ratón (`MouseHandler`); y el modelo, sus sprites. Se inyecta lo que conecta capas o lo que querrías sustituir.
 
+> **Para quedarse**
+> Cada clase recibe por su constructor lo que necesita, en lugar de hacer `new`. Y lo recibe como interfaz: así vale cualquier pieza que cumpla el contrato, también una falsa para probar.
+
 ## Montaje | Cómo se monta la aplicación {#montaje}
 
 Si cada clase recibe lo que necesita y no lo crea, alguien tiene que crear las piezas. En MVP ese sitio es uno solo: el punto de entrada del programa, el único que hace `new` de las capas. La receta es siempre la misma y tiene dos fases: construir y conectar, todo en un solo hilo; y arrancar, cuando nacen los demás hilos. Así se monta, en tres pasos:
@@ -479,6 +494,9 @@ public static void main(String[] args) {
 
 Fíjate en que el presentador no sabe qué animaciones hay: trabaja con los sprites que tenga el modelo. Por eso sirve igual para dos sprites que para veinte, y cambiar las animaciones no lo toca.
 
+> **Para quedarse**
+> Solo `main` crea y configura las capas, en un único sitio. La receta es siempre la misma: construir, conectar y, al final, arrancar.
+
 ## Conectar | Conectar antes de arrancar {#conectar}
 
 Las viñetas del apartado anterior esconden dos detalles: cómo se conectan el presentador y la vista, y por qué arrancar va al final.
@@ -498,6 +516,9 @@ public void start() {          // solo arranca
 ```
 
 Por eso arrancar va aparte, en el paso 3. Los hilos solo nacen cuando todo está construido y conectado: si el hilo de pintado empezara antes del paso 2, le pediría qué pintar a un presentador que la vista aún no tiene.
+
+> **Para quedarse**
+> La vista nace primero y el presentador se le presenta con `setPresenter(this)`. Los hilos arrancan solo cuando todo está construido y conectado.
 
 ## Hilos | MVP con hilos {#hilos}
 
@@ -591,6 +612,9 @@ Así se cumple la idea del principio: el hilo de pintado nunca toca un `Sprite`,
 
 Para cerrar, la demo no para los hilos uno a uno: al pulsar la X, `EXIT_ON_CLOSE` termina el programa y, con él, todos los hilos.
 
+> **Para quedarse**
+> Cada hilo vive en una capa: el de pintado, en la vista; los de los sprites, en el modelo. El hilo de pintado nunca toca un `Sprite`, y los de los sprites nunca tocan Swing.
+
 ## Un gesto | Un gesto, de principio a fin {#gesto}
 
 En MVP, cualquier gesto del usuario recorre el mismo camino. La vista lo recibe y avisa al presentador. El presentador aplica las reglas y cambia el modelo. La vista se entera del cambio de una de dos formas: lo ve la próxima vez que pide qué pintar, o el modelo avisa al presentador y este, a la vista. En la demo es la primera: nadie avisa a la vista.
@@ -672,6 +696,9 @@ public void changeSpriteSpeed(int index, int delta) {
 Arrastrar un sprite sigue el mismo camino. Qué sprite hay bajo el puntero lo averigua la vista: al pulsar, le pide al presentador los `SpriteView` de ese momento y busca el que queda encima. No guarda los `SpriteView`: los pide cuando los necesita, los usa y los suelta. Mientras arrastras, le pide al presentador que mueva el sprite (`moveSprite`). El pato sigue aleteando todo el rato, porque su hilo no sabe nada del ratón. Con la rueda sobre un sprite pasa lo mismo: la vista busca el sprite y avisa con `changeSpriteScale`, el presentador lo deja entre 1 y 8 y el modelo, con `setScale`, lo agranda sin mover su centro. Con Ctrl+clic, el viaje es el más corto: la vista pide un pato (`createDuck`), el presentador mira si cabe otro sprite y el modelo lo crea con los fotogramas que ya tiene y arranca su hilo. La diana roja que aparece sobre el sprite bajo el puntero sale de la misma búsqueda: la vista solo recuerda dónde está el ratón y, al pintar, mira qué sprite hay ahí.
 
 Para enterarse de la rueda, la vista usa el patrón Observer [[R5]](#src-R5 "Refactoring.Guru, Observer"){: .ref}: se suscribe a los eventos del ratón de Swing, y Swing la avisa llamando a `mouseWheelMoved`. Entre el modelo y la vista, en cambio, la demo no lo usa: el modelo no avisa a nadie, y la vista pide los datos cuando le toca pintar. En otros MVP, el modelo sí avisa de sus cambios al presentador, y también suele hacerlo con Observer.
+
+> **Para quedarse**
+> Todo gesto sigue el mismo camino: la vista lo recibe y avisa, el presentador aplica la regla y cambia el modelo, y la vista ve el cambio la próxima vez que pinta.
 
 ## Balance | Qué aporta MVP y qué cuesta {#balance}
 
