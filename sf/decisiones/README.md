@@ -19,6 +19,7 @@ Este índice no se escribe a mano: se regenera con `python -I -X utf8 tools/indi
 
 | Nº | Fecha | Decisión |
 | --- | --- | --- |
+| 47 | 2026-11-02 | [Ctrl+clic: la vista pide un pato al presentador y este al modelo](047-2026-11-02-ctrl-clic-la-vista-pide-un-pato-al-presentador-y-este-al-modelo.md) |
 | 46 | 2026-11-02 | [Visión y fundacional al día en su versión 0.2, con la fase 1 medida por claridad](046-2026-11-02-vision-y-fundacional-al-dia-en-su-version-0-2-con-la-fase-1-medida-por-claridad.md) |
 | 45 | 2026-11-02 | [HUD arcade, diana de mira y escala entera con la rueda](045-2026-11-02-hud-arcade-diana-de-mira-y-escala-entera-con-la-rueda.md) |
 | 44 | 2026-11-02 | [Documento de la estructura de la demo en docs/material](044-2026-11-02-documento-de-la-estructura-de-la-demo-en-docs-material.md) |
