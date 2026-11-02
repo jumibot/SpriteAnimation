@@ -11,6 +11,8 @@ herramientas: buscador lectura
 ---
 # SpriteAnimation
 
+Código de la demo: [repositorio en GitHub](https://github.com/jumibot/SpriteAnimation)
+
 > **Alcance**
 > La demo ya está construida, con sus pruebas, en el repositorio del proyecto. Lo que este documento describe de ella es lo que hace su código, y las cifras de velocidad (60 repintados, 8 y 12 fotogramas por segundo) son las de la demo al arrancar. Lo que falta por comprobar es su uso en clase.
 

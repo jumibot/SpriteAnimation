@@ -731,10 +731,17 @@ pre code { background: none; padding: 0; font-size: .82em; white-space: pre; }
 @media print { pre { overflow: visible; white-space: pre-wrap; break-inside: avoid; } pre code { white-space: pre-wrap; } }
 
   </style>
+  <style>
+/* Enlace al repositorio en la cabecera de color: claro y legible sobre el fondo oscuro; en papel, el color normal. */
+.portada.oscura .idea a, .site-header .institution-repo a { color: #9ee6dc; text-decoration-color: rgba(158,230,220,.55); }
+.site-header .institution-repo { color: rgba(255,255,255,.82); font-size: .8rem; margin-top: .2rem; }
+@media print { .portada.oscura .idea a, .site-header .institution-repo a { color: var(--primario); } .site-header .institution-repo { color: var(--texto); } }
+
+  </style>
 </head>
 <body>
 <a class="saltar" href="#contenido">Saltar al contenido</a>
-<header class="portada oscura"><div class="portada-dentro"><p class="marca">SpriteAnimation · Documento fundacional · Noviembre 2026</p><h1 class="titular">SpriteAnimation<span class="lema">Animar sprites,<br>separar el estado del dibujo.</span></h1><p class="subtitulo">Un ejemplo mínimo en Java para enseñar hojas de sprites, MVP e hilos en segundo de DAM.</p></div></header>
+<header class="portada oscura"><div class="portada-dentro"><p class="marca">SpriteAnimation · Documento fundacional · Noviembre 2026</p><h1 class="titular">SpriteAnimation<span class="lema">Animar sprites,<br>separar el estado del dibujo.</span></h1><p class="subtitulo">Un ejemplo mínimo en Java para enseñar hojas de sprites, MVP e hilos en segundo de DAM.</p><div class="idea"><p>Código de la demo: <a href="https://github.com/jumibot/SpriteAnimation" class="externo" target="_blank" rel="noopener noreferrer">repositorio en GitHub</a></p></div></div></header>
 <nav class="menu" aria-label="Secciones del documento"><div class="menu-dentro"><span class="menu-botones"><button type="button" class="plegar">Plegar todo</button><button type="button" class="imprimir" onclick="window.print()">Imprimir / PDF</button></span></div></nav>
 <div class="hoja">
   <main id="contenido" tabindex="-1"><div class="avisos-globales"><aside class="recuadro"><p class="recuadro-etiqueta">Alcance</p><p>La demo ya está construida, con sus pruebas, en el repositorio del proyecto. Lo que este documento describe de ella es lo que hace su código, y las cifras de velocidad (60 repintados, 8 y 12 fotogramas por segundo) son las de la demo al arrancar. Lo que falta por comprobar es su uso en clase.</p></aside></div><details class="seccion" id="razon" open><summary class="seccion-titulo"><span class="etiqueta">01 / Razón</span><h2>Razón para desarrollar</h2></summary><div class="seccion-cuerpo"><p class="entradilla">SpriteAnimation es una demo en Java, con Swing y Java2D, pensada para que un profesor de segundo de DAM enseñe a animar sprites en el módulo optativo de videojuegos y sus alumnos la consulten cuando la necesiten. Su propósito es que, en una sola ventana y con muy poco código, se vean tres ideas: cómo se recorta una hoja de sprites, por qué conviene separar el estado del dibujo y por qué la velocidad de una animación no depende de la de pintado.</p>
@@ -953,7 +960,7 @@ pre code { background: none; padding: 0; font-size: .82em; white-space: pre; }
 <p id="src-M1"><strong>[M1] SpriteAnimation.</strong> Decisiones del proyecto, en <code>sf/decisiones/</code>. <a href="../../../sf/decisiones/README.md">Enlace</a></p>
 <p id="src-M2"><strong>[M2] SpriteAnimation.</strong> Documento de visión. <a href="vision-spriteanimation.html">Enlace</a></p>
 </div></div></details></main>
-  <footer class="pie"><p>SpriteAnimation · Documento fundacional · Versión 0.2 · 02/11/2026 · Demo construida · Documento de proyecto</p><p>SpriteAnimation es un material de consulta para profesores y alumnos de segundo de DAM. La demo está construida; su valor lo validará su uso en clase.</p><p class="procedencia">Generado el 02/11/2026 18:59 · fuente fundacional-spriteanimation.md · huella 5508375dcc28 · commit 6a52bbb (con cambios sin commit)</p></footer>
+  <footer class="pie"><p>SpriteAnimation · Documento fundacional · Versión 0.2 · 02/11/2026 · Demo construida · Documento de proyecto</p><p>SpriteAnimation es un material de consulta para profesores y alumnos de segundo de DAM. La demo está construida; su valor lo validará su uso en clase.</p><p class="procedencia">Generado el 02/11/2026 19:27 · fuente fundacional-spriteanimation.md · huella 0ffcf14c533a · commit 79f4d33 (con cambios sin commit)</p></footer>
 </div>
 <script data-kit="skills/crear_documentos/assets/plegado.js">
 /* Secciones y tarjetas plegables de los documentos del generador común (skill crear_documentos).

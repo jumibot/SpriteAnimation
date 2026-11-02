@@ -923,6 +923,12 @@ pre {
 pre code { background: none; padding: 0; font-size: .82em; white-space: pre; }
 @media print { pre { overflow: visible; white-space: pre-wrap; break-inside: avoid; } pre code { white-space: pre-wrap; } }
   </style>
+  <style>
+/* Enlace al repositorio en la cabecera de color: claro y legible sobre el fondo oscuro; en papel, el color normal. */
+.portada.oscura .idea a, .site-header .institution-repo a { color: #9ee6dc; text-decoration-color: rgba(158,230,220,.55); }
+.site-header .institution-repo { color: rgba(255,255,255,.82); font-size: .8rem; margin-top: .2rem; }
+@media print { .portada.oscura .idea a, .site-header .institution-repo a { color: var(--primario); } .site-header .institution-repo { color: var(--texto); } }
+  </style>
 </head>
 <body>
   <div class="page">
@@ -931,6 +937,7 @@ pre code { background: none; padding: 0; font-size: .82em; white-space: pre; }
       <div class="institution">
         <div class="institution-name">SpriteAnimation: animar sprites con MVP e hilos en Java</div>
         <div class="institution-sub">SpriteAnimation</div>
+        <div class="institution-repo">Código de la demo: <a href="https://github.com/jumibot/SpriteAnimation" class="externo" target="_blank" rel="noopener noreferrer">repositorio en GitHub</a></div>
       </div>
     </header>
 
@@ -1136,7 +1143,7 @@ pre code { background: none; padding: 0; font-size: .82em; white-space: pre; }
 
     <footer class="site-footer">
       SpriteAnimation · Documento de visión
-    <p class="procedencia">Generado el 02/11/2026 18:59 · fuente vision-spriteanimation.md · huella 491ca85fe446 · commit 6a52bbb (con cambios sin commit)</p></footer>
+    <p class="procedencia">Generado el 02/11/2026 19:27 · fuente vision-spriteanimation.md · huella ee36cdad77b5 · commit 79f4d33 (con cambios sin commit)</p></footer>
 
   </div>
 <script>

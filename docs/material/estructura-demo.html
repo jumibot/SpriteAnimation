@@ -731,10 +731,17 @@ pre code { background: none; padding: 0; font-size: .82em; white-space: pre; }
 @media print { pre { overflow: visible; white-space: pre-wrap; break-inside: avoid; } pre code { white-space: pre-wrap; } }
 
   </style>
+  <style>
+/* Enlace al repositorio en la cabecera de color: claro y legible sobre el fondo oscuro; en papel, el color normal. */
+.portada.oscura .idea a, .site-header .institution-repo a { color: #9ee6dc; text-decoration-color: rgba(158,230,220,.55); }
+.site-header .institution-repo { color: rgba(255,255,255,.82); font-size: .8rem; margin-top: .2rem; }
+@media print { .portada.oscura .idea a, .site-header .institution-repo a { color: var(--primario); } .site-header .institution-repo { color: var(--texto); } }
+
+  </style>
 </head>
 <body>
 <a class="saltar" href="#contenido">Saltar al contenido</a>
-<header class="portada oscura"><div class="portada-dentro"><p class="marca">SpriteAnimation · Material para segundo de DAM</p><h1 class="titular">La estructura de la demo<span class="lema">Un mapa del código:<br>qué hay en cada sitio.</span></h1><p class="subtitulo">Los paquetes y las clases de la demo, qué hace cada una y cómo encajan.</p></div></header>
+<header class="portada oscura"><div class="portada-dentro"><p class="marca">SpriteAnimation · Material para segundo de DAM</p><h1 class="titular">La estructura de la demo<span class="lema">Un mapa del código:<br>qué hay en cada sitio.</span></h1><p class="subtitulo">Los paquetes y las clases de la demo, qué hace cada una y cómo encajan.</p><div class="idea"><p>Código de la demo: <a href="https://github.com/jumibot/SpriteAnimation" class="externo" target="_blank" rel="noopener noreferrer">repositorio en GitHub</a></p></div></div></header>
 <nav class="menu" aria-label="Secciones del documento"><div class="menu-dentro"><span class="menu-botones"><button type="button" class="plegar">Plegar todo</button><button type="button" class="imprimir" onclick="window.print()">Imprimir / PDF</button></span></div></nav>
 <div class="hoja">
   <main id="contenido" tabindex="-1"><details class="seccion" id="mapa" open><summary class="seccion-titulo"><span class="etiqueta">01 / Mapa</span><h2>Un mapa del código</h2></summary><div class="seccion-cuerpo"><p class="entradilla">Este documento es el mapa de SpriteAnimation: dónde está cada cosa, qué hace cada clase y a quién conoce. Sirve para orientarte antes de abrir el código o cuando buscas dónde cambiar algo.</p>
@@ -882,26 +889,8 @@ pre code { background: none; padding: 0; font-size: .82em; white-space: pre; }
 <li>El presentador no pinta ni guarda estado. Cada vez que le piden algo, lo pregunta al modelo y lo entrega (<a href="https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/041-2026-11-02-el-presentador-no-pinta-ni-guarda-estado.md" class="externo" target="_blank" rel="noopener noreferrer">041</a>).</li>
 <li>La vista no guarda lo que le da el presentador: lo pide, lo usa y lo suelta (<a href="https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/038-2026-11-02-la-vista-no-guarda-referencias-a-datos-del-presentador.md" class="externo" target="_blank" rel="noopener noreferrer">038</a>).</li>
 <li>Lo que solo usa <code>main</code> al montar no está en los contratos: <code>addSprite</code> del modelo, <code>setCanvasSize</code> de la vista y <code>setFpsLimits</code>, <code>setScaleLimits</code> y <code>setMaxSprites</code> del presentador (<a href="https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/028-2026-11-02-la-configuracion-que-solo-usa-main-queda-fuera-de-los-contratos.md" class="externo" target="_blank" rel="noopener noreferrer">028</a>). Por eso <code>main</code> usa las clases concretas, y el presentador no puede crear animaciones (<a href="https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/015-2026-11-02-main-pide-los-sprites-al-modelo-no-el-presentador.md" class="externo" target="_blank" rel="noopener noreferrer">015</a>).</li>
-</ol></div></details><details class="seccion" id="orden"><summary class="seccion-titulo"><span class="etiqueta">05 / Funcionamiento</span><h2>En qué orden se monta y funciona</h2></summary><div class="seccion-cuerpo"><p class="entradilla">Todo empieza en <code>main</code> y, cuando arranca, la aplicación sigue en sus hilos. El detalle, paso a paso, está en <a href="mvp-interfaces-inyeccion.html#montaje">Cómo se monta la aplicación</a> y en <a href="mvp-interfaces-inyeccion.html#hilos">MVP con hilos</a>.</p>
-<ol>
-<li><code>main</code> crea el <code>Model</code> y le pide las animaciones con <code>addSprite</code>. Para cada una, el modelo recorta su hoja con <code>SpriteSheet</code> y crea un <code>Sprite</code> (<a href="https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/014-2026-11-02-los-sprites-se-crean-en-el-modelo-y-el-presentador-arranca-la-aplicacion.md" class="externo" target="_blank" rel="noopener noreferrer">014</a>, <a href="https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/015-2026-11-02-main-pide-los-sprites-al-modelo-no-el-presentador.md" class="externo" target="_blank" rel="noopener noreferrer">015</a>).</li>
-<li><code>main</code> crea la <code>View</code>, que crea su <code>Viewer</code>, su <code>Hud</code> y su <code>MouseHandler</code>. Le da el tamaño del lienzo y la velocidad de pintado.</li>
-<li><code>main</code> crea el <code>Presenter</code> con el modelo y la vista. El constructor se conecta a la vista: le dice quién es su presentador (<a href="https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/016-2026-11-02-el-constructor-del-presentador-conecta-y-start-solo-arranca.md" class="externo" target="_blank" rel="noopener noreferrer">016</a>).</li>
-<li><code>main</code> llama a <code>presenter.start()</code>, que arranca el modelo (un hilo por sprite) y la vista (la ventana y su hilo de pintado).</li>
-<li>Desde ahí, en cada vuelta, el hilo de pintado pide al presentador los <code>SpriteView</code> y los pinta con el HUD encima. Mientras, el hilo de cada sprite avanza sus fotogramas.</li>
-<li>Cuando usas el ratón, <code>MouseHandler</code> avisa al presentador, que cambia el modelo o la vista. Se ve en <a href="mvp-interfaces-inyeccion.html#gesto">Un gesto, de principio a fin</a>.</li>
 </ol>
-<p>La aplicación termina al cerrar la ventana (<a href="https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/032-2026-11-02-la-demo-se-cierra-con-exit-on-close-sin-cierre-ordenado.md" class="externo" target="_blank" rel="noopener noreferrer">032</a>).</p></div></details><details class="seccion" id="tocar"><summary class="seccion-titulo"><span class="etiqueta">06 / Dónde tocar</span><h2>Dónde tocar para…</h2></summary><div class="seccion-cuerpo"><p class="entradilla">Algunos cambios habituales y el sitio donde se hacen. Los dos primeros solo tocan <code>main</code>; los otros, la vista.</p>
-<dl>
-<dt>Añadir una animación</dt>
-<dd>Pon su hoja en <code>src/main/resources/sprites/</code> y añade una línea <code>model.addSprite(…)</code> en <code>SpriteAnimation</code>. El HUD le hace sitio solo.</dd>
-<dt>Cambiar el tamaño de la ventana o las velocidades</dt>
-<dd>En <code>SpriteAnimation</code>: <code>setCanvasSize</code>, la velocidad de pintado inicial (<code>setRenderFps</code>) los límites de la rueda (<code>setFpsLimits</code>, <code>setScaleLimits</code>) y el máximo de sprites (<code>setMaxSprites</code>).</dd>
-<dt>Cambiar el aspecto del HUD</dt>
-<dd>En <code>Hud</code>: su posición, sus colores, su letra y el texto de cada línea.</dd>
-<dt>Cambiar lo que hace el ratón</dt>
-<dd>En <code>MouseHandler</code>, que decide a quién avisar. Si el gesto pide algo nuevo al modelo, hace falta también un método en <code>PresenterContract</code> y en <code>Presenter</code>, y quizá en <code>ModelContract</code> y <code>Model</code>.</dd>
-</dl></div></details><details class="seccion" id="decisiones"><summary class="seccion-titulo"><span class="etiqueta">07 / Anexo</span><h2>Las decisiones que dan forma a la estructura</h2></summary><div class="seccion-cuerpo"><p class="entradilla">Cada decisión cuenta qué se decidió y por qué. Están en la carpeta <code>sf/decisiones/</code> del repositorio.</p>
+<p>En qué orden monta <code>main</code> estas piezas y cuándo arrancan sus hilos se cuenta en <a href="mvp-interfaces-inyeccion.html#montaje">Cómo se monta la aplicación</a>.</p></div></details><details class="seccion" id="decisiones"><summary class="seccion-titulo"><span class="etiqueta">05 / Anexo</span><h2>Las decisiones que dan forma a la estructura</h2></summary><div class="seccion-cuerpo"><p class="entradilla">Aquí están solo las decisiones que fijan la arquitectura: las capas y sus contratos, quién conoce a quién, qué datos cruzan, los hilos y el montaje. Cada una cuenta qué se decidió y por qué. Las de estilo y detalle están con ellas en la carpeta <code>sf/decisiones/</code> del repositorio.</p>
 <table>
 <thead>
 <tr>
@@ -910,6 +899,10 @@ pre code { background: none; padding: 0; font-size: .82em; white-space: pre; }
 </tr>
 </thead>
 <tbody>
+<tr>
+<td data-label="Nº">003</td>
+<td data-label="Decisión"><a href="https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/003-2026-10-30-un-hilo-por-sprite-y-un-hilo-de-pintado.md" class="externo" target="_blank" rel="noopener noreferrer">Un hilo por sprite y un hilo de pintado</a></td>
+</tr>
 <tr>
 <td data-label="Nº">009</td>
 <td data-label="Decisión"><a href="https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/009-2026-10-30-clases-de-la-demo-con-viewer.md" class="externo" target="_blank" rel="noopener noreferrer">Clases de la demo con Viewer</a></td>
@@ -935,28 +928,12 @@ pre code { background: none; padding: 0; font-size: .82em; white-space: pre; }
 <td data-label="Decisión"><a href="https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/023-2026-11-02-paquetes-main-model-view-presenter-y-contract.md" class="externo" target="_blank" rel="noopener noreferrer">Paquetes main, model, view, presenter y contract</a></td>
 </tr>
 <tr>
-<td data-label="Nº">024</td>
-<td data-label="Decisión"><a href="https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/024-2026-11-02-la-vista-extiende-jframe.md" class="externo" target="_blank" rel="noopener noreferrer">La vista extiende JFrame</a></td>
-</tr>
-<tr>
-<td data-label="Nº">026</td>
-<td data-label="Decisión"><a href="https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/026-2026-11-02-un-archivo-por-contrato-con-sufijo-contract-y-sin-interfaz-contenedora.md" class="externo" target="_blank" rel="noopener noreferrer">Un archivo por contrato, con sufijo Contract y sin interfaz contenedora</a></td>
-</tr>
-<tr>
 <td data-label="Nº">027</td>
 <td data-label="Decisión"><a href="https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/027-2026-11-02-no-se-usan-clases-ni-interfaces-contenedoras.md" class="externo" target="_blank" rel="noopener noreferrer">No se usan clases ni interfaces contenedoras</a></td>
 </tr>
 <tr>
 <td data-label="Nº">028</td>
 <td data-label="Decisión"><a href="https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/028-2026-11-02-la-configuracion-que-solo-usa-main-queda-fuera-de-los-contratos.md" class="externo" target="_blank" rel="noopener noreferrer">La configuración que solo usa main queda fuera de los contratos</a></td>
-</tr>
-<tr>
-<td data-label="Nº">029</td>
-<td data-label="Decisión"><a href="https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/029-2026-11-02-el-proyecto-sigue-el-principio-kiss.md" class="externo" target="_blank" rel="noopener noreferrer">El proyecto sigue el principio KISS</a></td>
-</tr>
-<tr>
-<td data-label="Nº">032</td>
-<td data-label="Decisión"><a href="https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/032-2026-11-02-la-demo-se-cierra-con-exit-on-close-sin-cierre-ordenado.md" class="externo" target="_blank" rel="noopener noreferrer">La demo se cierra con EXIT_ON_CLOSE, sin cierre ordenado</a></td>
 </tr>
 <tr>
 <td data-label="Nº">034</td>
@@ -994,13 +971,9 @@ pre code { background: none; padding: 0; font-size: .82em; white-space: pre; }
 <td data-label="Nº">042</td>
 <td data-label="Decisión"><a href="https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/042-2026-11-02-las-interfaces-entregan-los-datos-minimos-inmutables-si-se-puede-nunca-objetos-internos.md" class="externo" target="_blank" rel="noopener noreferrer">Las interfaces entregan los datos mínimos, inmutables si se puede, nunca objetos internos</a></td>
 </tr>
-<tr>
-<td data-label="Nº">043</td>
-<td data-label="Decisión"><a href="https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/043-2026-11-02-el-record-picture-se-llama-spriteview-y-la-rueda-pide-spritecount.md" class="externo" target="_blank" rel="noopener noreferrer">El record Picture se llama SpriteView y la rueda pide spriteCount()</a></td>
-</tr>
 </tbody>
 </table></div></details></main>
-  <footer class="pie"><p>SpriteAnimation · Documento explicativo · Versión 1.0 · 02/11/2026 · Material didáctico</p><p>Material de consulta de SpriteAnimation para segundo de DAM.</p><p class="procedencia">Generado el 02/11/2026 16:44 · fuente estructura-demo.md · huella 4c7108db9815 · sin commit</p></footer>
+  <footer class="pie"><p>SpriteAnimation · Documento explicativo · Versión 1.0 · 02/11/2026 · Material didáctico</p><p>Material de consulta de SpriteAnimation para segundo de DAM.</p><p class="procedencia">Generado el 02/11/2026 19:29 · fuente estructura-demo.md · huella afbb343bf104 · commit 76b895b (con cambios sin commit)</p></footer>
 </div>
 <script data-kit="skills/crear_documentos/assets/plegado.js">
 /* Secciones y tarjetas plegables de los documentos del generador común (skill crear_documentos).

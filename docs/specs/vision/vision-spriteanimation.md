@@ -1,5 +1,6 @@
 <!-- destino: proyecto -->
 <!-- herramientas: buscador lectura -->
+<!-- repositorio: https://github.com/jumibot/SpriteAnimation (el generador no lo pinta: tras regenerar, se añade a mano en la cabecera, en .institution-repo) -->
 
 # SpriteAnimation: animar sprites con MVP e hilos en Java
 

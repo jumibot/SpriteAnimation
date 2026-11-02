@@ -5,5 +5,5 @@
   "herramientas": "buscador lectura",
   "reglas": "reglas-vision.md",
   "js": "modo-claro.js",
-  "css": "codigo.css"
+  "css": ["codigo.css", "cabecera.css"]
 }

@@ -12,6 +12,8 @@ herramientas: buscador lectura
 ---
 # MVP, interfaces e inyección de dependencias
 
+Código de la demo: [repositorio en GitHub](https://github.com/jumibot/SpriteAnimation)
+
 ## El ejemplo | Lo que vamos a construir {#ejemplo}
 
 Todo este documento gira alrededor de un solo programa: SpriteAnimation, una ventana con dos animaciones.
@@ -490,7 +492,7 @@ public static void main(String[] args) {
 }
 ```
 
-`main` declara cada pieza con su clase, `Model`, `View` y `Presenter`, porque las configura con métodos que no son del contrato: `addSprite`, que crea cada sprite a partir de su hoja, `setCanvasSize`, `setFpsLimits`, `setScaleLimits` y `setMaxSprites`. Así la configuración queda a la vista, en un solo sitio. El presentador recibe el modelo y la vista como `ModelContract` y `ViewContract`, sin esos métodos. `setRenderFps` sí es del contrato, porque el presentador lo usa cuando giras la rueda.
+`main` declara cada pieza con su clase, `Model`, `View` y `Presenter`, porque las configura con métodos que no son del contrato: `addSprite`, que recorta la hoja con `SpriteSheet` y crea su `Sprite`, `setCanvasSize`, `setFpsLimits`, `setScaleLimits` y `setMaxSprites`. Así la configuración queda a la vista, en un solo sitio. El presentador recibe el modelo y la vista como `ModelContract` y `ViewContract`, sin esos métodos. `setRenderFps` sí es del contrato, porque el presentador lo usa cuando giras la rueda.
 
 Fíjate en que el presentador no sabe qué animaciones hay: trabaja con los sprites que tenga el modelo. Por eso sirve igual para dos sprites que para veinte, y cambiar las animaciones no lo toca.
 
@@ -726,13 +728,13 @@ En la demo, el precio se puede contar. El contrato declara 24 métodos: 12 del m
 > **Cuándo compensa**
 > Cuando el programa va a crecer, va a cambiar de interfaz o necesita pruebas. Para un ejercicio de una tarde, una sola clase basta.
 
-## Errores | Errores frecuentes {#errores}
+## Prohibido | Prohibido en MVP {#prohibido}
 
-Estos son los atajos que más se repiten al empezar con MVP. Todos funcionan el primer día, y todos complican el segundo.
+Estos atajos son los que más se repiten al empezar, y en MVP están prohibidos. Todos funcionan el primer día, y todos complican el segundo.
 
 ::: tarjetas 2
 
-### La vista lee el modelo
+### La vista no lee el modelo
 
 Cómo se ve
 :   `View` recibe el `Model` y recorre sus `Sprite` para pintarlos.
@@ -743,7 +745,7 @@ Por qué es un problema
 Cómo se arregla
 :   La vista solo conoce `PresenterContract` y pinta `SpriteView`: datos preparados para enseñar, nunca un objeto del modelo, ni suelto ni dentro de una lista o un record.
 
-### El presentador pinta
+### El presentador no pinta
 
 Cómo se ve
 :   `Presenter` recibe un `Graphics2D` y dibuja.
@@ -754,7 +756,7 @@ Por qué es un problema
 Cómo se arregla
 :   El presentador devuelve datos y no guarda ninguno: cada vez se los pide al modelo, los prepara y los entrega. Pintar es cosa de la vista.
 
-### El `new` escondido
+### Ningún `new` escondido
 
 Cómo se ve
 :   `Presenter` hace `new View()` en su constructor.
@@ -765,7 +767,7 @@ Por qué es un problema
 Cómo se arregla
 :   Inyección por constructor: `new Presenter(model, view)` en `main`.
 
-### Recibir la clase en lugar de la interfaz
+### Nunca la clase en lugar de la interfaz
 
 Cómo se ve
 :   `Presenter(Model model, View view)`: los parámetros son las clases, no sus interfaces.
@@ -776,7 +778,7 @@ Por qué es un problema
 Cómo se arregla
 :   Programar contra interfaces: `Presenter(ModelContract model, ViewContract view)`.
 
-### La interfaz que lo expone todo
+### Ninguna interfaz que lo exponga todo
 
 Cómo se ve
 :   `PresenterContract` tiene veinte métodos, uno por cada campo del modelo.
@@ -787,7 +789,7 @@ Por qué es un problema
 Cómo se arregla
 :   Un método por cada cosa que la otra parte necesita de verdad, no por cada dato.
 
-### El modelo que avisa a la vista
+### El modelo no avisa a la vista
 
 Cómo se ve
 :   `Sprite` llama a `repaint()` cada vez que cambia de fotograma.

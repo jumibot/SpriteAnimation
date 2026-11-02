@@ -680,10 +680,17 @@ pre code { background: none; padding: 0; font-size: .82em; white-space: pre; }
 @media print { pre { overflow: visible; white-space: pre-wrap; break-inside: avoid; } pre code { white-space: pre-wrap; } }
 
   </style>
+  <style>
+/* Enlace al repositorio en la cabecera de color: claro y legible sobre el fondo oscuro; en papel, el color normal. */
+.portada.oscura .idea a, .site-header .institution-repo a { color: #9ee6dc; text-decoration-color: rgba(158,230,220,.55); }
+.site-header .institution-repo { color: rgba(255,255,255,.82); font-size: .8rem; margin-top: .2rem; }
+@media print { .portada.oscura .idea a, .site-header .institution-repo a { color: var(--primario); } .site-header .institution-repo { color: var(--texto); } }
+
+  </style>
 </head>
 <body>
 <a class="saltar" href="#contenido">Saltar al contenido</a>
-<header class="portada oscura"><div class="portada-dentro"><p class="marca">SpriteAnimation · Material para segundo de DAM</p><h1 class="titular">MVP, interfaces e inyección de dependencias<span class="lema">Cada pieza en su sitio,<br>y un solo sitio que las une.</span></h1><p class="subtitulo">Cómo se organiza un programa en Java, explicado con la demo de animación de sprites.</p></div></header>
+<header class="portada oscura"><div class="portada-dentro"><p class="marca">SpriteAnimation · Material para segundo de DAM</p><h1 class="titular">MVP, interfaces e inyección de dependencias<span class="lema">Cada pieza en su sitio,<br>y un solo sitio que las une.</span></h1><p class="subtitulo">Cómo se organiza un programa en Java, explicado con la demo de animación de sprites.</p><div class="idea"><p>Código de la demo: <a href="https://github.com/jumibot/SpriteAnimation" class="externo" target="_blank" rel="noopener noreferrer">repositorio en GitHub</a></p></div></div></header>
 <nav class="menu" aria-label="Secciones del documento"><div class="menu-dentro"><span class="menu-botones"><button type="button" class="plegar">Plegar todo</button><button type="button" class="imprimir" onclick="window.print()">Imprimir / PDF</button></span></div></nav>
 <div class="hoja">
   <main id="contenido" tabindex="-1"><details class="seccion" id="ejemplo" open><summary class="seccion-titulo"><span class="etiqueta">01 / El ejemplo</span><h2>Lo que vamos a construir</h2></summary><div class="seccion-cuerpo"><p class="entradilla">Todo este documento gira alrededor de un solo programa: SpriteAnimation, una ventana con dos animaciones.</p>
@@ -1093,7 +1100,7 @@ figure ol.vin ol.vin-acc>li::before{content:"→";position:absolute;left:0;top:0
     presenter.start();
 }
 </code></pre>
-<p><code>main</code> declara cada pieza con su clase, <code>Model</code>, <code>View</code> y <code>Presenter</code>, porque las configura con métodos que no son del contrato: <code>addSprite</code>, que crea cada sprite a partir de su hoja, <code>setCanvasSize</code>, <code>setFpsLimits</code>, <code>setScaleLimits</code> y <code>setMaxSprites</code>. Así la configuración queda a la vista, en un solo sitio. El presentador recibe el modelo y la vista como <code>ModelContract</code> y <code>ViewContract</code>, sin esos métodos. <code>setRenderFps</code> sí es del contrato, porque el presentador lo usa cuando giras la rueda.</p>
+<p><code>main</code> declara cada pieza con su clase, <code>Model</code>, <code>View</code> y <code>Presenter</code>, porque las configura con métodos que no son del contrato: <code>addSprite</code>, que recorta la hoja con <code>SpriteSheet</code> y crea su <code>Sprite</code>, <code>setCanvasSize</code>, <code>setFpsLimits</code>, <code>setScaleLimits</code> y <code>setMaxSprites</code>. Así la configuración queda a la vista, en un solo sitio. El presentador recibe el modelo y la vista como <code>ModelContract</code> y <code>ViewContract</code>, sin esos métodos. <code>setRenderFps</code> sí es del contrato, porque el presentador lo usa cuando giras la rueda.</p>
 <p>Fíjate en que el presentador no sabe qué animaciones hay: trabaja con los sprites que tenga el modelo. Por eso sirve igual para dos sprites que para veinte, y cambiar las animaciones no lo toca.</p><aside class="recuadro quedarse"><p class="recuadro-etiqueta">Para quedarse</p><p>Solo <code>main</code> crea y configura las capas, en un único sitio. La receta es siempre la misma: construir, conectar y, al final, arrancar.</p></aside></div></details><details class="seccion" id="conectar"><summary class="seccion-titulo"><span class="etiqueta">08 / Conectar</span><h2>Conectar antes de arrancar</h2></summary><div class="seccion-cuerpo"><p class="entradilla">Las viñetas del apartado anterior esconden dos detalles: cómo se conectan el presentador y la vista, y por qué arrancar va al final.</p>
 <p>Empieza por el paso 2. El presentador necesita la vista y la vista necesita el presentador, así que no pueden recibirse los dos por constructor: uno de los dos tiene que existir primero. La demo crea la vista, se la pasa al presentador, y el constructor del presentador, en su última línea, se presenta a la vista con <code>view.setPresenter(this)</code>. Es la única dependencia que no va por constructor.</p>
 <p>Pasar <code>this</code> desde un constructor se llama <em>dejar escapar</em> <code>this</code>, y suele ser mala práctica: otro hilo podría usar el objeto antes de que esté construido. Aquí no hay problema: es la última línea del constructor y todavía solo existe el hilo de <code>main</code>.</p>
@@ -1278,10 +1285,10 @@ public void changeSpriteSpeed(int index, int delta) {
 </article>
 </div>
 <p>En la demo, el precio se puede contar. El contrato declara 24 métodos: 12 del modelo, 4 de la vista y 8 del presentador. Cada uno se escribe dos veces, en la interfaz y en la clase que lo cumple. Sin MVP, el pato y la explosión cabrían en una sola clase de ventana que guarda los sprites, los pinta y escucha el ratón. Haría lo mismo con menos código, pero no podrías cambiar ni probar una parte sin las demás.</p>
-<aside class="recuadro"><p class="recuadro-etiqueta">Cuándo compensa</p><p>Cuando el programa va a crecer, va a cambiar de interfaz o necesita pruebas. Para un ejercicio de una tarde, una sola clase basta.</p></aside></div></details><details class="seccion" id="errores"><summary class="seccion-titulo"><span class="etiqueta">12 / Errores</span><h2>Errores frecuentes</h2></summary><div class="seccion-cuerpo"><p class="entradilla">Estos son los atajos que más se repiten al empezar con MVP. Todos funcionan el primer día, y todos complican el segundo.</p>
+<aside class="recuadro"><p class="recuadro-etiqueta">Cuándo compensa</p><p>Cuando el programa va a crecer, va a cambiar de interfaz o necesita pruebas. Para un ejercicio de una tarde, una sola clase basta.</p></aside></div></details><details class="seccion" id="prohibido"><summary class="seccion-titulo"><span class="etiqueta">12 / Prohibido</span><h2>Prohibido en MVP</h2></summary><div class="seccion-cuerpo"><p class="entradilla">Estos atajos son los que más se repiten al empezar, y en MVP están prohibidos. Todos funcionan el primer día, y todos complican el segundo.</p>
 <div class="tarjetas cols-2">
 <article class="tarjeta">
-<h3>La vista lee el modelo</h3>
+<h3>La vista no lee el modelo</h3>
 <dl>
 <dt>Cómo se ve</dt>
 <dd><code>View</code> recibe el <code>Model</code> y recorre sus <code>Sprite</code> para pintarlos.</dd>
@@ -1292,7 +1299,7 @@ public void changeSpriteSpeed(int index, int delta) {
 </dl>
 </article>
 <article class="tarjeta">
-<h3>El presentador pinta</h3>
+<h3>El presentador no pinta</h3>
 <dl>
 <dt>Cómo se ve</dt>
 <dd><code>Presenter</code> recibe un <code>Graphics2D</code> y dibuja.</dd>
@@ -1303,7 +1310,7 @@ public void changeSpriteSpeed(int index, int delta) {
 </dl>
 </article>
 <article class="tarjeta">
-<h3>El <code>new</code> escondido</h3>
+<h3>Ningún <code>new</code> escondido</h3>
 <dl>
 <dt>Cómo se ve</dt>
 <dd><code>Presenter</code> hace <code>new View()</code> en su constructor.</dd>
@@ -1314,7 +1321,7 @@ public void changeSpriteSpeed(int index, int delta) {
 </dl>
 </article>
 <article class="tarjeta">
-<h3>Recibir la clase en lugar de la interfaz</h3>
+<h3>Nunca la clase en lugar de la interfaz</h3>
 <dl>
 <dt>Cómo se ve</dt>
 <dd><code>Presenter(Model model, View view)</code>: los parámetros son las clases, no sus interfaces.</dd>
@@ -1325,7 +1332,7 @@ public void changeSpriteSpeed(int index, int delta) {
 </dl>
 </article>
 <article class="tarjeta">
-<h3>La interfaz que lo expone todo</h3>
+<h3>Ninguna interfaz que lo exponga todo</h3>
 <dl>
 <dt>Cómo se ve</dt>
 <dd><code>PresenterContract</code> tiene veinte métodos, uno por cada campo del modelo.</dd>
@@ -1336,7 +1343,7 @@ public void changeSpriteSpeed(int index, int delta) {
 </dl>
 </article>
 <article class="tarjeta">
-<h3>El modelo que avisa a la vista</h3>
+<h3>El modelo no avisa a la vista</h3>
 <dl>
 <dt>Cómo se ve</dt>
 <dd><code>Sprite</code> llama a <code>repaint()</code> cada vez que cambia de fotograma.</dd>

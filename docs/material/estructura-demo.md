@@ -12,6 +12,8 @@ herramientas: buscador lectura
 ---
 # La estructura de la demo
 
+Código de la demo: [repositorio en GitHub](https://github.com/jumibot/SpriteAnimation)
+
 ## Mapa | Un mapa del código {#mapa}
 
 Este documento es el mapa de SpriteAnimation: dónde está cada cosa, qué hace cada clase y a quién conoce. Sirve para orientarte antes de abrir el código o cuando buscas dónde cambiar algo.
@@ -149,53 +151,23 @@ La estructura no es solo dónde está cada archivo: también qué puede ver cada
 5. La vista no guarda lo que le da el presentador: lo pide, lo usa y lo suelta ([038](https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/038-2026-11-02-la-vista-no-guarda-referencias-a-datos-del-presentador.md)).
 6. Lo que solo usa `main` al montar no está en los contratos: `addSprite` del modelo, `setCanvasSize` de la vista y `setFpsLimits`, `setScaleLimits` y `setMaxSprites` del presentador ([028](https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/028-2026-11-02-la-configuracion-que-solo-usa-main-queda-fuera-de-los-contratos.md)). Por eso `main` usa las clases concretas, y el presentador no puede crear animaciones ([015](https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/015-2026-11-02-main-pide-los-sprites-al-modelo-no-el-presentador.md)).
 
-## Funcionamiento | En qué orden se monta y funciona {#orden}
-
-Todo empieza en `main` y, cuando arranca, la aplicación sigue en sus hilos. El detalle, paso a paso, está en [Cómo se monta la aplicación](mvp-interfaces-inyeccion.html#montaje) y en [MVP con hilos](mvp-interfaces-inyeccion.html#hilos).
-
-1. `main` crea el `Model` y le pide las animaciones con `addSprite`. Para cada una, el modelo recorta su hoja con `SpriteSheet` y crea un `Sprite` ([014](https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/014-2026-11-02-los-sprites-se-crean-en-el-modelo-y-el-presentador-arranca-la-aplicacion.md), [015](https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/015-2026-11-02-main-pide-los-sprites-al-modelo-no-el-presentador.md)).
-2. `main` crea la `View`, que crea su `Viewer`, su `Hud` y su `MouseHandler`. Le da el tamaño del lienzo y la velocidad de pintado.
-3. `main` crea el `Presenter` con el modelo y la vista. El constructor se conecta a la vista: le dice quién es su presentador ([016](https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/016-2026-11-02-el-constructor-del-presentador-conecta-y-start-solo-arranca.md)).
-4. `main` llama a `presenter.start()`, que arranca el modelo (un hilo por sprite) y la vista (la ventana y su hilo de pintado).
-5. Desde ahí, en cada vuelta, el hilo de pintado pide al presentador los `SpriteView` y los pinta con el HUD encima. Mientras, el hilo de cada sprite avanza sus fotogramas.
-6. Cuando usas el ratón, `MouseHandler` avisa al presentador, que cambia el modelo o la vista. Se ve en [Un gesto, de principio a fin](mvp-interfaces-inyeccion.html#gesto).
-
-La aplicación termina al cerrar la ventana ([032](https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/032-2026-11-02-la-demo-se-cierra-con-exit-on-close-sin-cierre-ordenado.md)).
-
-## Dónde tocar | Dónde tocar para… {#tocar}
-
-Algunos cambios habituales y el sitio donde se hacen. Los dos primeros solo tocan `main`; los otros, la vista.
-
-Añadir una animación
-:   Pon su hoja en `src/main/resources/sprites/` y añade una línea `model.addSprite(…)` en `SpriteAnimation`. El HUD le hace sitio solo.
-
-Cambiar el tamaño de la ventana o las velocidades
-:   En `SpriteAnimation`: `setCanvasSize`, la velocidad de pintado inicial (`setRenderFps`) los límites de la rueda (`setFpsLimits`, `setScaleLimits`) y el máximo de sprites (`setMaxSprites`).
-
-Cambiar el aspecto del HUD
-:   En `Hud`: su posición, sus colores, su letra y el texto de cada línea.
-
-Cambiar lo que hace el ratón
-:   En `MouseHandler`, que decide a quién avisar. Si el gesto pide algo nuevo al modelo, hace falta también un método en `PresenterContract` y en `Presenter`, y quizá en `ModelContract` y `Model`.
+En qué orden monta `main` estas piezas y cuándo arrancan sus hilos se cuenta en [Cómo se monta la aplicación](mvp-interfaces-inyeccion.html#montaje).
 
 ## Anexo | Las decisiones que dan forma a la estructura {#decisiones}
 
-Cada decisión cuenta qué se decidió y por qué. Están en la carpeta `sf/decisiones/` del repositorio.
+Aquí están solo las decisiones que fijan la arquitectura: las capas y sus contratos, quién conoce a quién, qué datos cruzan, los hilos y el montaje. Cada una cuenta qué se decidió y por qué. Las de estilo y detalle están con ellas en la carpeta `sf/decisiones/` del repositorio.
 
 | Nº | Decisión |
 | --- | --- |
+| 003 | [Un hilo por sprite y un hilo de pintado](https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/003-2026-10-30-un-hilo-por-sprite-y-un-hilo-de-pintado.md) |
 | 009 | [Clases de la demo con Viewer](https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/009-2026-10-30-clases-de-la-demo-con-viewer.md) |
 | 014 | [Los sprites se crean en el modelo y el presentador arranca la aplicación](https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/014-2026-11-02-los-sprites-se-crean-en-el-modelo-y-el-presentador-arranca-la-aplicacion.md) |
 | 015 | [main pide los sprites al modelo, no el presentador](https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/015-2026-11-02-main-pide-los-sprites-al-modelo-no-el-presentador.md) |
 | 016 | [El constructor del presentador conecta y start() solo arranca](https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/016-2026-11-02-el-constructor-del-presentador-conecta-y-start-solo-arranca.md) |
 | 017 | [El presentador recibe el modelo y la vista por sus interfaces](https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/017-2026-11-02-el-presentador-recibe-el-modelo-y-la-vista-por-sus-interfaces.md) |
 | 023 | [Paquetes main, model, view, presenter y contract](https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/023-2026-11-02-paquetes-main-model-view-presenter-y-contract.md) |
-| 024 | [La vista extiende JFrame](https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/024-2026-11-02-la-vista-extiende-jframe.md) |
-| 026 | [Un archivo por contrato, con sufijo Contract y sin interfaz contenedora](https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/026-2026-11-02-un-archivo-por-contrato-con-sufijo-contract-y-sin-interfaz-contenedora.md) |
 | 027 | [No se usan clases ni interfaces contenedoras](https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/027-2026-11-02-no-se-usan-clases-ni-interfaces-contenedoras.md) |
 | 028 | [La configuración que solo usa main queda fuera de los contratos](https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/028-2026-11-02-la-configuracion-que-solo-usa-main-queda-fuera-de-los-contratos.md) |
-| 029 | [El proyecto sigue el principio KISS](https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/029-2026-11-02-el-proyecto-sigue-el-principio-kiss.md) |
-| 032 | [La demo se cierra con EXIT_ON_CLOSE, sin cierre ordenado](https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/032-2026-11-02-la-demo-se-cierra-con-exit-on-close-sin-cierre-ordenado.md) |
 | 034 | [El sprite no sale del modelo: la vista solo recibe lo que pinta](https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/034-2026-11-02-el-sprite-no-sale-del-modelo-la-vista-solo-recibe-lo-que-pinta.md) |
 | 035 | [Los datos entre vista y modelo pasan por el presentador, son inmutables y no comparten referencias](https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/035-2026-11-02-los-datos-entre-vista-y-modelo-pasan-por-el-presentador-son-inmutables-y-no-comparten-referencias.md) |
 | 036 | [El presentador nunca pasa objetos del modelo a la vista](https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/036-2026-11-02-el-presentador-nunca-pasa-objetos-del-modelo-a-la-vista.md) |
@@ -205,4 +177,3 @@ Cada decisión cuenta qué se decidió y por qué. Están en la carpeta `sf/deci
 | 040 | [El modelo no conoce ninguna clase de la vista](https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/040-2026-11-02-el-modelo-no-conoce-ninguna-clase-de-la-vista.md) |
 | 041 | [El presentador no pinta ni guarda estado](https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/041-2026-11-02-el-presentador-no-pinta-ni-guarda-estado.md) |
 | 042 | [Las interfaces entregan los datos mínimos, inmutables si se puede, nunca objetos internos](https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/042-2026-11-02-las-interfaces-entregan-los-datos-minimos-inmutables-si-se-puede-nunca-objetos-internos.md) |
-| 043 | [El record Picture se llama SpriteView y la rueda pide spriteCount()](https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/043-2026-11-02-el-record-picture-se-llama-spriteview-y-la-rueda-pide-spritecount.md) |
