@@ -4,7 +4,6 @@ package contract;
 public interface ViewContract {
     void setPresenter(PresenterContract presenter);  // a quién pedirle qué pintar
     void start();                                    // empezar a pintar
-    void stop();                                     // dejar de pintar y cerrar la ventana
     int renderFps();                                 // cuántas veces por segundo pinta
     void setRenderFps(int fps);                      // cambiar ese ritmo
 }

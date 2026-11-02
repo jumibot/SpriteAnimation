@@ -886,7 +886,6 @@ html[data-modo="oscuro"] .ej-px{filter:url(#ej-inv)}
 <h3><code>ModelContract</code>: lo que el presentador puede pedirle al modelo</h3>
 <ul>
 <li><code>start()</code>: poner en marcha las animaciones.</li>
-<li><code>stop()</code>: pararlas al cerrar la aplicación.</li>
 <li><code>spriteCount()</code>: decir cuántos sprites hay.</li>
 <li><code>sprite(index)</code>: dar uno de los sprites, por su número.</li>
 </ul>
@@ -896,7 +895,6 @@ html[data-modo="oscuro"] .ej-px{filter:url(#ej-inv)}
 <ul>
 <li><code>setPresenter(presenter)</code>: guardar a quién pedirle qué pintar.</li>
 <li><code>start()</code>: empezar a pintar.</li>
-<li><code>stop()</code>: dejar de pintar.</li>
 <li><code>renderFps()</code>: decir cuántas veces por segundo pinta.</li>
 <li><code>setRenderFps(fps)</code>: cambiar ese ritmo.</li>
 </ul>
@@ -906,11 +904,10 @@ html[data-modo="oscuro"] .ej-px{filter:url(#ej-inv)}
 <ul>
 <li><code>sprites()</code>: dar la foto de todos los sprites, para pintarlos.</li>
 <li><code>changeRenderSpeed(delta)</code>: subir o bajar el ritmo de pintado, sin salirse de los límites.</li>
-<li><code>changeSpriteSpeed(sprite, delta)</code>: lo mismo con la velocidad de un sprite.</li>
+<li><code>changeSpriteSpeed(index, delta)</code>: lo mismo con la velocidad de un sprite.</li>
 <li><code>spriteAt(x, y)</code>: decir qué sprite hay en un punto de la ventana.</li>
-<li><code>moveSprite(sprite, x, y)</code>: llevar un sprite a otro sitio.</li>
+<li><code>moveSprite(index, x, y)</code>: llevar un sprite a otro sitio.</li>
 <li><code>start()</code>: poner en marcha la aplicación. No lo pide la vista: lo llama <code>main</code>.</li>
-<li><code>close()</code>: pararlo todo al cerrar la ventana.</li>
 </ul>
 <p>La foto de cada sprite es un <code>SpriteState</code>: su nombre, su fotograma, su posición y su velocidad. Nadie la cambia mientras se pinta. Va en su propio archivo, también en <code>contract</code>, pero no es un contrato: son datos.</p>
 </article>
@@ -1012,6 +1009,7 @@ public class Presenter implements PresenterContract { … }
     public Presenter(ModelContract model, ViewContract view) {   // las recibe, no las crea
         this.model = model;
         this.view = view;
+
         view.setPresenter(this);   // se conecta con la vista: lo verás en «Conectar antes de arrancar»
     }
     // …
@@ -1064,11 +1062,14 @@ figure ol.vin ol.vin-acc>li::before{content:"→";position:absolute;left:0;top:0
     // nombre, hoja, ancho y alto del fotograma, escala, fotogramas por segundo, x, y
     model.addSprite("Pato", "/sprites/pato.png", 16, 16, 4, 8, 120, 220);
     model.addSprite("Explosión", "/sprites/explosion.png", 48, 48, 3, 12, 360, 160);
+
     View view = new View();
     view.setCanvasSize(640, 400);         // ancho y alto del lienzo, en píxeles
     view.setRenderFps(60);                // al empezar, pinta 60 veces por segundo
+
     Presenter presenter = new Presenter(model, view);
     presenter.setFpsLimits(1, 120);       // la rueda no baja de 1 ni pasa de 120 por segundo
+
     presenter.start();
 }
 </code></pre>
@@ -1164,7 +1165,8 @@ public void start() {          // solo arranca
 </figure>
 <p>Cada <code>Sprite</code> tiene su hilo, que avanza el fotograma según el tiempo que ha pasado. Por eso su ritmo es el mismo en cualquier equipo, y no depende de lo rápido que se pinte.</p>
 <p>Los campos que escribe un hilo y lee otro son <code>volatile</code>, para que cada hilo vea el último valor escrito. Y la vista no lee los sprites: recibe una lista de <code>SpriteState</code> que no cambia mientras pinta.</p>
-<p>Así se cumple la idea del principio: el hilo de pintado nunca toca un <code>Sprite</code>, y los hilos de los sprites nunca tocan Swing.</p></div></details><details class="seccion" id="gesto"><summary class="seccion-titulo"><span class="etiqueta">10 / Un gesto</span><h2>Un gesto, de principio a fin</h2></summary><div class="seccion-cuerpo"><p class="entradilla">En MVP, cualquier gesto del usuario recorre el mismo camino. La vista lo recibe y avisa al presentador. El presentador aplica las reglas y cambia el modelo. La vista se entera del cambio de una de dos formas: lo ve la próxima vez que pide qué pintar, o el modelo avisa al presentador y este, a la vista. En la demo es la primera: nadie avisa a la vista.</p>
+<p>Así se cumple la idea del principio: el hilo de pintado nunca toca un <code>Sprite</code>, y los hilos de los sprites nunca tocan Swing.</p>
+<p>Para cerrar, la demo no para los hilos uno a uno: al pulsar la X, <code>EXIT_ON_CLOSE</code> termina el programa y, con él, todos los hilos.</p></div></details><details class="seccion" id="gesto"><summary class="seccion-titulo"><span class="etiqueta">10 / Un gesto</span><h2>Un gesto, de principio a fin</h2></summary><div class="seccion-cuerpo"><p class="entradilla">En MVP, cualquier gesto del usuario recorre el mismo camino. La vista lo recibe y avisa al presentador. El presentador aplica las reglas y cambia el modelo. La vista se entera del cambio de una de dos formas: lo ve la próxima vez que pide qué pintar, o el modelo avisa al presentador y este, a la vista. En la demo es la primera: nadie avisa a la vista.</p>
 <p>En la demo, sigue un gesto: giras la rueda del ratón sobre la cifra del pato en el HUD.</p>
 <figure class="vertical">
 <svg viewBox="0 0 560 500" role="img" style="font-family:var(--fuente-texto);display:block">
@@ -1216,6 +1218,7 @@ public void mouseWheelMoved(MouseWheelEvent e) {
     if (line < 0) {
         return;                                              // fuera del HUD, no hace nada
     }
+
     int delta = -e.getWheelRotation();                      // rueda hacia arriba: sube
     if (line == 0) {
         presenter.changeRenderSpeed(delta);
@@ -1225,9 +1228,9 @@ public void mouseWheelMoved(MouseWheelEvent e) {
 }
 
 // Presenter: aplica la regla
-public void changeSpriteSpeed(int sprite, int delta) {
-    SpriteContract s = model.sprite(sprite);
-    s.setFps(limit(s.fps() + delta));                       // entre minFps y maxFps
+public void changeSpriteSpeed(int index, int delta) {
+    SpriteContract sprite = model.sprite(index);
+    sprite.setFps(limit(sprite.fps() + delta));   // entre minFps y maxFps
 }
 </code></pre>
 <p>Arrastrar un sprite sigue el mismo camino. La vista pregunta al presentador qué sprite hay bajo el puntero (<code>spriteAt</code>) y, mientras arrastras, le pide que lo mueva (<code>moveSprite</code>). El pato sigue aleteando todo el rato, porque su hilo no sabe nada del ratón.</p>

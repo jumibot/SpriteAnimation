@@ -1,5 +1,6 @@
 package model;
 
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,20 +19,14 @@ public class Model implements ModelContract {
      */
     public void addSprite(String name, String sheet, int frameWidth, int frameHeight, int scale,
                           int fps, int x, int y) {
-        sprites.add(new Sprite(name, SpriteSheet.load(sheet, frameWidth, frameHeight, scale), fps, x, y));
+        BufferedImage[] frames = SpriteSheet.load(sheet, frameWidth, frameHeight, scale);
+        sprites.add(new Sprite(name, frames, fps, x, y));
     }
 
     @Override
     public void start() {
         for (Sprite sprite : sprites) {
             sprite.start();
-        }
-    }
-
-    @Override
-    public void stop() {
-        for (Sprite sprite : sprites) {
-            sprite.stop();
         }
     }
 

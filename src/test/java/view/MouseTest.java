@@ -5,7 +5,6 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.event.InputEvent;
-import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.imageio.ImageIO;
@@ -19,7 +18,7 @@ import presenter.Presenter;
 
 /**
  * Prueba con el ratón de verdad: abre la ventana real y mueve el ratón con java.awt.Robot.
- * Gira la rueda sobre cada cifra del HUD, arrastra cada sprite y cierra la ventana.
+ * Gira la rueda sobre cada cifra del HUD, arrastra cada sprite y comprueba cómo se cierra.
  * Durante la prueba no toques el ratón. Con -Dcaptura=carpeta guarda una captura de la ventana.
  */
 public class MouseTest {
@@ -55,11 +54,12 @@ public class MouseTest {
         dragEachSprite();
         capture("captura-final.png");
         stillResponds();
-        closesInOrder();
+        closesWithTheX();
         if (disturbed) {
             System.out.println("  AVISO: el ratón se ha movido durante la prueba; si algo ha fallado, repítela sin tocarlo.");
         }
         Check.finish("MouseTest");
+        System.exit(0);   // cierra la ventana y los hilos, como la X
     }
 
     // ---------------------------------------------------------------- rueda
@@ -116,15 +116,15 @@ public class MouseTest {
     }
 
     static void drag(int index, int dx, int dy) {
-        Sprite s = model.sprite(index);
+        Sprite sprite = model.sprite(index);
         // Hasta tres intentos: si alguien mueve el ratón, el arrastre no acaba donde debe.
         for (int attempt = 1; attempt <= 3; attempt++) {
             boolean disturbedBefore = disturbed;
             disturbed = false;
-            int x0 = s.x();
-            int y0 = s.y();
-            int grabX = x0 + s.width() / 2;
-            int grabY = y0 + s.height() / 2;
+            int x0 = sprite.x();
+            int y0 = sprite.y();
+            int grabX = x0 + sprite.width() / 2;
+            int grabY = y0 + sprite.height() / 2;
             moveTo(grabX, grabY);
             robot.delay(100);
             checkPointerAt(grabX, grabY);
@@ -134,16 +134,16 @@ public class MouseTest {
                 moveTo(grabX + dx * i / steps, grabY + dy * i / steps);
             }
             // Con el sprite cogido, su animación sigue: el fotograma cambia.
-            boolean animates = changesFrame(s, 400);
+            boolean animates = changesFrame(sprite, 400);
             checkPointerAt(grabX + dx, grabY + dy);
             robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
             robot.delay(200);
             boolean retry = disturbed && attempt < 3;
             disturbed |= disturbedBefore;
             if (retry) continue;
-            Check.that("arrastre de " + s.name() + ": (" + x0 + ", " + y0 + ") → (" + s.x() + ", " + s.y() + ")",
-                       s.x() == x0 + dx && s.y() == y0 + dy);
-            Check.that(s.name() + " sigue animándose mientras se arrastra", animates);
+            Check.that("arrastre de " + sprite.name() + ": (" + x0 + ", " + y0 + ") → (" + sprite.x() + ", " + sprite.y() + ")",
+                       sprite.x() == x0 + dx && sprite.y() == y0 + dy);
+            Check.that(sprite.name() + " sigue animándose mientras se arrastra", animates);
             break;
         }
     }
@@ -152,7 +152,7 @@ public class MouseTest {
 
     static void stillResponds() throws Exception {
         long start = System.nanoTime();
-        SwingUtilities.invokeAndWait(() -> {});   // una tarea vacía: vuelve en cuanto el hilo de eventos la hace
+        SwingUtilities.invokeAndWait(MouseTest::doNothing);   // vuelve en cuanto el hilo de eventos lo hace
         long ms = (System.nanoTime() - start) / 1_000_000;
         Check.that("el hilo de eventos de Swing responde (" + ms + " ms)", ms < 1000);
         Check.that("el hilo de pintado sigue vivo", alive("Render"));
@@ -162,18 +162,10 @@ public class MouseTest {
 
     // ---------------------------------------------------------------- cierre
 
-    static void closesInOrder() throws Exception {
+    static void closesWithTheX() {
+        // Pulsar la X terminaría también esta prueba: solo se comprueba que está configurada así.
         JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(viewer);
-        SwingUtilities.invokeAndWait(() ->
-            frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING)));   // como pulsar la X
-        long deadline = System.currentTimeMillis() + 3000;
-        while (System.currentTimeMillis() < deadline
-               && (alive("Render") || alive("Sprite Pato") || alive("Sprite Explosión") || frame.isDisplayable())) {
-            Thread.sleep(50);
-        }
-        Check.that("al cerrar, terminan el hilo de pintado y los de los sprites",
-                   !alive("Render") && !alive("Sprite Pato") && !alive("Sprite Explosión"));
-        Check.that("y la ventana se libera", !frame.isDisplayable());
+        Check.equal("al pulsar la X, la aplicación termina", JFrame.EXIT_ON_CLOSE, frame.getDefaultCloseOperation());
     }
 
     // ---------------------------------------------------------------- utilidades
@@ -196,16 +188,22 @@ public class MouseTest {
     }
 
     private static void bringToFront() throws Exception {
-        // Siempre encima: así el Robot no hace clic en otra ventana que la tape.
-        SwingUtilities.invokeAndWait(() -> {
-            java.awt.Window window = SwingUtilities.getWindowAncestor(viewer);
-            window.setAlwaysOnTop(true);
-            window.toFront();
-        });
+        SwingUtilities.invokeAndWait(MouseTest::keepOnTop);
         robot.delay(300);
         moveTo(viewer.getWidth() - 20, viewer.getHeight() - 20);   // un clic en una zona vacía, para darle el foco
         robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
         robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+    }
+
+    /** Siempre encima: así el Robot no hace clic en otra ventana que la tape. Lo hace el hilo de eventos. */
+    private static void keepOnTop() {
+        java.awt.Window window = SwingUtilities.getWindowAncestor(viewer);
+        window.setAlwaysOnTop(true);
+        window.toFront();
+    }
+
+    /** Una tarea vacía para el hilo de eventos: sirve para ver si responde. */
+    private static void doNothing() {
     }
 
     /** Mueve el ratón a un punto del lienzo (coordenadas del Viewer). */
@@ -216,11 +214,11 @@ public class MouseTest {
 
     /** Mira el fotograma cada 20 ms durante un rato. (Mirar solo al final engaña: con 4 fotogramas,
      *  tras avanzar 4 vuelve a estar en el mismo.) */
-    private static boolean changesFrame(Sprite s, int ms) {
-        int first = s.frameIndex();
+    private static boolean changesFrame(Sprite sprite, int ms) {
+        int first = sprite.frameIndex();
         for (int waited = 0; waited < ms; waited += 20) {
             robot.delay(20);
-            if (s.frameIndex() != first) return true;
+            if (sprite.frameIndex() != first) return true;
         }
         return false;
     }
@@ -240,10 +238,13 @@ public class MouseTest {
 
     /** Con -Ddepurar escribe cada evento del ratón: sirve para ver si alguien lo ha movido. */
     private static void printMouseEvents() {
-        java.awt.Toolkit.getDefaultToolkit().addAWTEventListener(e -> {
-            if (e.getID() != java.awt.event.MouseEvent.MOUSE_MOVED) System.out.println("    evento: " + e.paramString());
-        }, java.awt.AWTEvent.MOUSE_EVENT_MASK | java.awt.AWTEvent.MOUSE_MOTION_EVENT_MASK
-           | java.awt.AWTEvent.MOUSE_WHEEL_EVENT_MASK);
+        java.awt.Toolkit.getDefaultToolkit().addAWTEventListener(MouseTest::printEvent,
+                java.awt.AWTEvent.MOUSE_EVENT_MASK | java.awt.AWTEvent.MOUSE_MOTION_EVENT_MASK
+                | java.awt.AWTEvent.MOUSE_WHEEL_EVENT_MASK);
+    }
+
+    private static void printEvent(java.awt.AWTEvent e) {
+        if (e.getID() != java.awt.event.MouseEvent.MOUSE_MOVED) System.out.println("    evento: " + e.paramString());
     }
 
     private static boolean alive(String threadName) {

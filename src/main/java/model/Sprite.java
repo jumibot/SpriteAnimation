@@ -22,8 +22,6 @@ public class Sprite implements SpriteContract, Runnable {
     private volatile int fps;          // lo cambia la rueda del ratón
     private volatile int x;            // x e y: los cambia el arrastre
     private volatile int y;
-    private volatile boolean running;
-    private Thread thread;
 
     public Sprite(String name, BufferedImage[] frames, int fps, int x, int y) {
         this.name = name;
@@ -53,25 +51,10 @@ public class Sprite implements SpriteContract, Runnable {
         this.y = y;
     }
 
-    /** Crea y arranca el hilo del sprite. */
+    /** Crea y arranca el hilo del sprite. Dura lo que la aplicación: al cerrar la ventana, termina con ella. */
     public void start() {
-        running = true;
-        thread = new Thread(this, "Sprite " + name);
+        Thread thread = new Thread(this, "Sprite " + name);
         thread.start();
-    }
-
-    /** Para el hilo y espera a que termine. */
-    public void stop() {
-        running = false;
-        if (thread == null) {
-            return;   // nunca se arrancó
-        }
-        thread.interrupt();            // lo despierta si está dormido en sleep
-        try {
-            thread.join();             // espera a que salga de run()
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();   // conserva el aviso de interrupción
-        }
     }
 
     /** Lo que hace el hilo del sprite: cada poco, avanza los fotogramas que tocan por el tiempo pasado. */
@@ -79,19 +62,22 @@ public class Sprite implements SpriteContract, Runnable {
     public void run() {
         long previous = System.nanoTime();
         double pending = 0;            // fotogramas que tocaba avanzar y aún no se han avanzado
-        while (running) {
+
+        while (true) {
             long now = System.nanoTime();
-            double seconds = (now - previous) / 1_000_000_000.0;
-            pending += seconds * fps;
+            double elapsedSeconds = (now - previous) / 1_000_000_000.0;
+            pending += elapsedSeconds * fps;   // los fotogramas que tocan en ese tiempo
             previous = now;
+
             while (pending >= 1) {
                 frameIndex = (frameIndex + 1) % frames.length;   // tras el último, vuelve al primero
                 pending--;
             }
+
             try {
                 Thread.sleep(TICK_MS);
             } catch (InterruptedException e) {
-                return;                // nos piden parar
+                return;                // nadie interrumpe este hilo; si lo hiciera, terminaría
             }
         }
     }

@@ -15,13 +15,14 @@ public class Presenter implements PresenterContract {
     private final ModelContract model;
     private final ViewContract view;
 
-    // Entre qué velocidades se mueve la rueda, la de pintado y la de los sprites. Los fija main.
-    private int minFps;
-    private int maxFps;
+    // Entre qué velocidades se mueve la rueda, la de pintado y la de los sprites. main los cambia con setFpsLimits.
+    private int minFps = 1;
+    private int maxFps = 120;
 
     public Presenter(ModelContract model, ViewContract view) {   // las recibe, no las crea
         this.model = model;
         this.view = view;
+
         view.setPresenter(this);   // se conecta con la vista: lo verás en «Conectar antes de arrancar»
     }
 
@@ -41,9 +42,10 @@ public class Presenter implements PresenterContract {
     public List<SpriteState> sprites() {
         List<SpriteState> states = new ArrayList<>();
         for (int i = 0; i < model.spriteCount(); i++) {
-            SpriteContract s = model.sprite(i);
-            states.add(new SpriteState(s.name(), s.frame(), s.x(), s.y(), s.fps()));
+            SpriteContract sprite = model.sprite(i);
+            states.add(new SpriteState(sprite.name(), sprite.frame(), sprite.x(), sprite.y(), sprite.fps()));
         }
+
         return states;
     }
 
@@ -53,34 +55,29 @@ public class Presenter implements PresenterContract {
     }
 
     @Override
-    public void changeSpriteSpeed(int sprite, int delta) {
-        SpriteContract s = model.sprite(sprite);
-        s.setFps(limit(s.fps() + delta));                       // entre minFps y maxFps
+    public void changeSpriteSpeed(int index, int delta) {
+        SpriteContract sprite = model.sprite(index);
+        sprite.setFps(limit(sprite.fps() + delta));   // entre minFps y maxFps
     }
 
     /** Busca de arriba abajo: se pinta en orden, así que el último es el que queda encima. */
     @Override
     public int spriteAt(int x, int y) {
         for (int i = model.spriteCount() - 1; i >= 0; i--) {
-            SpriteContract s = model.sprite(i);
-            boolean inside = x >= s.x() && x < s.x() + s.width()
-                          && y >= s.y() && y < s.y() + s.height();
+            SpriteContract sprite = model.sprite(i);
+            boolean inside = x >= sprite.x() && x < sprite.x() + sprite.width()
+                          && y >= sprite.y() && y < sprite.y() + sprite.height();
             if (inside) {
                 return i;
             }
         }
+
         return -1;
     }
 
     @Override
-    public void moveSprite(int sprite, int x, int y) {
-        model.sprite(sprite).moveTo(x, y);
-    }
-
-    @Override
-    public void close() {
-        model.stop();   // primero los hilos de los sprites
-        view.stop();    // luego el de pintado y la ventana
+    public void moveSprite(int index, int x, int y) {
+        model.sprite(index).moveTo(x, y);
     }
 
     /** Deja la velocidad entre minFps y maxFps. */

@@ -9,6 +9,7 @@ public class SpriteSheetTest {
 
     public static void main(String[] args) {
         System.out.println("SpriteSheetTest");
+
         BufferedImage[] duck = SpriteSheet.load("/sprites/pato.png", 16, 16, 4);
         Check.equal("el pato, en columna, tiene 4 fotogramas", 4, duck.length);
         Check.equal("de 64 px de ancho (16 × 4)", 64, duck[0].getWidth());
@@ -18,6 +19,7 @@ public class SpriteSheetTest {
         Check.equal("la explosión, en fila, tiene 8 fotogramas", 8, explosion.length);
         Check.equal("de 144 px de ancho (48 × 3)", 144, explosion[0].getWidth());
         Check.equal("y 144 px de alto", 144, explosion[0].getHeight());
+
 
         Check.that("los fotogramas son distintos entre sí", differ(duck[0], duck[1]) && differ(explosion[0], explosion[4]));
         Check.finish("SpriteSheetTest");

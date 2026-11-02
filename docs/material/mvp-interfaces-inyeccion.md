@@ -250,7 +250,6 @@ En la demo, el modelo no pide nada: la vista pregunta al presentador cada vez qu
 ### `ModelContract`: lo que el presentador puede pedirle al modelo
 
 - `start()`: poner en marcha las animaciones.
-- `stop()`: pararlas al cerrar la aplicación.
 - `spriteCount()`: decir cuántos sprites hay.
 - `sprite(index)`: dar uno de los sprites, por su número.
 
@@ -258,7 +257,6 @@ En la demo, el modelo no pide nada: la vista pregunta al presentador cada vez qu
 
 - `setPresenter(presenter)`: guardar a quién pedirle qué pintar.
 - `start()`: empezar a pintar.
-- `stop()`: dejar de pintar.
 - `renderFps()`: decir cuántas veces por segundo pinta.
 - `setRenderFps(fps)`: cambiar ese ritmo.
 
@@ -266,11 +264,10 @@ En la demo, el modelo no pide nada: la vista pregunta al presentador cada vez qu
 
 - `sprites()`: dar la foto de todos los sprites, para pintarlos.
 - `changeRenderSpeed(delta)`: subir o bajar el ritmo de pintado, sin salirse de los límites.
-- `changeSpriteSpeed(sprite, delta)`: lo mismo con la velocidad de un sprite.
+- `changeSpriteSpeed(index, delta)`: lo mismo con la velocidad de un sprite.
 - `spriteAt(x, y)`: decir qué sprite hay en un punto de la ventana.
-- `moveSprite(sprite, x, y)`: llevar un sprite a otro sitio.
+- `moveSprite(index, x, y)`: llevar un sprite a otro sitio.
 - `start()`: poner en marcha la aplicación. No lo pide la vista: lo llama `main`.
-- `close()`: pararlo todo al cerrar la ventana.
 
 La foto de cada sprite es un `SpriteState`: su nombre, su fotograma, su posición y su velocidad. Nadie la cambia mientras se pinta. Va en su propio archivo, también en `contract`, pero no es un contrato: son datos.
 
@@ -391,6 +388,7 @@ public class Presenter implements PresenterContract {
     public Presenter(ModelContract model, ViewContract view) {   // las recibe, no las crea
         this.model = model;
         this.view = view;
+
         view.setPresenter(this);   // se conecta con la vista: lo verás en «Conectar antes de arrancar»
     }
     // …
@@ -453,11 +451,14 @@ public static void main(String[] args) {
     // nombre, hoja, ancho y alto del fotograma, escala, fotogramas por segundo, x, y
     model.addSprite("Pato", "/sprites/pato.png", 16, 16, 4, 8, 120, 220);
     model.addSprite("Explosión", "/sprites/explosion.png", 48, 48, 3, 12, 360, 160);
+
     View view = new View();
     view.setCanvasSize(640, 400);         // ancho y alto del lienzo, en píxeles
     view.setRenderFps(60);                // al empezar, pinta 60 veces por segundo
+
     Presenter presenter = new Presenter(model, view);
     presenter.setFpsLimits(1, 120);       // la rueda no baja de 1 ni pasa de 120 por segundo
+
     presenter.start();
 }
 ```
@@ -576,6 +577,8 @@ Los campos que escribe un hilo y lee otro son `volatile`, para que cada hilo vea
 
 Así se cumple la idea del principio: el hilo de pintado nunca toca un `Sprite`, y los hilos de los sprites nunca tocan Swing.
 
+Para cerrar, la demo no para los hilos uno a uno: al pulsar la X, `EXIT_ON_CLOSE` termina el programa y, con él, todos los hilos.
+
 ## Un gesto | Un gesto, de principio a fin {#gesto}
 
 En MVP, cualquier gesto del usuario recorre el mismo camino. La vista lo recibe y avisa al presentador. El presentador aplica las reglas y cambia el modelo. La vista se entera del cambio de una de dos formas: lo ve la próxima vez que pide qué pintar, o el modelo avisa al presentador y este, a la vista. En la demo es la primera: nadie avisa a la vista.
@@ -635,6 +638,7 @@ public void mouseWheelMoved(MouseWheelEvent e) {
     if (line < 0) {
         return;                                              // fuera del HUD, no hace nada
     }
+
     int delta = -e.getWheelRotation();                      // rueda hacia arriba: sube
     if (line == 0) {
         presenter.changeRenderSpeed(delta);
@@ -644,9 +648,9 @@ public void mouseWheelMoved(MouseWheelEvent e) {
 }
 
 // Presenter: aplica la regla
-public void changeSpriteSpeed(int sprite, int delta) {
-    SpriteContract s = model.sprite(sprite);
-    s.setFps(limit(s.fps() + delta));                       // entre minFps y maxFps
+public void changeSpriteSpeed(int index, int delta) {
+    SpriteContract sprite = model.sprite(index);
+    sprite.setFps(limit(sprite.fps() + delta));   // entre minFps y maxFps
 }
 ```
 

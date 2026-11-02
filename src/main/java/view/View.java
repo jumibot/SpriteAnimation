@@ -4,8 +4,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
 import java.util.List;
 import javax.swing.JFrame;
@@ -33,26 +31,19 @@ public class View extends JFrame implements ViewContract {
     private PresenterContract presenter;
 
     // Lo escribe el hilo de eventos (rueda) y lo lee el de pintado: volatile.
-    private volatile int renderFps;   // el valor inicial lo pone main con setRenderFps
-    private volatile boolean running;
-    private Thread renderThread;
+    private volatile int renderFps = 60;
 
     public View() {
         super("SpriteAnimation");   // el título de la ventana
         viewer = new Viewer();   // parte interna de la vista: la crea ella
-        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);   // cerramos nosotros, en orden
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);   // al pulsar la X, termina la aplicación
         add(viewer);
         setResizable(false);
 
         viewer.addMouseListener(mouse);
         viewer.addMouseMotionListener(mouse);
         viewer.addMouseWheelListener(mouse);
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                presenter.close();
-            }
-        });
+
         // El tamaño y la velocidad de pintado los pone main, con setCanvasSize y setRenderFps.
         // La ventana aún no se ve: la muestra start(), cuando todo está conectado.
     }
@@ -83,30 +74,18 @@ public class View extends JFrame implements ViewContract {
     @Override
     public void start() {
         // Lo que toca la ventana debe hacerlo el hilo de eventos de Swing.
-        // invokeLater le pasa la tarea; él la hará en cuanto pueda.
-        SwingUtilities.invokeLater(() -> {
-            setVisible(true);
-            viewer.createBufferStrategy(2);   // dos búferes: se pinta en uno mientras se ve el otro
-            // Ya hay donde pintar: arranca el hilo de pintado.
-            running = true;
-            renderThread = new Thread(() -> renderLoop(), "Render");
-            renderThread.start();
-        });
+        // invokeLater le pasa el método showWindow; él lo hará en cuanto pueda.
+        SwingUtilities.invokeLater(this::showWindow);
     }
 
-    /** Llega por el hilo de eventos de Swing, al cerrar la ventana. */
-    @Override
-    public void stop() {
-        running = false;
-        if (renderThread != null) {
-            renderThread.interrupt();
-            try {
-                renderThread.join();   // que no pinte en una ventana cerrada
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();   // conserva el aviso de interrupción
-            }
-        }
-        dispose();   // al cerrar la última ventana, Swing termina
+    /** Lo hace el hilo de eventos de Swing: enseña la ventana y arranca el hilo de pintado. */
+    private void showWindow() {
+        setVisible(true);
+        viewer.createBufferStrategy(2);   // dos búferes: se pinta en uno mientras se ve el otro
+
+        // Ya hay donde pintar: arranca el hilo de pintado.
+        Thread renderThread = new Thread(this::renderLoop, "Render");
+        renderThread.start();
     }
 
     // ---------------------------------------------------------------- pintado
@@ -114,7 +93,8 @@ public class View extends JFrame implements ViewContract {
     /** El hilo de pintado: en cada vuelta pide qué pintar, pinta y espera hasta la siguiente. */
     private void renderLoop() {
         BufferStrategy buffers = viewer.getBufferStrategy();
-        while (running) {
+
+        while (true) {
             long start = System.nanoTime();
 
             List<SpriteState> sprites = presenter.sprites();   // la foto fija
@@ -132,7 +112,7 @@ public class View extends JFrame implements ViewContract {
                 try {
                     Thread.sleep(waitMs);
                 } catch (InterruptedException e) {
-                    return;   // nos piden parar
+                    return;   // nadie interrumpe este hilo; si lo hiciera, terminaría
                 }
             }
         }
@@ -141,9 +121,11 @@ public class View extends JFrame implements ViewContract {
     private void paintScene(Graphics2D g, List<SpriteState> sprites) {
         g.setColor(BACKGROUND);
         g.fillRect(0, 0, viewer.getWidth(), viewer.getHeight());
-        for (SpriteState s : sprites) {
-            g.drawImage(s.frame(), s.x(), s.y(), null);
+
+        for (SpriteState state : sprites) {
+            g.drawImage(state.frame(), state.x(), state.y(), null);
         }
+
         hud.paint(g, renderFps, sprites);
     }
 }

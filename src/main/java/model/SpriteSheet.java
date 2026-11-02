@@ -3,7 +3,7 @@ package model;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.URL;
 import javax.imageio.ImageIO;
 
 /** Ayuda del modelo: carga una hoja de sprites y la recorta en fotogramas. */
@@ -19,9 +19,10 @@ public final class SpriteSheet {
      * @param resource ruta del recurso dentro del classpath, por ejemplo "/sprites/pato.png"
      */
     public static BufferedImage[] load(String resource, int frameWidth, int frameHeight, int scale) {
-        BufferedImage sheet = read(resource);
+        BufferedImage sheet = loadImage(resource);
         int columns = sheet.getWidth() / frameWidth;    // cuántos fotogramas caben a lo ancho
         int rows = sheet.getHeight() / frameHeight;     // y cuántos a lo alto
+
         BufferedImage[] frames = new BufferedImage[columns * rows];
         int next = 0;                                   // posición del siguiente fotograma en el array
         for (int row = 0; row < rows; row++) {
@@ -34,15 +35,19 @@ public final class SpriteSheet {
                 next++;
             }
         }
+
         return frames;
     }
 
-    private static BufferedImage read(String resource) {
-        try (InputStream in = SpriteSheet.class.getResourceAsStream(resource)) {
-            if (in == null) {
-                throw new IllegalArgumentException("No se encuentra la hoja " + resource);
-            }
-            return ImageIO.read(in);
+    /** Lee la imagen de la hoja, que va dentro del programa, junto a las clases. */
+    private static BufferedImage loadImage(String resource) {
+        URL url = SpriteSheet.class.getResource(resource);   // dónde está el archivo (null si no está)
+        if (url == null) {
+            throw new IllegalArgumentException("No se encuentra la hoja " + resource);
+        }
+
+        try {
+            return ImageIO.read(url);
         } catch (IOException e) {
             throw new IllegalStateException("No se puede leer la hoja " + resource, e);
         }
@@ -52,10 +57,12 @@ public final class SpriteSheet {
     private static BufferedImage enlarge(BufferedImage frame, int scale) {
         int width = frame.getWidth() * scale;
         int height = frame.getHeight() * scale;
+
         BufferedImage big = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = big.createGraphics();
         g.drawImage(frame, 0, 0, width, height, null);   // sin interpolación: vecino más próximo
         g.dispose();
+
         return big;
     }
 }

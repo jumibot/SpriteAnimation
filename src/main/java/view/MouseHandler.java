@@ -17,8 +17,8 @@ public class MouseHandler extends MouseAdapter {
     private PresenterContract presenter;
 
     // Estado del arrastre: solo lo usa el hilo de eventos, así que no necesita volatile.
-    private int dragged = -1;   // qué sprite se arrastra (-1: ninguno)
-    private int grabX;          // dónde se ha cogido, medido desde la esquina del sprite
+    private int draggedSprite = -1;   // qué sprite se arrastra (-1: ninguno)
+    private int grabX;                // dónde se ha cogido, medido desde la esquina del sprite
     private int grabY;
 
     public MouseHandler(Hud hud) {
@@ -37,6 +37,7 @@ public class MouseHandler extends MouseAdapter {
         if (line < 0) {
             return;                                              // fuera del HUD, no hace nada
         }
+
         int delta = -e.getWheelRotation();                      // rueda hacia arriba: sube
         if (line == 0) {
             presenter.changeRenderSpeed(delta);
@@ -47,25 +48,26 @@ public class MouseHandler extends MouseAdapter {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        dragged = presenter.spriteAt(e.getX(), e.getY());
-        if (dragged < 0) {
+        draggedSprite = presenter.spriteAt(e.getX(), e.getY());
+        if (draggedSprite < 0) {
             return;   // no hay sprite bajo el puntero
         }
+
         // Guardamos dónde se ha cogido el sprite, para que no salte al puntero.
-        SpriteState s = presenter.sprites().get(dragged);
-        grabX = e.getX() - s.x();
-        grabY = e.getY() - s.y();
+        SpriteState state = presenter.sprites().get(draggedSprite);
+        grabX = e.getX() - state.x();
+        grabY = e.getY() - state.y();
     }
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        if (dragged >= 0) {
-            presenter.moveSprite(dragged, e.getX() - grabX, e.getY() - grabY);
+        if (draggedSprite >= 0) {
+            presenter.moveSprite(draggedSprite, e.getX() - grabX, e.getY() - grabY);
         }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        dragged = -1;
+        draggedSprite = -1;
     }
 }

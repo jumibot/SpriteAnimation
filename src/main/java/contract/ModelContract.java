@@ -3,7 +3,6 @@ package contract;
 /** El contrato del modelo: lo que el presentador puede pedirle. */
 public interface ModelContract {
     void start();                      // pone en marcha las animaciones (un hilo por sprite)
-    void stop();                       // las para al cerrar la aplicación
     int spriteCount();                 // cuántos sprites hay
     SpriteContract sprite(int index);  // uno de los sprites, por su número
 }

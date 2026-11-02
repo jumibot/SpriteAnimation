@@ -29,23 +29,27 @@ public class Hud {
     /** Pinta la velocidad de pintado y la de cada sprite, una por línea. */
     public void paint(Graphics2D g, int renderFps, List<SpriteState> sprites) {
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
         int lines = 1 + sprites.size();
         g.setColor(BACKGROUND);
+        // El recuadro de fondo, con las esquinas redondeadas: 8 px de margen a la izquierda y abajo.
         g.fillRoundRect(X - 8, Y - LINE, WIDTH, lines * LINE + 8, 10, 10);
+
         paintLine(g, 0, "Pintado", renderFps + " veces por segundo");
         for (int i = 0; i < sprites.size(); i++) {
-            SpriteState s = sprites.get(i);
-            paintLine(g, i + 1, s.name(), s.fps() + " fotogramas por segundo");
+            SpriteState state = sprites.get(i);
+            paintLine(g, i + 1, state.name(), state.fps() + " fotogramas por segundo");
         }
     }
 
     /** Sobre qué línea cae el punto (x, y): 0, la de pintado; 1, 2…, los sprites; -1, fuera del HUD. */
     public int lineAt(int x, int y, int lines) {
-        int left = X - 8;
+        int left = X - 8;      // la esquina del recuadro de fondo, como en paint
         int top = Y - LINE;
         if (x < left || x >= left + WIDTH || y < top) {
             return -1;
         }
+
         int line = (y - top) / LINE;
         if (line >= lines) {
             return -1;   // por debajo de la última línea
@@ -54,10 +58,12 @@ public class Hud {
     }
 
     private void paintLine(Graphics2D g, int line, String label, String value) {
-        int y = Y + line * LINE - 6;
+        int y = Y + line * LINE - 6;   // la base del texto, 6 px por encima del final de la línea
+
         g.setFont(FONT_BOLD);
         g.setColor(LABEL);
         g.drawString(label, X, y);
+
         int x = X + g.getFontMetrics().stringWidth(label);   // el valor, justo detrás de la etiqueta
         g.setFont(FONT);
         g.setColor(TEXT);

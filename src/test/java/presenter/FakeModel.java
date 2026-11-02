@@ -10,10 +10,8 @@ class FakeModel implements ModelContract {
 
     final Sprite duck = new Sprite("Pato", blankFrames(4, 64, 64), 8, 100, 200);
     boolean started;
-    boolean stopped;
 
     @Override public void start() { started = true; }   // no arranca el hilo del sprite
-    @Override public void stop() { stopped = true; }
     @Override public int spriteCount() { return 1; }
     @Override public Sprite sprite(int index) { return duck; }
 
