@@ -3,10 +3,10 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
-import contract.AnimationContract;
+import contract.ModelContract;
 
 /** El modelo de MVP: el estado de la aplicación, los sprites. No sabe que existe una ventana. */
-public class Model implements AnimationContract.Model {
+public class Model implements ModelContract {
 
     private final List<Sprite> sprites = new ArrayList<>();
 

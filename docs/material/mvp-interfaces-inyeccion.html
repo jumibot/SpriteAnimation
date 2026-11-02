@@ -779,9 +779,9 @@ html[data-modo="oscuro"] .ej-px{filter:url(#ej-inv)}
 <text x="148" y="400">main crea, Presenter conecta</text>
 </g>
 <g font-size="15" style="fill:var(--texto-suave)">
-<text x="148" y="94">y las propias: Sprite, SpriteSheet, Viewer</text>
+<text x="148" y="94">y las propias, como Sprite, SpriteSheet o Viewer</text>
 <text x="148" y="204">Presenter aplica las reglas entre los dos</text>
-<text x="148" y="314">AnimationContract: Model, View y Presenter</text>
+<text x="148" y="314">ModelContract, ViewContract y PresenterContract</text>
 <text x="148" y="424">y Presenter.start() lo pone en marcha</text>
 </g>
 </svg>
@@ -880,10 +880,10 @@ html[data-modo="oscuro"] .ej-px{filter:url(#ej-inv)}
 </svg>
 <figcaption>Cada flecha va de quien pide a quien responde, y pasa por la interfaz que lo permite. En discontinuo, lo opcional: el modelo solo le pide algo al presentador si tiene que avisarle de cambios. Las tres interfaces, juntas, son el contrato.</figcaption>
 </figure>
-<p>En la demo, el modelo no pide nada: la vista pregunta al presentador cada vez que pinta, así que nadie tiene que avisarla. Por eso <code>AnimationContract.Model</code> no recibe al presentador. El contrato es un solo archivo, <code>AnimationContract</code>, con las tres interfaces dentro, y una cuarta, <code>Sprite</code>, con lo que el presentador puede pedirle a cada sprite. Son cortas a propósito: cada método es algo que la otra parte necesita de verdad.</p>
+<p>En la demo, el modelo no pide nada: la vista pregunta al presentador cada vez que pinta, así que nadie tiene que avisarla. Por eso <code>ModelContract</code> no recibe al presentador. El contrato está en el paquete <code>contract</code>, un archivo por interfaz: <code>ModelContract</code>, <code>ViewContract</code> y <code>PresenterContract</code>, y una cuarta, <code>SpriteContract</code>, con lo que el presentador puede pedirle a cada sprite. Son cortas a propósito: cada método es algo que la otra parte necesita de verdad.</p>
 <div class="tarjetas cols-3">
 <article class="tarjeta">
-<h3><code>Model</code>: lo que el presentador puede pedirle al modelo</h3>
+<h3><code>ModelContract</code>: lo que el presentador puede pedirle al modelo</h3>
 <ul>
 <li><code>start()</code>: poner en marcha las animaciones.</li>
 <li><code>stop()</code>: pararlas al cerrar la aplicación.</li>
@@ -892,7 +892,7 @@ html[data-modo="oscuro"] .ej-px{filter:url(#ej-inv)}
 </ul>
 </article>
 <article class="tarjeta">
-<h3><code>View</code>: lo que el presentador puede pedirle a la vista</h3>
+<h3><code>ViewContract</code>: lo que el presentador puede pedirle a la vista</h3>
 <ul>
 <li><code>setPresenter(presenter)</code>: guardar a quién pedirle qué pintar.</li>
 <li><code>start()</code>: empezar a pintar.</li>
@@ -902,7 +902,7 @@ html[data-modo="oscuro"] .ej-px{filter:url(#ej-inv)}
 </ul>
 </article>
 <article class="tarjeta">
-<h3><code>Presenter</code>: lo que la vista puede pedirle al presentador</h3>
+<h3><code>PresenterContract</code>: lo que la vista puede pedirle al presentador</h3>
 <ul>
 <li><code>sprites()</code>: dar la foto de todos los sprites, para pintarlos.</li>
 <li><code>changeRenderSpeed(delta)</code>: subir o bajar el ritmo de pintado, sin salirse de los límites.</li>
@@ -912,27 +912,26 @@ html[data-modo="oscuro"] .ej-px{filter:url(#ej-inv)}
 <li><code>start()</code>: poner en marcha la aplicación. No lo pide la vista: lo llama <code>main</code>.</li>
 <li><code>close()</code>: pararlo todo al cerrar la ventana.</li>
 </ul>
-<p>La foto de cada sprite es un <code>SpriteState</code>: su nombre, su fotograma, su posición y su velocidad. Nadie la cambia mientras se pinta.</p>
+<p>La foto de cada sprite es un <code>SpriteState</code>: su nombre, su fotograma, su posición y su velocidad. Nadie la cambia mientras se pinta. Va en su propio archivo, también en <code>contract</code>, pero no es un contrato: son datos.</p>
 </article>
 </div></div></details><details class="seccion" id="contrato-java"><summary class="seccion-titulo"><span class="etiqueta">05 / En Java</span><h2>El contrato en Java</h2></summary><div class="seccion-cuerpo"><p class="entradilla">Las promesas del apartado anterior se escriben en Java como interfaces, y cada clase cumple la suya.</p>
-<p>El contrato se escribe así, y cada clase implementa su parte:</p>
-<pre><code class="language-java">public interface AnimationContract {
-    interface Model { … }
-    interface View { … }
-    interface Presenter { … }
-    interface Sprite { … }
-}
+<p>El contrato se escribe así, una interfaz en cada archivo, y cada clase implementa la suya:</p>
+<pre><code class="language-java">public interface ModelContract { … }
+public interface ViewContract { … }
+public interface PresenterContract { … }
+public interface SpriteContract { … }
+public record SpriteState(String name, BufferedImage frame, int x, int y, int fps) {}
 
-public class Model implements AnimationContract.Model { … }
-public class View extends JFrame implements AnimationContract.View { … }
-public class Presenter implements AnimationContract.Presenter { … }
+public class Model implements ModelContract { … }
+public class View extends JFrame implements ViewContract { … }
+public class Presenter implements PresenterContract { … }
 </code></pre>
 <p>Cada pieza va en su paquete: el contrato en <code>contract</code>; <code>Model</code>, <code>View</code> y <code>Presenter</code> en <code>model</code>, <code>view</code> y <code>presenter</code>; y la clase con <code>main</code>, en <code>main</code>.</p>
-<p>A <code>AnimationContract.Model</code> le falta algo a propósito: <code>addSprite</code>. Decidir qué animaciones hay es cosa de <code>main</code>, así que ese método es de la clase <code>Model</code>, pero no del contrato. Sacar a una interfaz solo la parte de una clase que otra necesita es una técnica de refactorización con nombre propio: <em>extraer interfaz</em> <a class="ref" href="#src-R3" title="Refactoring.Guru, Extract Interface">[R3]</a>.</p>
+<p>A <code>ModelContract</code> le falta algo a propósito: <code>addSprite</code>. Decidir qué animaciones hay es cosa de <code>main</code>, así que ese método es de la clase <code>Model</code>, pero no del contrato. Sacar a una interfaz solo la parte de una clase que otra necesita es una técnica de refactorización con nombre propio: <em>extraer interfaz</em> <a class="ref" href="#src-R3" title="Refactoring.Guru, Extract Interface">[R3]</a>.</p>
 <p>Gracias al contrato, el presentador funciona igual con cualquier vista que lo cumpla: la de Swing, una de texto o una falsa para probar sin ventana.</p>
 <figure class="vertical">
 <svg viewBox="0 0 560 400" role="img" style="font-family:var(--fuente-texto);display:block">
-<title>El presentador usa la interfaz AnimationContract.View, que pueden implementar la vista de Swing, una vista de texto o una vista falsa para pruebas</title>
+<title>El presentador usa la interfaz ViewContract, que pueden implementar la vista de Swing, una vista de texto o una vista falsa para pruebas</title>
 <defs><marker id="m3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--texto-suave)"/></marker></defs>
 <rect x="160" y="16" width="240" height="60" rx="10" fill="none" style="stroke:var(--primario)" stroke-width="2"/>
 <text x="280" y="44" font-size="18" font-weight="700" text-anchor="middle" style="fill:var(--primario)">Presenter</text>
@@ -941,7 +940,7 @@ public class Presenter implements AnimationContract.Presenter { … }
 <text x="292" y="112" font-size="15" style="fill:var(--texto-suave)">usa</text>
 <rect x="130" y="138" width="300" height="66" rx="10" fill="none" style="stroke:var(--oscuro)" stroke-width="3"/>
 <text x="280" y="164" font-size="15" text-anchor="middle" style="fill:var(--texto-suave)">«interface»</text>
-<text x="280" y="190" font-size="18" font-weight="700" text-anchor="middle" style="fill:var(--oscuro)">AnimationContract.View</text>
+<text x="280" y="190" font-size="18" font-weight="700" text-anchor="middle" style="fill:var(--oscuro)">ViewContract</text>
 <g style="stroke:var(--texto-suave)" stroke-width="2"><line x1="110" y1="290" x2="200" y2="208" marker-end="url(#m3)"/><line x1="280" y1="290" x2="280" y2="208" marker-end="url(#m3)"/><line x1="450" y1="290" x2="360" y2="208" marker-end="url(#m3)"/></g>
 <text x="300" y="256" font-size="15" style="fill:var(--texto-suave)">implementan</text>
 <rect x="20" y="292" width="170" height="80" rx="10" fill="none" style="stroke:var(--primario)" stroke-width="2"/>
@@ -1005,12 +1004,12 @@ public class Presenter implements AnimationContract.Presenter { … }
 <figcaption>A la izquierda, la clase crea lo que necesita y queda atada a esa clase concreta. A la derecha, lo recibe por el constructor a través de una interfaz, y <code>main</code> puede pasarle la vista real o una falsa para probar.</figcaption>
 </figure>
 <p>En la demo, si el presentador hiciera <code>new View()</code> dentro de su constructor, quedaría atado para siempre a esa vista, y no se podría probar con una vista falsa. Por eso recibe el modelo y la vista:</p>
-<pre><code class="language-java">public class Presenter implements AnimationContract.Presenter {
+<pre><code class="language-java">public class Presenter implements PresenterContract {
 
-    private final AnimationContract.Model model;
-    private final AnimationContract.View view;
+    private final ModelContract model;
+    private final ViewContract view;
 
-    public Presenter(AnimationContract.Model model, AnimationContract.View view) {   // las recibe, no las crea
+    public Presenter(ModelContract model, ViewContract view) {   // las recibe, no las crea
         this.model = model;
         this.view = view;
         view.setPresenter(this);   // se conecta con la vista: lo verás en «Conectar antes de arrancar»
@@ -1019,7 +1018,7 @@ public class Presenter implements AnimationContract.Presenter { … }
 }
 </code></pre>
 <p>Fíjate en el tipo de los dos parámetros: son interfaces, no clases. Eso se llama <strong>programar contra interfaces</strong>. El presentador solo ve los métodos del contrato: aunque reciba un <code>Model</code> de verdad, no puede llamar a <code>addSprite</code>, porque el compilador no le deja. Así, que solo <code>main</code> decida qué animaciones hay no es una norma que haya que recordar: lo garantiza el compilador.</p>
-<p>No todo se inyecta. Lo que es parte interna de una pieza lo crea ella: la vista crea su lienzo (<code>Viewer</code>) y el modelo, sus sprites. Se inyecta lo que conecta capas o lo que querrías sustituir.</p></div></details><details class="seccion" id="montaje"><summary class="seccion-titulo"><span class="etiqueta">07 / Montaje</span><h2>Cómo se monta la aplicación</h2></summary><div class="seccion-cuerpo"><p class="entradilla">Si cada clase recibe lo que necesita y no lo crea, alguien tiene que crear las piezas. En MVP ese sitio es uno solo: el punto de entrada del programa, el único que hace <code>new</code> de las capas. La receta es siempre la misma y tiene dos fases: construir y conectar, todo en un solo hilo; y arrancar, cuando nacen los demás hilos. Así se monta, en tres pasos:</p>
+<p>No todo se inyecta. Lo que es parte interna de una pieza lo crea ella: la vista crea su lienzo (<code>Viewer</code>), su HUD (<code>Hud</code>) y la clase que escucha el ratón (<code>MouseHandler</code>); y el modelo, sus sprites. Se inyecta lo que conecta capas o lo que querrías sustituir.</p></div></details><details class="seccion" id="montaje"><summary class="seccion-titulo"><span class="etiqueta">07 / Montaje</span><h2>Cómo se monta la aplicación</h2></summary><div class="seccion-cuerpo"><p class="entradilla">Si cada clase recibe lo que necesita y no lo crea, alguien tiene que crear las piezas. En MVP ese sitio es uno solo: el punto de entrada del programa, el único que hace <code>new</code> de las capas. La receta es siempre la misma y tiene dos fases: construir y conectar, todo en un solo hilo; y arrancar, cuando nacen los demás hilos. Así se monta, en tres pasos:</p>
 <figure class="vertical">
 <style>
 figure ol.vin{--vin-main:#2c6e9b;--vin-start:#b23a2a;list-style:none;margin:0 auto;padding:0;max-width:560px;display:grid;gap:.75rem}
@@ -1047,10 +1046,10 @@ figure ol.vin ol.vin-acc>li::before{content:"→";position:absolute;left:0;top:0
 <svg width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true"><defs><marker id="vin-fv" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--texto-suave)"/></marker><marker id="vin-fn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" style="fill:var(--primario)"/></marker></defs></svg>
 <ol class="vin">
 <li><div class="vin-cab"><span class="vin-num">1</span><div><span class="vin-fase">Construir y conectar</span><span class="vin-tit">Preparar el modelo y la vista</span></div></div>
-<ol class="vin-acc"><li>Se crea el modelo, todavía vacío.</li><li>Después se configura: se le dan sus datos (aquí, las animaciones).</li><li>Luego se crea la vista. Aún no tiene presentador: no sabe a quién pedir qué pintar.</li></ol>
+<ol class="vin-acc"><li>Se crea el modelo, todavía vacío.</li><li>Después se configura: se le dan sus datos (aquí, las animaciones).</li><li>Luego se crea la vista y se configura (aquí, el tamaño del lienzo y la velocidad de pintado). Aún no tiene presentador: no sabe a quién pedir qué pintar.</li></ol>
 <svg viewBox="0 0 500 42" role="img" style="font-family:var(--fuente-texto)"><title>Nuevos: el modelo con sus datos y la vista, todavía sin presentador</title><rect x="2" y="4" width="162" height="34" rx="6" style="fill:var(--fondo-medio);stroke:var(--primario)" stroke-width="2.5"/><text x="83.0" y="26" font-size="15" text-anchor="middle" font-weight="700" style="fill:var(--primario)">datos del modelo</text><rect x="190" y="4" width="86" height="34" rx="6" style="fill:var(--fondo-medio);stroke:var(--primario)" stroke-width="2.5"/><text x="233.0" y="26" font-size="15" text-anchor="middle" font-weight="700" style="fill:var(--primario)">Modelo</text><rect x="302" y="4" width="110" height="34" rx="6" fill="none" style="stroke:var(--tenue)" stroke-width="1.2" stroke-dasharray="4 3"/><text x="357.0" y="26" font-size="15" text-anchor="middle" style="fill:var(--texto-tenue)">Presentador</text><rect x="436" y="4" width="62" height="34" rx="6" style="fill:var(--fondo-medio);stroke:var(--primario)" stroke-width="2.5"/><text x="467.0" y="26" font-size="15" text-anchor="middle" font-weight="700" style="fill:var(--primario)">Vista</text><line x1="188" y1="21" x2="166" y2="21" style="stroke:var(--primario)" stroke-width="2.2" marker-end="url(#vin-fn)"/></svg></li>
 <li><div class="vin-cab"><span class="vin-num">2</span><div><span class="vin-fase">Construir y conectar</span><span class="vin-tit">Construir el presentador</span></div></div>
-<ol class="vin-acc"><li>Se crea el presentador, que recibe el modelo y la vista.</li><li>Los guarda para usarlos después.</li><li>Se presenta a la vista, que lo guarda: se cierra el ciclo.</li></ol>
+<ol class="vin-acc"><li>Se crea el presentador, que recibe el modelo y la vista.</li><li>Los guarda para usarlos después.</li><li>Se presenta a la vista, que lo guarda: se cierra el ciclo.</li><li>Por último, se configura (aquí, los límites de velocidad).</li></ol>
 <svg viewBox="0 0 500 42" role="img" style="font-family:var(--fuente-texto)"><title>Nuevo: el presentador, que apunta al modelo y a la vista, y la vista, que apunta al presentador</title><rect x="2" y="4" width="162" height="34" rx="6" fill="none" style="stroke:var(--texto-suave)" stroke-width="1.5"/><text x="83.0" y="26" font-size="15" text-anchor="middle" style="fill:var(--texto)">datos del modelo</text><rect x="190" y="4" width="86" height="34" rx="6" fill="none" style="stroke:var(--texto-suave)" stroke-width="1.5"/><text x="233.0" y="26" font-size="15" text-anchor="middle" style="fill:var(--texto)">Modelo</text><rect x="302" y="4" width="110" height="34" rx="6" style="fill:var(--fondo-medio);stroke:var(--primario)" stroke-width="2.5"/><text x="357.0" y="26" font-size="15" text-anchor="middle" font-weight="700" style="fill:var(--primario)">Presentador</text><rect x="436" y="4" width="62" height="34" rx="6" fill="none" style="stroke:var(--texto-suave)" stroke-width="1.5"/><text x="467.0" y="26" font-size="15" text-anchor="middle" style="fill:var(--texto)">Vista</text><line x1="188" y1="21" x2="166" y2="21" style="stroke:var(--texto-suave)" stroke-width="1.5" marker-end="url(#vin-fv)"/><line x1="300" y1="21" x2="278" y2="21" style="stroke:var(--primario)" stroke-width="2.2" marker-end="url(#vin-fn)"/><line x1="413" y1="15" x2="434" y2="15" style="stroke:var(--primario)" stroke-width="2.2" marker-end="url(#vin-fn)"/><line x1="434" y1="27" x2="413" y2="27" style="stroke:var(--primario)" stroke-width="2.2" marker-end="url(#vin-fn)"/></svg></li>
 <li class="vin-start"><div class="vin-cab"><span class="vin-num">3</span><div><span class="vin-fase">Arrancar</span><span class="vin-tit">Arrancar todo</span></div></div>
 <ol class="vin-acc"><li>Se pone en marcha el modelo (aquí, un hilo por animación).</li><li>Se pone en marcha la vista, con su hilo de pintado.</li><li>El programa principal termina; la aplicación sigue en los hilos nuevos.</li></ol>
@@ -1059,18 +1058,21 @@ figure ol.vin ol.vin-acc>li::before{content:"→";position:absolute;left:0;top:0
 <script>(function(){var l=document.querySelector('.vin');if(!l)return;function mira(){var r=l.getBoundingClientRect();if(r.height>0&&r.top<innerHeight*.7&&r.bottom>0){l.classList.add('en-marcha');removeEventListener('scroll',mira);removeEventListener('resize',mira);document.removeEventListener('toggle',mira,true);}}addEventListener('scroll',mira,{passive:true});addEventListener('resize',mira);document.addEventListener('toggle',mira,true);mira();})();</script>
 <figcaption>La receta de montaje de cualquier MVP, en el orden en que se ejecuta. Debajo de cada paso, las piezas tal como quedan al terminarlo. El color del número marca la fase: en azul, construir y conectar (1 y 2); en terracota, arrancar (3). Hasta el paso 3 solo trabaja un hilo, el del programa principal. Lo nuevo de cada paso va resaltado y lo discontinuo aún no existe. Las flechas son lo que cada pieza guarda; la doble entre el presentador y la vista es el ciclo que cierra el paso 2. En dorado, lo que tiene un hilo en marcha.</figcaption>
 </figure>
-<p>En la demo, el punto de entrada es el método <code>main</code> de <code>SpriteAnimation</code>, y cada línea es una acción de las viñetas: crea el modelo, lo configura con sus animaciones, crea la vista y el presentador, y lo arranca todo.</p>
+<p>En la demo, el punto de entrada es el método <code>main</code> de <code>SpriteAnimation</code>, y cada línea es una acción de las viñetas: crea el modelo y lo configura con sus animaciones, crea y configura la vista y el presentador, y lo arranca todo.</p>
 <pre><code class="language-java">public static void main(String[] args) {
     Model model = new Model();
     // nombre, hoja, ancho y alto del fotograma, escala, fotogramas por segundo, x, y
     model.addSprite("Pato", "/sprites/pato.png", 16, 16, 4, 8, 120, 220);
     model.addSprite("Explosión", "/sprites/explosion.png", 48, 48, 3, 12, 360, 160);
-    AnimationContract.View view = new View();
-    AnimationContract.Presenter presenter = new Presenter(model, view);
+    View view = new View();
+    view.setCanvasSize(640, 400);         // ancho y alto del lienzo, en píxeles
+    view.setRenderFps(60);                // al empezar, pinta 60 veces por segundo
+    Presenter presenter = new Presenter(model, view);
+    presenter.setFpsLimits(1, 120);       // la rueda no baja de 1 ni pasa de 120 por segundo
     presenter.start();
 }
 </code></pre>
-<p><code>main</code> declara el modelo como <code>Model</code> porque necesita <code>addSprite</code>, que crea cada sprite a partir de su hoja. El presentador recibe ese mismo objeto como <code>AnimationContract.Model</code>, sin <code>addSprite</code>.</p>
+<p><code>main</code> declara cada pieza con su clase, <code>Model</code>, <code>View</code> y <code>Presenter</code>, porque las configura con métodos que no son del contrato: <code>addSprite</code>, que crea cada sprite a partir de su hoja, <code>setCanvasSize</code> y <code>setFpsLimits</code>. Así la configuración queda a la vista, en un solo sitio. El presentador recibe el modelo y la vista como <code>ModelContract</code> y <code>ViewContract</code>, sin esos métodos. <code>setRenderFps</code> sí es del contrato, porque el presentador lo usa cuando giras la rueda.</p>
 <p>Fíjate en que el presentador no sabe qué animaciones hay: trabaja con los sprites que tenga el modelo. Por eso sirve igual para dos sprites que para veinte, y cambiar las animaciones no lo toca.</p></div></details><details class="seccion" id="conectar"><summary class="seccion-titulo"><span class="etiqueta">08 / Conectar</span><h2>Conectar antes de arrancar</h2></summary><div class="seccion-cuerpo"><p class="entradilla">Las viñetas del apartado anterior esconden dos detalles: cómo se conectan el presentador y la vista, y por qué arrancar va al final.</p>
 <p>Empieza por el paso 2. El presentador necesita la vista y la vista necesita el presentador, así que no pueden recibirse los dos por constructor: uno de los dos tiene que existir primero. La demo crea la vista, se la pasa al presentador, y el constructor del presentador, en su última línea, se presenta a la vista con <code>view.setPresenter(this)</code>. Es la única dependencia que no va por constructor.</p>
 <p>Pasar <code>this</code> desde un constructor se llama <em>dejar escapar</em> <code>this</code>, y suele ser mala práctica: otro hilo podría usar el objeto antes de que esté construido. Aquí no hay problema: es la última línea del constructor y todavía solo existe el hilo de <code>main</code>.</p>
@@ -1206,14 +1208,15 @@ public void start() {          // solo arranca
 </svg>
 <figcaption>El gesto baja por la izquierda hasta el modelo. La vista no cambia la cifra: la ve cambiada cuando vuelve a pedir qué pintar.</figcaption>
 </figure>
-<p>En código, el recorrido es corto. La vista solo averigua sobre qué línea del HUD está el ratón y avisa; el presentador aplica la regla del límite y se lo pasa al modelo con <code>setFps</code>.</p>
-<pre><code class="language-java">// View: el evento llega por el hilo de eventos de Swing
+<p>En código, el recorrido es corto. La vista solo averigua sobre qué línea del HUD está el ratón y avisa (lo hace <code>MouseHandler</code>, la parte de la vista que escucha el ratón); el presentador aplica la regla del límite y se lo pasa al modelo con <code>setFps</code>.</p>
+<pre><code class="language-java">// MouseHandler, de la vista: el evento llega por el hilo de eventos de Swing
 public void mouseWheelMoved(MouseWheelEvent e) {
-    int line = (e.getY() - HUD_Y + HUD_LINE) / HUD_LINE;   // 0: pintado; 1, 2…: sprites
-    int delta = -e.getWheelRotation();                      // rueda hacia arriba: sube
-    if (!insideHud(e.getX(), e.getY(), line)) {
+    int lines = 1 + presenter.sprites().size();             // la de pintado y una por sprite
+    int line = hud.lineAt(e.getX(), e.getY(), lines);       // 0: pintado; 1, 2…: sprites
+    if (line < 0) {
         return;                                              // fuera del HUD, no hace nada
     }
+    int delta = -e.getWheelRotation();                      // rueda hacia arriba: sube
     if (line == 0) {
         presenter.changeRenderSpeed(delta);
     } else {
@@ -1223,8 +1226,8 @@ public void mouseWheelMoved(MouseWheelEvent e) {
 
 // Presenter: aplica la regla
 public void changeSpriteSpeed(int sprite, int delta) {
-    AnimationContract.Sprite s = model.sprite(sprite);
-    s.setFps(limit(s.fps() + delta));                       // entre 1 y 120
+    SpriteContract s = model.sprite(sprite);
+    s.setFps(limit(s.fps() + delta));                       // entre minFps y maxFps
 }
 </code></pre>
 <p>Arrastrar un sprite sigue el mismo camino. La vista pregunta al presentador qué sprite hay bajo el puntero (<code>spriteAt</code>) y, mientras arrastras, le pide que lo mueva (<code>moveSprite</code>). El pato sigue aleteando todo el rato, porque su hilo no sabe nada del ratón.</p>
@@ -1259,7 +1262,7 @@ public void changeSpriteSpeed(int sprite, int delta) {
 <dt>Por qué es un problema</dt>
 <dd>La vista queda atada a las clases del modelo, y el hilo de pintado toca objetos que otros hilos están cambiando.</dd>
 <dt>Cómo se arregla</dt>
-<dd>La vista solo conoce <code>AnimationContract.Presenter</code> y pinta <code>SpriteState</code>.</dd>
+<dd>La vista solo conoce <code>PresenterContract</code> y pinta <code>SpriteState</code>.</dd>
 </dl>
 </article>
 <article class="tarjeta">
@@ -1292,14 +1295,14 @@ public void changeSpriteSpeed(int sprite, int delta) {
 <dt>Por qué es un problema</dt>
 <dd>El presentador puede llamar a cualquier método, también a <code>addSprite</code>, y ya no acepta una <code>FakeView</code> ni un modelo falso.</dd>
 <dt>Cómo se arregla</dt>
-<dd>Programar contra interfaces: <code>Presenter(AnimationContract.Model model, AnimationContract.View view)</code>.</dd>
+<dd>Programar contra interfaces: <code>Presenter(ModelContract model, ViewContract view)</code>.</dd>
 </dl>
 </article>
 <article class="tarjeta">
 <h3>La interfaz que lo expone todo</h3>
 <dl>
 <dt>Cómo se ve</dt>
-<dd><code>AnimationContract.Presenter</code> tiene veinte métodos, uno por cada campo del modelo.</dd>
+<dd><code>PresenterContract</code> tiene veinte métodos, uno por cada campo del modelo.</dd>
 <dt>Por qué es un problema</dt>
 <dd>El contrato deja de proteger nada: la vista vuelve a depender de cómo es el modelo.</dd>
 <dt>Cómo se arregla</dt>
@@ -1335,7 +1338,7 @@ public void changeSpriteSpeed(int sprite, int delta) {
 <h3>Una vista de texto</h3>
 <dl>
 <dt>Qué tienes que hacer</dt>
-<dd>Escribe una <code>TextView</code> que implemente <code>AnimationContract.View</code> y escriba en consola, una vez por segundo, el fotograma y la posición de cada sprite.</dd>
+<dd>Escribe una <code>TextView</code> que implemente <code>ViewContract</code> y escriba en consola, una vez por segundo, el fotograma y la posición de cada sprite.</dd>
 <dt>Qué clases cambian</dt>
 <dd>Ninguna: añades <code>TextView</code> y cambias una línea de <code>main</code>.</dd>
 <dt>Qué aprendes</dt>
@@ -1346,7 +1349,7 @@ public void changeSpriteSpeed(int sprite, int delta) {
 <h3>Una prueba sin ventana</h3>
 <dl>
 <dt>Qué tienes que hacer</dt>
-<dd>Escribe una <code>FakeView</code> que implemente <code>AnimationContract.View</code> sin abrir ninguna ventana, y un <code>FakeModel</code> con un sprite fijo. Con ellos, comprueba que la velocidad no baja de 1 ni sube de 120, para el pintado y para cada sprite.</dd>
+<dd>Escribe una <code>FakeView</code> que implemente <code>ViewContract</code> sin abrir ninguna ventana, y un <code>FakeModel</code> con un sprite fijo. Con ellos, comprueba que la velocidad no baja de 1 ni sube de 120, para el pintado y para cada sprite.</dd>
 <dt>Qué clases cambian</dt>
 <dd>Ninguna: la prueba, la <code>FakeView</code> y el <code>FakeModel</code> son clases aparte.</dd>
 <dt>Qué aprendes</dt>
@@ -1359,7 +1362,7 @@ public void changeSpriteSpeed(int sprite, int delta) {
 <dt>Qué tienes que hacer</dt>
 <dd>Con un doble clic sobre un sprite, su animación se para o vuelve a empezar.</dd>
 <dt>Qué clases cambian</dt>
-<dd><code>View</code> (el gesto), <code>AnimationContract.Presenter</code> y <code>Presenter</code> (el método nuevo) y <code>Sprite</code> (la pausa).</dd>
+<dd><code>MouseHandler</code> (el gesto), <code>PresenterContract</code> y <code>Presenter</code> (el método nuevo) y <code>Sprite</code> (la pausa).</dd>
 <dt>Qué aprendes</dt>
 <dd>Cómo atraviesa una funcionalidad nueva las tres capas, y cómo se para y se reanuda un hilo.</dd>
 </dl>
@@ -1368,7 +1371,7 @@ public void changeSpriteSpeed(int sprite, int delta) {
 <div class="fuentes">
 <p id="src-R1"><strong>[R1] Wikipedia.</strong> «Modelo–vista–presentador». Qué es MVP y qué papel tiene cada una de sus tres piezas. <a href="https://es.wikipedia.org/wiki/Modelo%E2%80%93vista%E2%80%93presentador" class="externo" target="_blank" rel="noopener noreferrer">Enlace</a></p>
 <p id="src-R2"><strong>[R2] Refactoring.Guru.</strong> «Mediator». En la demo, el presentador es el intermediario entre la vista y el modelo, que nunca se hablan directamente. <a href="https://refactoring.guru/es/design-patterns/mediator" class="externo" target="_blank" rel="noopener noreferrer">Enlace</a></p>
-<p id="src-R3"><strong>[R3] Refactoring.Guru.</strong> «Extract Interface» (en inglés). Cómo se saca a una interfaz la parte de una clase que otra necesita, como <code>AnimationContract.Model</code>. <a href="https://refactoring.guru/es/extract-interface" class="externo" target="_blank" rel="noopener noreferrer">Enlace</a></p>
+<p id="src-R3"><strong>[R3] Refactoring.Guru.</strong> «Extract Interface» (en inglés). Cómo se saca a una interfaz la parte de una clase que otra necesita, como <code>ModelContract</code>. <a href="https://refactoring.guru/es/extract-interface" class="externo" target="_blank" rel="noopener noreferrer">Enlace</a></p>
 <p id="src-R4"><strong>[R4] Wikipedia.</strong> «Inyección de dependencias». Por qué una clase recibe lo que necesita en lugar de crearlo ella. <a href="https://es.wikipedia.org/wiki/Inyecci%C3%B3n_de_dependencias" class="externo" target="_blank" rel="noopener noreferrer">Enlace</a></p>
 <p id="src-R5"><strong>[R5] Refactoring.Guru.</strong> «Observer». En la demo, la vista se suscribe a los eventos del ratón de Swing; el modelo, en cambio, no avisa a nadie. <a href="https://refactoring.guru/es/design-patterns/observer" class="externo" target="_blank" rel="noopener noreferrer">Enlace</a></p>
 <p id="src-R6"><strong>[R6] SpriteAnimation.</strong> «Código de la demo». El programa completo de este documento, con cómo ejecutarlo y sus pruebas. <a href="https://github.com/jumibot/SpriteAnimation" class="externo" target="_blank" rel="noopener noreferrer">Enlace</a></p>

@@ -2,14 +2,14 @@ package model;
 
 import java.awt.image.BufferedImage;
 
-import contract.AnimationContract;
+import contract.SpriteContract;
 
 /**
  * Una animación del modelo, con su propio hilo que va cambiando de fotograma.
  * El ritmo depende del tiempo que pasa, no de lo rápido que se pinte.
- * Fuera del modelo se ve solo como AnimationContract.Sprite.
+ * Fuera del modelo se ve solo como SpriteContract.
  */
-public class Sprite implements AnimationContract.Sprite, Runnable {
+public class Sprite implements SpriteContract, Runnable {
 
     private static final long TICK_MS = 5;   // cada cuánto mira el hilo si toca cambiar de fotograma
 

@@ -37,7 +37,10 @@ public class MouseTest {
         model.addSprite("Pato", "/sprites/pato.png", 16, 16, 4, 8, 120, 220);
         model.addSprite("Explosión", "/sprites/explosion.png", 48, 48, 3, 12, 360, 160);
         view = new View();
+        view.setCanvasSize(640, 400);
+        view.setRenderFps(60);
         Presenter presenter = new Presenter(model, view);
+        presenter.setFpsLimits(1, 120);
         presenter.start();
 
         if (System.getProperty("depurar") != null) printMouseEvents();
@@ -64,8 +67,8 @@ public class MouseTest {
     static void wheelOverEachHudLine() {
         int lines = 1 + model.spriteCount();
         for (int line = 0; line < lines; line++) {
-            int x = View.HUD_X + 60;
-            int y = View.HUD_Y + line * View.HUD_LINE - View.HUD_LINE / 2;   // en medio de la línea
+            int x = Hud.X + 60;
+            int y = Hud.Y + line * Hud.LINE - Hud.LINE / 2;   // en medio de la línea
             // Hasta tres intentos: si alguien mueve el ratón, la rueda puede caer en otra línea.
             for (int attempt = 1; attempt <= 3; attempt++) {
                 boolean disturbedBefore = disturbed;
@@ -91,7 +94,7 @@ public class MouseTest {
         }
         // Fuera del HUD la rueda no hace nada.
         int render = view.renderFps();
-        moveTo(View.CANVAS_WIDTH - 40, View.CANVAS_HEIGHT - 40);
+        moveTo(viewer.getWidth() - 40, viewer.getHeight() - 40);
         robot.mouseWheel(-3);
         robot.delay(300);
         Check.equal("la rueda fuera del HUD no cambia nada", render, view.renderFps());
@@ -200,7 +203,7 @@ public class MouseTest {
             window.toFront();
         });
         robot.delay(300);
-        moveTo(View.CANVAS_WIDTH - 20, View.CANVAS_HEIGHT - 20);   // un clic en una zona vacía, para darle el foco
+        moveTo(viewer.getWidth() - 20, viewer.getHeight() - 20);   // un clic en una zona vacía, para darle el foco
         robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
         robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
     }

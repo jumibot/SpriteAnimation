@@ -3,7 +3,7 @@ package presenter;
 import java.util.List;
 
 import check.Check;
-import contract.AnimationContract;
+import contract.SpriteState;
 
 /**
  * Prueba el presentador sin ventana, con FakeView y FakeModel.
@@ -42,6 +42,7 @@ public class PresenterTest {
     static void renderSpeedStaysBetween1And120() {
         FakeView view = new FakeView();
         Presenter presenter = new Presenter(new FakeModel(), view);
+        presenter.setFpsLimits(1, 120);
         presenter.changeRenderSpeed(+1);
         Check.equal("la rueda sube el pintado de 60 a 61", 61, view.renderFps());
         presenter.changeRenderSpeed(-2);
@@ -55,6 +56,7 @@ public class PresenterTest {
     static void spriteSpeedStaysBetween1And120() {
         FakeModel model = new FakeModel();
         Presenter presenter = new Presenter(model, new FakeView());
+        presenter.setFpsLimits(1, 120);
         presenter.changeSpriteSpeed(0, +1);
         Check.equal("la rueda sube el pato de 8 a 9", 9, model.duck.fps());
         presenter.changeSpriteSpeed(0, +500);
@@ -66,9 +68,9 @@ public class PresenterTest {
     static void spritesGivesAPhoto() {
         FakeModel model = new FakeModel();
         Presenter presenter = new Presenter(model, new FakeView());
-        List<AnimationContract.Presenter.SpriteState> photo = presenter.sprites();
+        List<SpriteState> photo = presenter.sprites();
         Check.equal("sprites() da un SpriteState por sprite", 1, photo.size());
-        AnimationContract.Presenter.SpriteState duck = photo.get(0);
+        SpriteState duck = photo.get(0);
         Check.that("con su nombre, posición y velocidad",
                    duck.name().equals("Pato") && duck.x() == 100 && duck.y() == 200 && duck.fps() == 8);
         model.duck.moveTo(0, 0);

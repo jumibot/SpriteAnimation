@@ -17,7 +17,7 @@ Una ventana con un pato que vuela y una explosión, hechos con Swing y Java2D. E
 
 - **Sprites:** recortar una hoja de sprites en fotogramas y avanzarlos con el tiempo, no con el repintado.
 - **MVP:** qué hace el modelo, qué hace la vista y por qué el presentador es el único que habla con los dos.
-- **Interfaces:** un contrato, `AnimationContract`, con tres interfaces: lo que la vista puede pedir al presentador y lo que el presentador puede pedir a la vista y al modelo.
+- **Interfaces:** cuatro contratos en el paquete `contract`, cada uno en su archivo: `PresenterContract` (lo que la vista puede pedir al presentador), `ViewContract` y `ModelContract` (lo que el presentador puede pedir a la vista y al modelo) y `SpriteContract` (lo que puede pedir a cada sprite). El record `SpriteState` es la foto de un sprite que la vista pinta.
 - **Inyección de dependencias:** quién crea a quién y por qué cada clase recibe lo que necesita en lugar de crearlo.
 - **Hilos:** un hilo por sprite, uno de pintado y el de eventos de Swing, cada uno en su capa, y cómo comparten datos sin pisarse.
 

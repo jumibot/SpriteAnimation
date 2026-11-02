@@ -2,11 +2,11 @@ package presenter;
 
 import java.awt.image.BufferedImage;
 
-import contract.AnimationContract;
+import contract.ModelContract;
 import model.Sprite;
 
 /** Un modelo falso: un sprite fijo, sin hilos y sin hojas de sprites. */
-class FakeModel implements AnimationContract.Model {
+class FakeModel implements ModelContract {
 
     final Sprite duck = new Sprite("Pato", blankFrames(4, 64, 64), 8, 100, 200);
     boolean started;

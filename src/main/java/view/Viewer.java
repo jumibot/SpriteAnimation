@@ -1,7 +1,6 @@
 package view;
 
 import java.awt.Canvas;
-import java.awt.Dimension;
 
 /**
  * El lienzo, parte interna de la vista. No pinta: es la superficie sobre la que pinta el hilo de la vista.
@@ -9,8 +8,7 @@ import java.awt.Dimension;
  */
 public class Viewer extends Canvas {
 
-    public Viewer(int width, int height) {
-        setPreferredSize(new Dimension(width, height));
+    public Viewer() {
         setIgnoreRepaint(true);   // nada se dibuja solo: Swing no debe repintarlo por su cuenta
     }
 }

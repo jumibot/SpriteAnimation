@@ -1,13 +1,9 @@
 package view;
 
 import java.awt.Color;
-import java.awt.Font;
+import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.Toolkit;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
@@ -16,7 +12,9 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
-import contract.AnimationContract;
+import contract.PresenterContract;
+import contract.SpriteState;
+import contract.ViewContract;
 
 /**
  * La vista de MVP: es la ventana. Pinta lo que le da el presentador y le avisa de lo que hace el usuario.
@@ -25,48 +23,27 @@ import contract.AnimationContract;
  * La usan tres hilos: el de main, que la construye; el de pintado (renderLoop);
  * y el de eventos de Swing, que trae el ratón y el cierre de la ventana.
  */
-public class View extends JFrame implements AnimationContract.View {
-
-    // Tamaño del lienzo. (WIDTH y HEIGHT ya existen en JFrame: por eso estos nombres.)
-    static final int CANVAS_WIDTH = 640;
-    static final int CANVAS_HEIGHT = 400;
-
-    // El HUD: una línea por velocidad. HUD_Y es la base de la primera línea (la de pintado).
-    static final int HUD_X = 16;
-    static final int HUD_Y = 40;
-    static final int HUD_LINE = 24;
-    static final int HUD_WIDTH = 320;
+public class View extends JFrame implements ViewContract {
 
     private static final Color BACKGROUND = new Color(0x1e2a30);
-    private static final Color HUD_BACKGROUND = new Color(255, 255, 255, 40);
-    private static final Color HUD_LABEL = new Color(0x7fd1ff);
-    private static final Color HUD_TEXT = Color.WHITE;
-    private static final Font HUD_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 15);
-    private static final Font HUD_FONT_BOLD = HUD_FONT.deriveFont(Font.BOLD);
 
     private final Viewer viewer;
-    private AnimationContract.Presenter presenter;
+    private final Hud hud = new Hud();   // el recuadro de las velocidades: lo pinta él
+    private final MouseHandler mouse = new MouseHandler(hud);   // el que escucha el ratón
+    private PresenterContract presenter;
 
     // Lo escribe el hilo de eventos (rueda) y lo lee el de pintado: volatile.
-    private volatile int renderFps = 60;
+    private volatile int renderFps;   // el valor inicial lo pone main con setRenderFps
     private volatile boolean running;
     private Thread renderThread;
 
-    // Estado del arrastre: solo lo usa el hilo de eventos, así que no necesita volatile.
-    private int dragged = -1;   // qué sprite se arrastra (-1: ninguno)
-    private int grabX;          // dónde se ha cogido, medido desde la esquina del sprite
-    private int grabY;
-
     public View() {
         super("SpriteAnimation");   // el título de la ventana
-        viewer = new Viewer(CANVAS_WIDTH, CANVAS_HEIGHT);   // parte interna de la vista: la crea ella
+        viewer = new Viewer();   // parte interna de la vista: la crea ella
         setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);   // cerramos nosotros, en orden
         add(viewer);
-        pack();
         setResizable(false);
-        setLocationRelativeTo(null);   // centrada en la pantalla
 
-        MouseHandler mouse = new MouseHandler();
         viewer.addMouseListener(mouse);
         viewer.addMouseMotionListener(mouse);
         viewer.addMouseWheelListener(mouse);
@@ -76,12 +53,21 @@ public class View extends JFrame implements AnimationContract.View {
                 presenter.close();
             }
         });
+        // El tamaño y la velocidad de pintado los pone main, con setCanvasSize y setRenderFps.
         // La ventana aún no se ve: la muestra start(), cuando todo está conectado.
     }
 
+    /** El tamaño del lienzo. No es del contrato: solo lo usa main, al montar la aplicación. */
+    public void setCanvasSize(int width, int height) {
+        viewer.setPreferredSize(new Dimension(width, height));
+        pack();                        // la ventana se ajusta al lienzo
+        setLocationRelativeTo(null);   // centrada en la pantalla
+    }
+
     @Override
-    public void setPresenter(AnimationContract.Presenter presenter) {
+    public void setPresenter(PresenterContract presenter) {
         this.presenter = presenter;   // solo guarda la referencia
+        mouse.setPresenter(presenter);   // y se la pasa al que escucha el ratón
     }
 
     @Override
@@ -131,7 +117,7 @@ public class View extends JFrame implements AnimationContract.View {
         while (running) {
             long start = System.nanoTime();
 
-            List<AnimationContract.Presenter.SpriteState> sprites = presenter.sprites();   // la foto fija
+            List<SpriteState> sprites = presenter.sprites();   // la foto fija
             Graphics2D g = (Graphics2D) buffers.getDrawGraphics();   // el búfer que no se ve
             paintScene(g, sprites);
             g.dispose();
@@ -152,89 +138,12 @@ public class View extends JFrame implements AnimationContract.View {
         }
     }
 
-    private void paintScene(Graphics2D g, List<AnimationContract.Presenter.SpriteState> sprites) {
+    private void paintScene(Graphics2D g, List<SpriteState> sprites) {
         g.setColor(BACKGROUND);
-        g.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-        for (AnimationContract.Presenter.SpriteState s : sprites) {
+        g.fillRect(0, 0, viewer.getWidth(), viewer.getHeight());
+        for (SpriteState s : sprites) {
             g.drawImage(s.frame(), s.x(), s.y(), null);
         }
-        paintHud(g, sprites);
-    }
-
-    /** El HUD: la velocidad de pintado y la de cada sprite, una por línea. */
-    private void paintHud(Graphics2D g, List<AnimationContract.Presenter.SpriteState> sprites) {
-        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        int lines = 1 + sprites.size();
-        g.setColor(HUD_BACKGROUND);
-        g.fillRoundRect(HUD_X - 8, HUD_Y - HUD_LINE, HUD_WIDTH, lines * HUD_LINE + 8, 10, 10);
-        hudLine(g, 0, "Pintado", renderFps + " veces por segundo");
-        for (int i = 0; i < sprites.size(); i++) {
-            AnimationContract.Presenter.SpriteState s = sprites.get(i);
-            hudLine(g, i + 1, s.name(), s.fps() + " fotogramas por segundo");
-        }
-    }
-
-    private void hudLine(Graphics2D g, int line, String label, String value) {
-        int y = HUD_Y + line * HUD_LINE - 6;
-        g.setFont(HUD_FONT_BOLD);
-        g.setColor(HUD_LABEL);
-        g.drawString(label, HUD_X, y);
-        int x = HUD_X + g.getFontMetrics().stringWidth(label);   // el valor, justo detrás de la etiqueta
-        g.setFont(HUD_FONT);
-        g.setColor(HUD_TEXT);
-        g.drawString(" · " + value, x, y);
-    }
-
-    // ---------------------------------------------------------------- ratón
-
-    /** Escucha el ratón sobre el lienzo. Swing llama a estos métodos desde su hilo de eventos. */
-    private class MouseHandler extends MouseAdapter {
-
-        @Override
-        public void mouseWheelMoved(MouseWheelEvent e) {
-            int line = (e.getY() - HUD_Y + HUD_LINE) / HUD_LINE;   // 0: pintado; 1, 2…: sprites
-            int delta = -e.getWheelRotation();                      // rueda hacia arriba: sube
-            if (!insideHud(e.getX(), e.getY(), line)) {
-                return;                                              // fuera del HUD, no hace nada
-            }
-            if (line == 0) {
-                presenter.changeRenderSpeed(delta);
-            } else {
-                presenter.changeSpriteSpeed(line - 1, delta);
-            }
-        }
-
-        @Override
-        public void mousePressed(MouseEvent e) {
-            dragged = presenter.spriteAt(e.getX(), e.getY());
-            if (dragged < 0) {
-                return;   // no hay sprite bajo el puntero
-            }
-            // Guardamos dónde se ha cogido el sprite, para que no salte al puntero.
-            AnimationContract.Presenter.SpriteState s = presenter.sprites().get(dragged);
-            grabX = e.getX() - s.x();
-            grabY = e.getY() - s.y();
-        }
-
-        @Override
-        public void mouseDragged(MouseEvent e) {
-            if (dragged >= 0) {
-                presenter.moveSprite(dragged, e.getX() - grabX, e.getY() - grabY);
-            }
-        }
-
-        @Override
-        public void mouseReleased(MouseEvent e) {
-            dragged = -1;
-        }
-
-        /** Si el punto (x, y) cae sobre alguna línea del HUD. */
-        private boolean insideHud(int x, int y, int line) {
-            int left = HUD_X - 8;
-            int top = HUD_Y - HUD_LINE;
-            int lastLine = presenter.sprites().size();
-            return x >= left && x < left + HUD_WIDTH
-                && y >= top && line <= lastLine;
-        }
+        hud.paint(g, renderFps, sprites);
     }
 }

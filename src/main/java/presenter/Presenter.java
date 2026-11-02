@@ -3,21 +3,32 @@ package presenter;
 import java.util.ArrayList;
 import java.util.List;
 
-import contract.AnimationContract;
+import contract.ModelContract;
+import contract.PresenterContract;
+import contract.SpriteContract;
+import contract.SpriteState;
+import contract.ViewContract;
 
 /** El presentador de MVP: traduce el modelo a lo que la vista pinta y aplica las reglas a cada gesto. */
-public class Presenter implements AnimationContract.Presenter {
+public class Presenter implements PresenterContract {
 
-    static final int MIN_FPS = 1;
-    static final int MAX_FPS = 120;
+    private final ModelContract model;
+    private final ViewContract view;
 
-    private final AnimationContract.Model model;
-    private final AnimationContract.View view;
+    // Entre qué velocidades se mueve la rueda, la de pintado y la de los sprites. Los fija main.
+    private int minFps;
+    private int maxFps;
 
-    public Presenter(AnimationContract.Model model, AnimationContract.View view) {   // las recibe, no las crea
+    public Presenter(ModelContract model, ViewContract view) {   // las recibe, no las crea
         this.model = model;
         this.view = view;
         view.setPresenter(this);   // se conecta con la vista: lo verás en «Conectar antes de arrancar»
+    }
+
+    /** Los límites de velocidad. No es del contrato: solo lo usa main, al montar la aplicación. */
+    public void setFpsLimits(int min, int max) {
+        minFps = min;
+        maxFps = max;
     }
 
     @Override
@@ -30,7 +41,7 @@ public class Presenter implements AnimationContract.Presenter {
     public List<SpriteState> sprites() {
         List<SpriteState> states = new ArrayList<>();
         for (int i = 0; i < model.spriteCount(); i++) {
-            AnimationContract.Sprite s = model.sprite(i);
+            SpriteContract s = model.sprite(i);
             states.add(new SpriteState(s.name(), s.frame(), s.x(), s.y(), s.fps()));
         }
         return states;
@@ -43,15 +54,15 @@ public class Presenter implements AnimationContract.Presenter {
 
     @Override
     public void changeSpriteSpeed(int sprite, int delta) {
-        AnimationContract.Sprite s = model.sprite(sprite);
-        s.setFps(limit(s.fps() + delta));                       // entre 1 y 120
+        SpriteContract s = model.sprite(sprite);
+        s.setFps(limit(s.fps() + delta));                       // entre minFps y maxFps
     }
 
     /** Busca de arriba abajo: se pinta en orden, así que el último es el que queda encima. */
     @Override
     public int spriteAt(int x, int y) {
         for (int i = model.spriteCount() - 1; i >= 0; i--) {
-            AnimationContract.Sprite s = model.sprite(i);
+            SpriteContract s = model.sprite(i);
             boolean inside = x >= s.x() && x < s.x() + s.width()
                           && y >= s.y() && y < s.y() + s.height();
             if (inside) {
@@ -72,13 +83,13 @@ public class Presenter implements AnimationContract.Presenter {
         view.stop();    // luego el de pintado y la ventana
     }
 
-    /** Deja la velocidad entre MIN_FPS y MAX_FPS. */
-    private static int limit(int fps) {
-        if (fps < MIN_FPS) {
-            return MIN_FPS;
+    /** Deja la velocidad entre minFps y maxFps. */
+    private int limit(int fps) {
+        if (fps < minFps) {
+            return minFps;
         }
-        if (fps > MAX_FPS) {
-            return MAX_FPS;
+        if (fps > maxFps) {
+            return maxFps;
         }
         return fps;
     }

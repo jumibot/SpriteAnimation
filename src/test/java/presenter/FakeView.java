@@ -1,16 +1,17 @@
 package presenter;
 
-import contract.AnimationContract;
+import contract.PresenterContract;
+import contract.ViewContract;
 
 /** Una vista falsa: cumple el contrato sin abrir ninguna ventana. */
-class FakeView implements AnimationContract.View {
+class FakeView implements ViewContract {
 
     int fps = 60;
     boolean started;
     boolean stopped;
-    AnimationContract.Presenter presenter;
+    PresenterContract presenter;
 
-    @Override public void setPresenter(AnimationContract.Presenter presenter) { this.presenter = presenter; }
+    @Override public void setPresenter(PresenterContract presenter) { this.presenter = presenter; }
     @Override public void start() { started = true; }
     @Override public void stop() { stopped = true; }
     @Override public int renderFps() { return fps; }
