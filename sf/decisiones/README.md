@@ -19,6 +19,7 @@ Este índice no se escribe a mano: se regenera con `python -I -X utf8 tools/indi
 
 | Nº | Fecha | Decisión |
 | --- | --- | --- |
+| 26 | 2026-11-02 | [Un archivo por contrato, con sufijo Contract y sin interfaz contenedora](026-2026-11-02-un-archivo-por-contrato-con-sufijo-contract-y-sin-interfaz-contenedora.md) |
 | 25 | 2026-11-02 | [El contrato expone una interfaz Sprite](025-2026-11-02-el-contrato-expone-una-interfaz-sprite.md) |
 | 24 | 2026-11-02 | [La vista extiende JFrame](024-2026-11-02-la-vista-extiende-jframe.md) |
 | 23 | 2026-11-02 | [Paquetes main, model, view, presenter y contract](023-2026-11-02-paquetes-main-model-view-presenter-y-contract.md) |
