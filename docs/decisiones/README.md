@@ -19,6 +19,7 @@ Este índice no se escribe a mano: se regenera con `python -I -X utf8 tools/indi
 
 | Nº | Fecha | Decisión |
 | --- | --- | --- |
+| 14 | 2026-11-02 | [Los sprites se crean en el modelo y el presentador arranca la aplicación](014-2026-11-02-los-sprites-se-crean-en-el-modelo-y-el-presentador-arranca-la-aplicacion.md) |
 | 13 | 2026-11-02 | [Viñetas para mostrar el montaje paso a paso](013-2026-11-02-vinetas-para-mostrar-el-montaje-paso-a-paso.md) |
 | 12 | 2026-10-31 | [Interfaces y constructores de la demo](012-2026-10-31-interfaces-y-constructores-de-la-demo.md) |
 | 11 | 2026-10-30 | [Para segundo de DAM: videojuegos y Servicios y Procesos](011-2026-10-30-para-segundo-de-dam-videojuegos-y-servicios-y-procesos.md) |
