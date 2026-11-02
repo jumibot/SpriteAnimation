@@ -11,7 +11,7 @@
  * Carcasa: cabecera, resumen, bloques y subsecciones plegables, tablas y pie.
  * Los colores y las tipografías son variables CSS (var(--rol), var(--fuente-…)) que define el tema
  * elegido (assets/temas/*.json); en las URI de datos SVG, los marcadores {{rol}} los rellena el script.
- * Lo propio de cada proyecto va en su CSS, indicado en identidad.json. Origen: ver ORIGIN.md. */
+ * Lo propio de cada proyecto va en su CSS, indicado en identidad.json. Origen: docs/referencias/procedencia/ del repositorio de la SF. */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -565,7 +565,7 @@ strong { font-weight: 600; }
 .herramienta button:focus-visible, .herramienta input:focus-visible, .herramienta textarea:focus-visible, .abrir-herramienta:focus-visible { outline: 3px solid var(--acento); outline-offset: 2px; }
 .herramienta ol, .herramienta p { margin: 0; padding: 0; }
 .bd-campo { display: block; }
-/* Columna de herramientas y buscador, según el modelo de los 20 casos de OncoCore.
+/* Columna de herramientas y buscador.
  * Desde 1400 px, la herramienta va anclada en una columna a la derecha, de ancho ajustable y plegable;
  * la chincheta de la barra (a la derecha del engranaje) las despega todas como ventanas flotantes, que se arrastra y se minimiza. Por debajo, minimizada del todo
  * hasta pulsar «Buscar» en el menú; entonces se abre como panel inferior, sin tapar la cabecera ni el menú. */
@@ -637,7 +637,7 @@ mark.bd-hit.actual { background: var(--oscuro); color: #fff; box-shadow: none; }
 .dc-guardar { font: inherit; font-size: .8125rem; font-weight: 700; cursor: pointer; border: 1px solid var(--primario); border-radius: var(--esquinas, 6px);
   background: var(--primario); color: #fff; padding: .3rem .75rem; min-height: 24px; }
 .dc-guardar:hover { background: var(--oscuro); border-color: var(--oscuro); }
-/* En la columna, la barra es su primera tarjeta, como en OncoCore: versión y herramientas, estado y «Guardar». */
+/* En la columna, la barra es su primera tarjeta: versión y herramientas, estado y «Guardar». */
 .columna-herramientas > .barra-doc { display: flex; flex-wrap: nowrap; min-width: 0; box-sizing: border-box; justify-content: space-between; align-items: center; gap: .7rem;
   padding: .45rem .45rem .45rem .8rem; font-size: .78rem; border: 1px solid var(--linea); border-radius: var(--esquinas, 10px);
   background: linear-gradient(180deg, var(--fondo) 0, #fff 100%); box-shadow: 0 4px 14px rgba(var(--primario-rgb, 0, 0, 0), .10); }
@@ -652,7 +652,7 @@ mark.bd-hit.actual { background: var(--oscuro); color: #fff; box-shadow: none; }
 .nt-nota textarea { resize: vertical; min-height: 4.2em; line-height: 1.45; }
 .nt-ayuda, .nt-vacio { font-size: .8125rem; color: var(--texto-suave); }
 .nt-lista { list-style: none; display: grid; gap: .6rem; }
-/* Tarjetas de nota (modelo gene_associations de OncoCore). En la columna no hay panel común: cada nota es su propia
+/* Tarjetas de nota. En la columna no hay panel común: cada nota es su propia
  * tarjeta, con el aspecto de una herramienta; en la ventana flotante y en el móvil van dentro del panel «Notas». */
 .nt-general-zona, .nt-foco { display: grid; gap: .8rem; }
 .nt-general-zona:empty, .nt-foco:empty { display: none; }
@@ -705,7 +705,7 @@ mark.nota-cita.destello { background: var(--acento); color: #fff; transition: ba
   background: var(--oscuro); color: #fff; padding: .4rem .8rem; min-height: 32px; box-shadow: 0 6px 18px rgba(0, 0, 0, .25); }
 .boton-anotar[hidden] { display: none; }
 
-/* Aspecto de tarjeta (como en OncoCore): franja de color arriba, fondo tintado y sombra del color del tema. */
+/* Aspecto de tarjeta: franja de color arriba, fondo tintado y sombra del color del tema. */
 html.con-columna .columna-herramientas { background: var(--fondo-suave); box-shadow: -6px 0 18px rgba(var(--primario-rgb, 0, 0, 0), .08); }
 .herramienta { position: relative; padding: .9rem 1rem 1rem; border: 1px solid var(--linea); border-radius: var(--esquinas, 10px);
   background: linear-gradient(180deg, var(--fondo) 0, #fff 3.2rem); box-shadow: 0 4px 14px rgba(var(--primario-rgb, 0, 0, 0), .10); }
@@ -871,7 +871,7 @@ p.editando { outline: 2px solid var(--primario); outline-offset: 4px; border-rad
 /* Pie con la procedencia del documento (la ponen los generadores). */
 .procedencia { font-size: .75rem; color: var(--texto-suave); margin-top: .35rem; font-variant-numeric: tabular-nums; }
 
-/* Tamaño de las notas en la columna (modelo OncoCore): el panel ocupa lo que dejan las demás herramientas y cada
+/* Tamaño de las notas en la columna: el panel ocupa lo que dejan las demás herramientas y cada
  * nota abierta se reparte ese alto con las otras, entre 12em y el 60 % de la pantalla; su texto llena la tarjeta. */
 html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="columna"] { display: flex; }
 html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="columna"]:has(.nt-tarjeta:not(.plegada):not(.nt-todas)) { flex: 1 0 auto; }
@@ -883,7 +883,7 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
 .herr-notas.por-seccion[data-modo="columna"] .nt-nota:has(> textarea.nt-amplia) { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 7em; }
 .herr-notas.por-seccion[data-modo="columna"] textarea.nt-amplia { flex: 1 1 auto; min-height: 7em; resize: none; }
 
-/* Notas en su sitio (1.8.0; discretas desde la 1.8.1): sin columna, como en OncoCore, cada sección acaba con un
+/* Notas en su sitio (1.8.0; discretas desde la 1.8.1): sin columna, cada sección acaba con un
    rótulo pequeño, el campo de texto abierto y «Convertir en párrafo» a la derecha, sin caja ni plegado. La nota general
    y «Tus notas» van al principio del documento. */
 :is(.nt-sitio, .nt-sitio-inicio) button { font: inherit; font-size: .8rem; font-weight: 600; line-height: 1.2; cursor: pointer;
@@ -909,6 +909,20 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
 @media print { .nt-sitio, .nt-sitio-inicio { display: none; } }
 .abrir-herramienta[hidden] { display: none !important; }
 </style>
+  <style>
+/* Bloques de código de los documentos del proyecto. El kit de la SF solo da estilo al código en línea. */
+pre {
+  background: var(--fondo-suave);
+  border-left: 3px solid var(--primario);
+  border-radius: 4px;
+  padding: .8em 1em;
+  margin: 1em 0 1.2em;
+  overflow-x: auto;
+  line-height: 1.45;
+}
+pre code { background: none; padding: 0; font-size: .82em; white-space: pre; }
+@media print { pre { overflow: visible; white-space: pre-wrap; break-inside: avoid; } pre code { white-space: pre-wrap; } }
+  </style>
 </head>
 <body>
   <div class="page">
@@ -921,7 +935,7 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
     </header>
 
     <div class="report-header">
-      <div class="report-title report-estado"><strong>Estado:</strong> 30 de octubre de 2026, borrador 0.1.</div>
+      <div class="report-title report-estado"><strong>Estado:</strong> 2 de noviembre de 2026, versión 0.2, al día con el código de la demo.</div>
     </div>
 
     <div class="report-body">
@@ -946,10 +960,10 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
 <text x="200" y="296" font-size="12" fill="#555555">arrastrar el sprite</text>
 <rect x="336" y="164" width="128" height="128" rx="8" fill="#2a2a2a"/><svg x="340" y="168" width="120" height="120" viewBox="96 0 48 48"><image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAYAAAAAwCAYAAAAYeq1+AAAACXBIWXMAAAsTAAALEwEAmpwYAAAF8WlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxNDggNzkuMTY0MDM2LCAyMDE5LzA4LzEzLTAxOjA2OjU3ICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdEV2dD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlRXZlbnQjIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOnBob3Rvc2hvcD0iaHR0cDovL25zLmFkb2JlLmNvbS9waG90b3Nob3AvMS4wLyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgMjEuMCAoV2luZG93cykiIHhtcDpDcmVhdGVEYXRlPSIyMDIxLTExLTI2VDIxOjIxOjI2KzAzOjAwIiB4bXA6TWV0YWRhdGFEYXRlPSIyMDIxLTExLTI2VDIxOjIxOjI2KzAzOjAwIiB4bXA6TW9kaWZ5RGF0ZT0iMjAyMS0xMS0yNlQyMToyMToyNiswMzowMCIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo0YjM1YTA2Mi1mYTU0LTMzNGItOGEzNy04MjgxNGNkYzcwY2QiIHhtcE1NOkRvY3VtZW50SUQ9ImFkb2JlOmRvY2lkOnBob3Rvc2hvcDpkMjAzOTdlNi05MTViLWNiNGUtOGQ0Yi0wYTgzMjE4YTdmNWIiIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1YjdlMWI1OS1jOGYyLTZlNGItOWUxMC00MmE3MjVmMmY3ZWQiIGRjOmZvcm1hdD0iaW1hZ2UvcG5nIiBwaG90b3Nob3A6Q29sb3JNb2RlPSIzIiBwaG90b3Nob3A6SUNDUHJvZmlsZT0ic1JHQiBJRUM2MTk2Ni0yLjEiPiA8eG1wTU06SGlzdG9yeT4gPHJkZjpTZXE+IDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJjcmVhdGVkIiBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOjViN2UxYjU5LWM4ZjItNmU0Yi05ZTEwLTQyYTcyNWYyZjdlZCIgc3RFdnQ6d2hlbj0iMjAyMS0xMS0yNlQyMToyMToyNiswMzowMCIgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgUGhvdG9zaG9wIDIxLjAgKFdpbmRvd3MpIi8+IDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJzYXZlZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDo0YjM1YTA2Mi1mYTU0LTMzNGItOGEzNy04MjgxNGNkYzcwY2QiIHN0RXZ0OndoZW49IjIwMjEtMTEtMjZUMjE6MjE6MjYrMDM6MDAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBob3Rvc2hvcCAyMS4wIChXaW5kb3dzKSIgc3RFdnQ6Y2hhbmdlZD0iLyIvPiA8L3JkZjpTZXE+IDwveG1wTU06SGlzdG9yeT4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz7BrRXcAAAKmUlEQVR42u2dy5EkNRCGxxYOXDnAjSsnvMAJDMIATMAaItYEbhQ0UIQmOx9/plIqqSo7QtHLTHU9mt3/U74/juP4yFi//fhNrVq1Bq1fvv72aNfoz9W656K6/VEAqFULE09uXXkfyGf++PmrT6tAcN3fowJArVo3Ev9ZQPBeSxL/qyDQc70VLJg73H8BoNYS6yVA53v75xVF/89fvzt+//6HtxUFQVQEIgCQxP8EwOquq6jlUwAoC6DWRgB4CSr9nfQZ67jXas/nXa24n2L/gkC7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" width="384" height="48" style="image-rendering:pixelated"/></svg>
 </svg>
-<figcaption>Lo que ven Andreu y sus alumnos al ejecutar la demo. Las cifras del HUD son ilustrativas.</figcaption>
+<figcaption>Lo que ven Andreu y sus alumnos al ejecutar la demo, con las cifras del HUD al arrancar.</figcaption>
 </figure>
 
-<p>Detrás de esa ventana hay siete clases y dos interfaces, repartidas según la arquitectura MVP: modelo, vista y presentador. Cada sprite avanza en su propio hilo y otro hilo pinta. Así Andreu enseña a la vez las tres ideas que sus alumnos necesitan: el recorte de la hoja, la separación entre estado y dibujo, y los dos ritmos. Las secciones siguientes las recorren una a una.</p>
+<p>Detrás de esa ventana hay nueve clases, tres interfaces y un record, repartidos según la arquitectura MVP: modelo, vista y presentador. Cada sprite avanza en su propio hilo y otro hilo pinta. Así Andreu enseña a la vez las tres ideas que sus alumnos necesitan: el recorte de la hoja, la separación entre estado y dibujo, y los dos ritmos. Las secciones siguientes las recorren una a una.</p>
 </details><details id="que-le-cuesta-a-quien-empieza" class="bloque bloque-2"><summary class="bloque-summary"><span class="bloque-chip"><span class="bloque-title">Qué le cuesta a quien empieza</span><button type="button" class="bloque-btn" data-action="expand" title="Expandir el bloque y todas sus subsecciones">Expandir</button><button type="button" class="bloque-btn" data-action="collapse" title="Contraer el bloque y todas sus subsecciones">Contraer</button></span></summary>
 <div class="caso"><p class="caso-etiqueta">El caso · capítulo 1 · el método que lo hace todo</p><p>Andreu abre la práctica de Laia: un método de ochenta líneas. Carga la hoja cada vez que pinta, suma uno al fotograma en cada repintado y dibuja. Funciona, pero Laia no sabe explicar por qué el pato cambia de ritmo. ¿Dónde se tuercen todos, curso tras curso?</p></div>
 
@@ -994,7 +1008,7 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
 </details><details id="cada-pieza-en-su-sitio" class="bloque bloque-4"><summary class="bloque-summary"><span class="bloque-chip"><span class="bloque-title">Cada pieza en su sitio</span><button type="button" class="bloque-btn" data-action="expand" title="Expandir el bloque y todas sus subsecciones">Expandir</button><button type="button" class="bloque-btn" data-action="collapse" title="Contraer el bloque y todas sus subsecciones">Contraer</button></span></summary>
 <div class="caso"><p class="caso-etiqueta">El caso · capítulo 3 · ¿quién manda aquí?</p><p>Hasta ahora, Andreu explicaba MVP con un formulario de altas y bajas, y la clase se le dormía. Esta vez tiene fotogramas que alguien tiene que elegir, alguien tiene que pintar y un ratón que cambia cosas. ¿Quién hace cada cosa?</p></div>
 
-<p>La demo reparte el trabajo según MVP, con el mínimo de clases con que la separación se ve. Son siete clases y dos interfaces, una para la vista y otra para el presentador. Las interfaces enseñan el contrato entre las capas: qué puede pedir cada una a la otra.</p>
+<p>La demo reparte el trabajo según MVP, con el mínimo de clases con que la separación se ve. Son nueve clases, tres interfaces y un record, cada uno en su archivo. Las interfaces son el contrato entre las capas, una por capa: qué puede pedir cada una a las otras. El record, <code>SpriteView</code>, lleva a la vista lo que tiene que pintar de cada sprite, porque el sprite no sale del modelo.</p>
 <figure class="vertical">
 <svg viewBox="0 0 560 520" role="img" aria-label="Las clases de la demo según MVP y los dos recorridos: pintar y ratón" style="font-family:var(--fuente-texto);display:block">
 <rect x="60" y="14" width="440" height="58" rx="10" fill="none" style="stroke: var(--borde)"/>
@@ -1002,16 +1016,16 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
 <text x="80" y="58" font-size="12" fill="#555555">el lienzo: un Canvas sobre el que se pinta</text>
 <rect x="60" y="112" width="440" height="78" rx="10" fill="none" style="stroke: var(--borde)"/>
 <text x="80" y="136" font-size="14" font-weight="700" style="fill: var(--primario)">View</text>
-<text x="128" y="136" font-size="12" fill="#888888">· implementa la interfaz de la vista</text>
-<text x="80" y="157" font-size="12" fill="#555555">crea la ventana · tiene el hilo de pintado</text>
-<text x="80" y="176" font-size="12" fill="#555555">escucha el ratón sobre el Viewer</text>
+<text x="128" y="136" font-size="12" fill="#888888">· implementa ViewContract</text>
+<text x="80" y="157" font-size="12" fill="#555555">crea la ventana y el HUD · tiene el hilo de pintado</text>
+<text x="80" y="176" font-size="12" fill="#555555">su MouseHandler escucha el ratón sobre el Viewer</text>
 <rect x="60" y="252" width="440" height="66" rx="10" fill="none" style="stroke: var(--borde)"/>
 <text x="80" y="277" font-size="14" font-weight="700" style="fill: var(--primario)">Presenter</text>
-<text x="160" y="277" font-size="12" fill="#888888">· implementa la interfaz del presentador</text>
+<text x="160" y="277" font-size="12" fill="#888888">· implementa PresenterContract</text>
 <text x="80" y="300" font-size="12" fill="#555555">une el modelo y la vista; no pinta ni guarda estado propio</text>
 <rect x="60" y="380" width="440" height="126" rx="10" fill="none" style="stroke: var(--borde)"/>
 <text x="80" y="404" font-size="14" font-weight="700" style="fill: var(--primario)">Model</text>
-<text x="132" y="404" font-size="12" fill="#555555">· los dos sprites; los arranca y los para</text>
+<text x="132" y="404" font-size="12" fill="#555555">· implementa ModelContract · los sprites no salen de él</text>
 <text x="96" y="434" font-size="13" font-weight="700" style="fill: var(--oscuro)">Sprite pato</text>
 <text x="96" y="452" font-size="12" fill="#555555">4 fotogramas · su hilo · su velocidad · su posición</text>
 <text x="96" y="478" font-size="13" font-weight="700" style="fill: var(--oscuro)">Sprite explosión</text>
@@ -1021,9 +1035,9 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
 <text x="150" y="98" font-size="12" style="fill: var(--primario)">pinta en cada vuelta</text>
 <line x1="140" y1="192" x2="140" y2="248" stroke-width="1.6" marker-end="url(#fv)" style="stroke: var(--primario)"/>
 <text x="150" y="216" font-size="12" style="fill: var(--primario)">pide qué dibujar</text>
-<text x="150" y="232" font-size="12" style="fill: var(--primario)">y recibe los datos</text>
+<text x="150" y="232" font-size="12" style="fill: var(--primario)">y recibe un SpriteView por sprite</text>
 <line x1="140" y1="320" x2="140" y2="376" stroke-width="1.6" marker-end="url(#fv)" style="stroke: var(--primario)"/>
-<text x="150" y="346" font-size="12" style="fill: var(--primario)">lee fotograma</text>
+<text x="150" y="346" font-size="12" style="fill: var(--primario)">pide una copia del fotograma</text>
 <text x="150" y="362" font-size="12" style="fill: var(--primario)">y posición</text>
 <line x1="420" y1="192" x2="420" y2="248" stroke="#2c6e9b" stroke-width="1.6" marker-end="url(#fa)"/>
 <text x="410" y="216" font-size="12" fill="#2c6e9b" text-anchor="end">rueda o arrastre</text>
@@ -1034,9 +1048,9 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
 <figcaption>Las flechas de la izquierda son el recorrido de pintar; las de la derecha, el del ratón. <code>SpriteAnimation</code>, la clase principal, crea las piezas y las conecta; <code>SpriteSheet</code> prepara los fotogramas.</figcaption>
 </figure>
 
-<p>Para pintar, la iniciativa es de la vista. En cada vuelta, el hilo de pintado de <code>View</code> le pide al presentador qué tiene que dibujar. El presentador lo lee del modelo y se lo devuelve, y <code>View</code> lo pinta sobre el <code>Viewer</code>. Nadie empuja nada hacia la vista: ella pide cuando le toca.</p>
-<p>Para el ratón, el recorrido va al revés. <code>View</code> recoge el gesto sobre el lienzo y avisa al presentador, que cambia el modelo: la velocidad o la posición de un sprite. La vista no mueve nada por su cuenta. En la vuelta siguiente, el sprite aparece donde diga el modelo.</p>
-<p>Así cada clase tiene una sola razón para cambiar. Si un alumno quiere otro personaje, toca <code>SpriteSheet</code> y el modelo; si quiere otra ventana, solo la vista.</p>
+<p>Para pintar, la iniciativa es de la vista. En cada vuelta, el hilo de pintado de <code>View</code> le pide al presentador qué tiene que dibujar. El presentador se lo pide al modelo y se lo devuelve como una lista de <code>SpriteView</code>, con una copia de cada fotograma, y <code>View</code> lo pinta sobre el <code>Viewer</code>. Nadie empuja nada hacia la vista: ella pide cuando le toca.</p>
+<p>Para el ratón, el recorrido va al revés. <code>MouseHandler</code>, la parte de la vista que escucha el ratón, recoge el gesto sobre el lienzo y avisa al presentador, que cambia el modelo: la velocidad o la posición de un sprite. La vista no mueve nada por su cuenta. En la vuelta siguiente, el sprite aparece donde diga el modelo.</p>
+<p>Así cada clase tiene una sola razón para cambiar. Si un alumno quiere otro personaje, añade una línea en <code>main</code>; si quiere otra ventana, solo toca la vista.</p>
 </details><details id="dos-ritmos-que-no-dependen-uno-del-otro" class="bloque bloque-5"><summary class="bloque-summary"><span class="bloque-chip"><span class="bloque-title">Dos ritmos que no dependen uno del otro</span><button type="button" class="bloque-btn" data-action="expand" title="Expandir el bloque y todas sus subsecciones">Expandir</button><button type="button" class="bloque-btn" data-action="collapse" title="Contraer el bloque y todas sus subsecciones">Contraer</button></span></summary>
 <div class="caso"><p class="caso-etiqueta">El caso · capítulo 4 · el pato que aleteaba demasiado</p><p>Es lunes. Andreu proyecta la demo en el aula y pregunta por qué el pato de Laia iba rápido en su portátil y lento aquí. Nadie lo sabe todavía. Si pintar y animar fueran cosas distintas, ¿qué fotograma se pintaría en cada momento?</p></div>
 
@@ -1058,11 +1072,11 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
 <line x1="40" y1="268" x2="520" y2="268" stroke="#888888"/>
 <g font-size="12" fill="#888888"><text x="40" y="288">0 s</text><text x="268" y="288">0,5 s</text><text x="508" y="288">1 s</text></g>
 </svg>
-<figcaption>Un segundo de la demo con las cifras del HUD (ilustrativas). Cada repintado dibuja el fotograma que toca en ese momento.</figcaption>
+<figcaption>Un segundo de la demo con las cifras del HUD al arrancar. Cada repintado dibuja el fotograma que toca en ese momento.</figcaption>
 </figure>
 
 <p>Si el pintado va más rápido que la animación, dibuja el mismo fotograma varias veces. Si va más despacio, se salta alguno, pero la animación no se ralentiza. Para que el ritmo sea constante, cada hilo <strong>mide el tiempo</strong> en lugar de contar vueltas. Es la idea que los programadores de juegos conocen como «<a href="https://gafferongames.com/post/fix_your_timestep/" class="externo" target="_blank" rel="noopener noreferrer">Fix Your Timestep</a>», reducida a lo mínimo.</p>
-<p>Los hilos son aquí un tema secundario, pero son la pieza que hace visible esta diferencia. Hay uno por sprite, en el modelo, y uno de pintado, en la vista. La demo enseña a crearlos, a pararlos limpiamente y a mantener su velocidad. Los gestos del ratón llegan por un tercer hilo, el de eventos de Swing. El código resuelve con lo mínimo el estado que comparte con el de pintado.</p>
+<p>Los hilos son aquí un tema secundario, pero son la pieza que hace visible esta diferencia. Hay uno por sprite, en el modelo, y uno de pintado, en la vista. La demo enseña a crearlos y a mantener su velocidad. No los para uno a uno: al cerrar la ventana, <code>EXIT_ON_CLOSE</code> termina el programa y, con él, todos los hilos. Los gestos del ratón llegan por un tercer hilo, el de eventos de Swing. El código resuelve con lo mínimo el estado que comparte con el de pintado.</p>
 <div class="escena" role="note" aria-label="Escena ilustrativa">
 <p class="escena-etiqueta">Escena ilustrativa · el aula, el lunes</p>
 <p class="escena-contexto">Andreu proyecta SpriteAnimation en el aula. Laia tiene el ratón.</p>
@@ -1080,13 +1094,13 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
 <div class="caso"><p class="caso-etiqueta">El caso · capítulo 5 · coger el pato en pleno vuelo</p><p>Laia arrastra el pato hasta la explosión y lo suelta, y la clase se ríe: el pato no ha dejado de aletear. Andreu lo aprovecha para preguntar: ¿quién ha movido el pato, la ventana o el modelo?</p></div>
 
 <p>La demo admite dos gestos con el ratón. La rueda sobre una cifra del HUD sube o baja esa velocidad. Arrastrar un sprite lo cambia de sitio; si dos se solapan, se coge el de arriba.</p>
-<p>Los dos gestos recorren MVP de vuelta, como en el gráfico de «Cada pieza en su sitio». <code>View</code> los recoge sobre el <code>Viewer</code> y avisa al presentador, que cambia el modelo. Por eso el pato sigue aleteando mientras se arrastra. Su hilo no sabe nada del ratón: la posición y la animación son datos distintos del mismo sprite.</p>
+<p>Los dos gestos recorren MVP de vuelta, como en el gráfico de «Cada pieza en su sitio». <code>MouseHandler</code>, de la vista, los recoge sobre el <code>Viewer</code> y avisa al presentador, que cambia el modelo. Por eso el pato sigue aleteando mientras se arrastra. Su hilo no sabe nada del ratón: la posición y la animación son datos distintos del mismo sprite.</p>
 <p>Con muy poco código, el ratón le da a Andreu lo que le faltaba para explicar MVP: que se vea que la vista no decide nada. Solo recoge el gesto y pinta lo que el modelo diga.</p>
 </details><details id="lo-que-la-demo-no-hace" class="bloque bloque-7"><summary class="bloque-summary"><span class="bloque-chip"><span class="bloque-title">Lo que la demo no hace</span><button type="button" class="bloque-btn" data-action="expand" title="Expandir el bloque y todas sus subsecciones">Expandir</button><button type="button" class="bloque-btn" data-action="collapse" title="Contraer el bloque y todas sus subsecciones">Contraer</button></span></summary>
 <div class="caso"><p class="caso-etiqueta">El caso · capítulo 6 · ¿y si el pato choca?</p><p>Pau, desde la última fila, pregunta si el pato puede chocar con la explosión, o moverse con las flechas. Lo busca en el código y no lo encuentra. ¿Es un olvido?</p></div>
 
 <p>No es un olvido. SpriteAnimation es un ejemplo mínimo, no un juego: no tiene teclas de movimiento, ni física, ni colisiones. Cada cosa que no está la deja fuera para que lo que sí está se vea sin ruido.</p>
-<p>La misma regla vale para el código. Tiene el mínimo de clases y de líneas con que se ven los tres temas: las hojas de sprites, MVP y los hilos. Cada clase se gana su sitio por lo que enseña, y no hay utilidades, capas ni bibliotecas de concurrencia que no hagan falta. Las dos interfaces están porque enseñan el contrato entre las capas.</p>
+<p>La misma regla vale para el código. Tiene el mínimo de clases y de líneas con que se ven los tres temas: las hojas de sprites, MVP y los hilos. Cada clase se gana su sitio por lo que enseña, y no hay utilidades, capas ni bibliotecas de concurrencia que no hagan falta. Las tres interfaces están porque enseñan el contrato entre las capas.</p>
 <p>Para Andreu, esa ausencia es un ejercicio: añadir las colisiones es fácil cuando el alumno sabe en qué clase va cada cosa.</p>
 </details><details id="en-que-se-diferencia-de-lo-que-ya-existe" class="bloque bloque-8"><summary class="bloque-summary"><span class="bloque-chip"><span class="bloque-title">En qué se diferencia de lo que ya existe</span><button type="button" class="bloque-btn" data-action="expand" title="Expandir el bloque y todas sus subsecciones">Expandir</button><button type="button" class="bloque-btn" data-action="collapse" title="Contraer el bloque y todas sus subsecciones">Contraer</button></span></summary>
 <div class="caso"><p class="caso-etiqueta">El caso · capítulo 7 · lo que Andreu ya había probado</p><p>Antes de preparar SpriteAnimation, Andreu había buscado. Encontró tutoriales, un libro gordísimo y un motor de juegos. ¿Por qué no le bastó ninguno?</p></div>
@@ -1103,7 +1117,7 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
 </details><details id="anexo-el-caso-y-las-fuentes" class="bloque bloque-10"><summary class="bloque-summary"><span class="bloque-chip"><span class="bloque-title">Anexo: el caso y las fuentes</span><button type="button" class="bloque-btn" data-action="expand" title="Expandir el bloque y todas sus subsecciones">Expandir</button><button type="button" class="bloque-btn" data-action="collapse" title="Contraer el bloque y todas sus subsecciones">Contraer</button></span></summary>
 <h4 id="el-caso-de-andreu">El caso de Andreu</h4>
 <p>Andreu, sus alumnos Laia y Pau, y su compañera Marta son ficticios. El caso se ha construido para ilustrar los tres tropiezos de «Qué le cuesta a quien empieza». Los momentos de la historia (las prácticas sobre la mesa, la clase del lunes, la entrega dos semanas después) son ilustrativos.</p>
-<p>Las cifras del HUD (60 repintados, 8 fotogramas del pato y 12 de la explosión por segundo) son un ejemplo, no valores de la demo. Con ellas, el pato da una vuelta completa a su animación cada medio segundo y la explosión, cada 0,67 segundos. A los 0,3 segundos, el pato está en su fotograma 2 (0,3 × 8 = 2,4) y la explosión, en el 3 (0,3 × 12 = 3,6).</p>
+<p>Las cifras del HUD (60 repintados, 8 fotogramas del pato y 12 de la explosión por segundo) son las de la demo al arrancar; con la rueda cambian. Con ellas, el pato da una vuelta completa a su animación cada medio segundo y la explosión, cada 0,67 segundos. A los 0,3 segundos, el pato está en su fotograma 2 (0,3 × 8 = 2,4) y la explosión, en el 3 (0,3 × 12 = 3,6).</p>
 <h4 id="las-hojas-de-sprites">Las hojas de sprites</h4>
 <ul>
 <li><strong><code>pato.png</code>:</strong> «<a href="https://opengameart.org/content/16x16-duck" class="externo" target="_blank" rel="noopener noreferrer">16x16 Duck</a>», de ARoachIFoundOnMyPillow, CC0. Son 4 fotogramas de 16×16 en columna.</li>
@@ -1122,7 +1136,7 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
 
     <footer class="site-footer">
       SpriteAnimation · Documento de visión
-    <p class="procedencia">Generado el 30/10/2026 19:47 · fuente vision-spriteanimation.md · huella 733610a47b68 · commit 4e3a2c2 (con cambios sin commit)</p></footer>
+    <p class="procedencia">Generado el 02/11/2026 18:59 · fuente vision-spriteanimation.md · huella 491ca85fe446 · commit 6a52bbb (con cambios sin commit)</p></footer>
 
   </div>
 <script>
@@ -1145,7 +1159,7 @@ document.addEventListener('click', function (e) {
  * Lo usan documento_vision (.report-body con bloques .bloque) y documento_fundacional (main con secciones .seccion);
  * el estilo está en herramientas.css. Al cambiar cualquiera de estos archivos, se sube VERSION (aquí).
  * Las demás piezas usan window.herramientasDocumento (herramienta(), aplicar(), mostrar()…).
- * Modelo: el documento de los 20 casos de referencia de OncoCore (kit_documentos v1.0.57). Reescrito para la SF.
+ * Procedencia: docs/referencias/procedencia/kit_documentos.md del repositorio de la SF.
  * · Pantalla grande (≥ 1400 px): cada herramienta va anclada en una columna a la derecha, de ancho ajustable, y se
  *   pliega con su flecha. La chincheta de la barra, a la derecha del engranaje, despega todas las herramientas como
  *   ventanas flotantes (se arrastran por la cabecera, se minimizan, doble clic las devuelve a su sitio) y las vuelve a anclar.
@@ -1154,17 +1168,17 @@ document.addEventListener('click', function (e) {
  * Buscador: no distingue mayúsculas ni tildes, resalta, salta con Intro / Mayús+Intro, agrupa por sección y abre la
  *   sección plegada.
  * Notas: personales, de tres clases que el documento activa por separado: sobre un texto seleccionado («Anotar»,
- *   nota-texto), una por sección (nota-seccion) y una general de todo el documento (nota-global). Como en
- *   gene_associations de OncoCore, la columna muestra sola la nota de la sección que se lee, plegada si está vacía,
- *   y lo escrito se ve también al final de su sección. Sin columna (ventanas flotantes o pantalla pequeña), como en
- *   OncoCore, cada nota vuelve a su sitio: una tarjeta editable al final de su sección, y la nota general y «Tus
+ *   nota-texto), una por sección (nota-seccion) y una general de todo el documento (nota-global). En
+ *   la columna se muestra sola la nota de la sección que se lee, plegada si está vacía,
+ *   y lo escrito se ve también al final de su sección. Sin columna (ventanas flotantes o pantalla pequeña),
+ *   cada nota vuelve a su sitio: una tarjeta editable al final de su sección, y la nota general y «Tus
  *   notas» al principio del documento; la ventana «Notas» no aparece. Si el documento
  *   no nombra ninguna de las tres, van las tres. Se guardan solas en el
  *   navegador; «Guardar» crea un documento anotado (copia del HTML con las notas dentro, en el bloque JSON
  *   #notas-documento) y sube la versión. Esa copia se puede pasar al autor: tools/kit_documentos/extraer_notas.py las lista.
  * Sin JavaScript no aparece nada; no se imprime. */
 (function () {
-  const VERSION = '1.8.1';
+  const VERSION = '1.9.2';
   const main = document.querySelector('main, .report-body');
   if (!main) return;
   const SECCION = 'details.seccion, details.bloque', TITULO = '.etiqueta, .bloque-title';
@@ -1596,7 +1610,7 @@ document.addEventListener('click', function (e) {
   function persistir() { if (CON_NOTAS) escribir(CLAVE_NOTAS, { notas, borradas: [...borradas], guardado }); estado(); }
 
   if (CON_NOTAS) {
-  // Modelo de gene_associations (kit de OncoCore): sin botones para crear notas. La columna muestra sola la nota de la
+  // Sin botones para crear notas. La columna muestra sola la nota de la
   // sección que se lee (y las de las secciones que la contienen), cada una con su cabecera, plegada si está vacía; lo
   // escrito se ve también, solo para leer, al final de su sección. La nota general va arriba y «Todas las notas»
   // resume las demás.
@@ -1619,7 +1633,7 @@ document.addEventListener('click', function (e) {
     const v = todasEl.classList.toggle('plegada'); e.currentTarget.setAttribute('aria-expanded', String(!v));
   });
   autorEl.addEventListener('input', () => escribir(CLAVE_AUTOR, autorEl.value.trim()));
-  // Sin columna, las notas van en su sitio (modelo de OncoCore): la general y «Tus notas», al principio del documento.
+  // Sin columna, las notas van en su sitio: la general y «Tus notas», al principio del documento.
   function sitio() { return enSitio(notasT); }  // función: la usa también el arranque, fuera de este bloque
   const inicioSitio = document.createElement('div');
   inicioSitio.className = 'nt-sitio-inicio';
@@ -1667,7 +1681,7 @@ document.addEventListener('click', function (e) {
   const enFoco = () => secActual ? cadena(secActual).map(x => x.id).join('|') : '';
   let pintado = null;
   const escribiendo = () => focoEl.contains(document.activeElement) || generalEl.contains(document.activeElement);
-  notasT.el.classList.add('por-seccion');  // en la columna, cada nota es su propia tarjeta, como en OncoCore
+  notasT.el.classList.add('por-seccion');  // en la columna, cada nota es su propia tarjeta
   function actualizarFoco() { if (!sitio() && enFoco() !== pintado && !escribiendo()) pintarNotas(); }
   function seguirSeccion() {
     let s = null;
@@ -1801,7 +1815,7 @@ document.addEventListener('click', function (e) {
     pintarResumen();
     espejos();
   }
-  // Sin columna, como en OncoCore: un rótulo pequeño, el campo abierto y las acciones; sin caja ni plegado.
+  // Sin columna: un rótulo pequeño, el campo abierto y las acciones; sin caja ni plegado.
   function bloqueSitio(titulo, items) {
     const b = document.createElement('section');
     b.className = 'nt-sitio-bloque';
@@ -2090,13 +2104,13 @@ document.addEventListener('click', function (e) {
 /* Opciones de lectura del documento (biblioteca tools/kit_documentos/, con herramientas.js, que va antes).
  * Cada opción se elige en <html data-herramientas> (catálogo y valores iniciales en tema_identidad.py). Las que el
  * lector ajusta (el engranaje junto a «Guardar» abre «Lectura») parten del valor del autor y se recuerdan por documento:
- * · modo: claro, oscuro o el del sistema (por defecto el del sistema; «oscuro» en la lista = empezar en oscuro);
+ * · modo: claro, oscuro o el del sistema; el documento abre siempre en claro y el oscuro lo elige el lector;
  * · acordeon: un solo bloque abierto a la vez;
  * · cabecera: el título de la sección abierta se queda arriba mientras se lee;
  * · fuentes: al pasar por una referencia [E1], bocadillo con la fuente y la frase que respalda resaltada;
  * · bocadillos: los subapartados de detalle (visión) se abren en un bocadillo, sin desplazar el texto.
  * Las que elige solo el autor: tablas (anchos ajustables) y leyenda («Cómo leer este documento»).
- * Modelo: kit_documentos de OncoCore (v1.0.57: ANCHOS_JS, ACORDEON_JS, FIJO_JS, FUENTE_JS, RESALTA_JS). */
+ * Procedencia: docs/referencias/procedencia/kit_documentos.md del repositorio de la SF. */
 (function () {
   const api = window.herramientasDocumento;
   if (!api) return;
@@ -2110,7 +2124,9 @@ document.addEventListener('click', function (e) {
   const CLAVE = 'documento-lectura:' + ruta;
   const guardadas = leer(CLAVE, {}) || {};
   const pref = {
-    modo: guardadas.modo || (ACTIVAS.has('oscuro') ? 'oscuro' : 'sistema'),
+    // Hasta la 1.8 se guardaba «sistema» sin que el lector lo eligiera: solo vale el modo que eligió en «Lectura».
+    modo: (guardadas.modoElegido && guardadas.modo) || 'claro',
+    modoElegido: !!guardadas.modoElegido,
     acordeon: guardadas.acordeon ?? ACTIVAS.has('acordeon'),
     cabecera: guardadas.cabecera ?? ACTIVAS.has('cabecera'),
     fuentes: guardadas.fuentes ?? ACTIVAS.has('fuentes'),
@@ -2427,7 +2443,7 @@ document.addEventListener('click', function (e) {
     alCopiar.push(c => c.querySelectorAll('.modal-lectura, .dc-config').forEach(x => x.remove()));
     const sel = lec.q('select');
     sel.value = pref.modo;
-    sel.addEventListener('change', () => { pref.modo = sel.value; guardar(); aplicarModo(); });
+    sel.addEventListener('change', () => { pref.modo = sel.value; pref.modoElegido = true; guardar(); aplicarModo(); });
     lec.el.querySelectorAll('input[data-clave]').forEach(c => {
       c.checked = !!pref[c.dataset.clave];
       c.addEventListener('change', () => {
@@ -2458,7 +2474,7 @@ document.addEventListener('click', function (e) {
  * · Los párrafos añadidos desde una nota («Convertir en párrafo», herramientas.js) llevan «Añadido · fecha» y
  *   «Retirar», que pide confirmación en el propio botón.
  * Lo pintado (lápiz, barra, etiquetas) no viaja en la copia guardada: se vuelve a poner al abrirla.
- * Modelo: _EDICION_JS y _PARRAFOS_JS del kit_documentos de OncoCore (v1.0.57), sin sus etiquetas clínicas. */
+ * Procedencia: docs/referencias/procedencia/kit_documentos.md del repositorio de la SF. */
 (function () {
   const api = window.herramientasDocumento;
   const EDITA = api && api.ACTIVAS.has('edicion');

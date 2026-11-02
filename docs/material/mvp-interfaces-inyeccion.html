@@ -1352,7 +1352,7 @@ public void changeSpriteSpeed(int index, int delta) {
 <h3>Una vista de texto</h3>
 <dl>
 <dt>Qué tienes que hacer</dt>
-<dd>Escribe una <code>TextView</code> que implemente <code>ViewContract</code> y escriba en consola, una vez por segundo, el fotograma y la posición de cada sprite.</dd>
+<dd>Escribe una <code>TextView</code> que implemente <code>ViewContract</code> y escriba en consola, una vez por segundo, el nombre, la velocidad y la posición de cada sprite: lo que le da el presentador con <code>spriteViews()</code>.</dd>
 <dt>Qué clases cambian</dt>
 <dd>Ninguna: añades <code>TextView</code> y cambias una línea de <code>main</code>.</dd>
 <dt>Qué aprendes</dt>
@@ -1365,7 +1365,7 @@ public void changeSpriteSpeed(int index, int delta) {
 <dt>Qué tienes que hacer</dt>
 <dd>Escribe una <code>FakeView</code> que implemente <code>ViewContract</code> sin abrir ninguna ventana, y un <code>FakeModel</code> con un sprite fijo. Con ellos, comprueba que la velocidad no baja de 1 ni sube de 120, para el pintado y para cada sprite.</dd>
 <dt>Qué clases cambian</dt>
-<dd>Ninguna: la prueba, la <code>FakeView</code> y el <code>FakeModel</code> son clases aparte.</dd>
+<dd>Ninguna: la prueba, la <code>FakeView</code> y el <code>FakeModel</code> son clases aparte. La demo trae las suyas en <code>src/test/java/presenter</code>: míralas cuando termines las tuyas.</dd>
 <dt>Qué aprendes</dt>
 <dd>Que inyectar por interfaces hace que el presentador se pueda probar solo, sin ventana y sin hojas de sprites.</dd>
 </dl>
@@ -1376,7 +1376,7 @@ public void changeSpriteSpeed(int index, int delta) {
 <dt>Qué tienes que hacer</dt>
 <dd>Con un doble clic sobre un sprite, su animación se para o vuelve a empezar.</dd>
 <dt>Qué clases cambian</dt>
-<dd><code>MouseHandler</code> (el gesto), <code>PresenterContract</code> y <code>Presenter</code> (el método nuevo), <code>ModelContract</code> y <code>Model</code> (lo que el presentador le pide) y <code>Sprite</code> (la pausa).</dd>
+<dd><code>MouseHandler</code> (el gesto), <code>PresenterContract</code> y <code>Presenter</code> (el método nuevo), <code>ModelContract</code> y <code>Model</code> (lo que el presentador le pide) y <code>Sprite</code> (la pausa). En las pruebas, también <code>FakeModel</code>, que cumple <code>ModelContract</code>.</dd>
 <dt>Qué aprendes</dt>
 <dd>Cómo atraviesa una funcionalidad nueva las tres capas, y cómo se para y se reanuda un hilo.</dd>
 </dl>

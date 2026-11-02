@@ -793,7 +793,7 @@ Qué aprendes
 ### Una vista de texto
 
 Qué tienes que hacer
-:   Escribe una `TextView` que implemente `ViewContract` y escriba en consola, una vez por segundo, el fotograma y la posición de cada sprite.
+:   Escribe una `TextView` que implemente `ViewContract` y escriba en consola, una vez por segundo, el nombre, la velocidad y la posición de cada sprite: lo que le da el presentador con `spriteViews()`.
 
 Qué clases cambian
 :   Ninguna: añades `TextView` y cambias una línea de `main`.
@@ -807,7 +807,7 @@ Qué tienes que hacer
 :   Escribe una `FakeView` que implemente `ViewContract` sin abrir ninguna ventana, y un `FakeModel` con un sprite fijo. Con ellos, comprueba que la velocidad no baja de 1 ni sube de 120, para el pintado y para cada sprite.
 
 Qué clases cambian
-:   Ninguna: la prueba, la `FakeView` y el `FakeModel` son clases aparte.
+:   Ninguna: la prueba, la `FakeView` y el `FakeModel` son clases aparte. La demo trae las suyas en `src/test/java/presenter`: míralas cuando termines las tuyas.
 
 Qué aprendes
 :   Que inyectar por interfaces hace que el presentador se pueda probar solo, sin ventana y sin hojas de sprites.
@@ -818,7 +818,7 @@ Qué tienes que hacer
 :   Con un doble clic sobre un sprite, su animación se para o vuelve a empezar.
 
 Qué clases cambian
-:   `MouseHandler` (el gesto), `PresenterContract` y `Presenter` (el método nuevo), `ModelContract` y `Model` (lo que el presentador le pide) y `Sprite` (la pausa).
+:   `MouseHandler` (el gesto), `PresenterContract` y `Presenter` (el método nuevo), `ModelContract` y `Model` (lo que el presentador le pide) y `Sprite` (la pausa). En las pruebas, también `FakeModel`, que cumple `ModelContract`.
 
 Qué aprendes
 :   Cómo atraviesa una funcionalidad nueva las tres capas, y cómo se para y se reanuda un hilo.

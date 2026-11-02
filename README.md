@@ -68,7 +68,7 @@ docs/
 src/main/java/   Código de la demo, en los paquetes main, model, view, presenter y contract
 src/main/resources/sprites/
                  Hojas de sprites y su origen
-src/test/java/   Pruebas: sin ventana, de las hojas y con el ratón
+src/test/java/   Pruebas: sin ventana, de las hojas, del modelo y con el ratón
 .vscode/         Tareas «Ejecutar demo» y «Probar», y F5 para depurar
 ```
 

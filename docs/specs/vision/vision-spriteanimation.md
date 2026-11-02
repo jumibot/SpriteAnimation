@@ -3,7 +3,7 @@
 
 # SpriteAnimation: animar sprites con MVP e hilos en Java
 
-**Estado:** 30 de octubre de 2026, borrador 0.1.
+**Estado:** 2 de noviembre de 2026, versión 0.2, al día con el código de la demo.
 
 <div class="caso"><p class="caso-etiqueta">El caso · Andreu, profesor de videojuegos en segundo de DAM</p><p>Andreu tiene treinta prácticas sobre la mesa, y casi todas son la misma: un personaje animado en una ventana de Java. En casi todas, un solo método carga la imagen, cuenta el tiempo y pinta. En el portátil de Laia, el pato aletea como un colibrí; en el ordenador del aula, como si estuviera cansado. El lunes empieza la unidad de animación del módulo optativo de videojuegos, y Andreu se hace la pregunta de cada curso: <strong>¿qué ejemplo les doy para que entiendan cómo se organiza una animación?</strong></p></div>
 
@@ -29,10 +29,10 @@ En la ventana hay dos animaciones sacadas de dos hojas de sprites: el pato volan
 <text x="200" y="296" font-size="12" fill="#555555">arrastrar el sprite</text>
 <rect x="336" y="164" width="128" height="128" rx="8" fill="#2a2a2a"/><svg x="340" y="168" width="120" height="120" viewBox="96 0 48 48"><image href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAYAAAAAwCAYAAAAYeq1+AAAACXBIWXMAAAsTAAALEwEAmpwYAAAF8WlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxNDggNzkuMTY0MDM2LCAyMDE5LzA4LzEzLTAxOjA2OjU3ICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdEV2dD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlRXZlbnQjIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOnBob3Rvc2hvcD0iaHR0cDovL25zLmFkb2JlLmNvbS9waG90b3Nob3AvMS4wLyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgMjEuMCAoV2luZG93cykiIHhtcDpDcmVhdGVEYXRlPSIyMDIxLTExLTI2VDIxOjIxOjI2KzAzOjAwIiB4bXA6TWV0YWRhdGFEYXRlPSIyMDIxLTExLTI2VDIxOjIxOjI2KzAzOjAwIiB4bXA6TW9kaWZ5RGF0ZT0iMjAyMS0xMS0yNlQyMToyMToyNiswMzowMCIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo0YjM1YTA2Mi1mYTU0LTMzNGItOGEzNy04MjgxNGNkYzcwY2QiIHhtcE1NOkRvY3VtZW50SUQ9ImFkb2JlOmRvY2lkOnBob3Rvc2hvcDpkMjAzOTdlNi05MTViLWNiNGUtOGQ0Yi0wYTgzMjE4YTdmNWIiIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1YjdlMWI1OS1jOGYyLTZlNGItOWUxMC00MmE3MjVmMmY3ZWQiIGRjOmZvcm1hdD0iaW1hZ2UvcG5nIiBwaG90b3Nob3A6Q29sb3JNb2RlPSIzIiBwaG90b3Nob3A6SUNDUHJvZmlsZT0ic1JHQiBJRUM2MTk2Ni0yLjEiPiA8eG1wTU06SGlzdG9yeT4gPHJkZjpTZXE+IDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJjcmVhdGVkIiBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOjViN2UxYjU5LWM4ZjItNmU0Yi05ZTEwLTQyYTcyNWYyZjdlZCIgc3RFdnQ6d2hlbj0iMjAyMS0xMS0yNlQyMToyMToyNiswMzowMCIgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgUGhvdG9zaG9wIDIxLjAgKFdpbmRvd3MpIi8+IDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJzYXZlZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDo0YjM1YTA2Mi1mYTU0LTMzNGItOGEzNy04MjgxNGNkYzcwY2QiIHN0RXZ0OndoZW49IjIwMjEtMTEtMjZUMjE6MjE6MjYrMDM6MDAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBob3Rvc2hvcCAyMS4wIChXaW5kb3dzKSIgc3RFdnQ6Y2hhbmdlZD0iLyIvPiA8L3JkZjpTZXE+IDwveG1wTU06SGlzdG9yeT4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz7BrRXcAAAKmUlEQVR42u2dy5EkNRCGxxYOXDnAjSsnvMAJDMIATMAaItYEbhQ0UIQmOx9/plIqqSo7QtHLTHU9mt3/U74/juP4yFi//fhNrVq1Bq1fvv72aNfoz9W656K6/VEAqFULE09uXXkfyGf++PmrT6tAcN3fowJArVo3Ev9ZQPBeSxL/qyDQc70VLJg73H8BoNYS6yVA53v75xVF/89fvzt+//6HtxUFQVQEIgCQxP8EwOquq6jlUwAoC6DWRgB4CSr9nfQZ67jXas/nXa24n2L/gkC7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" width="384" height="48" style="image-rendering:pixelated"/></svg>
 </svg>
-<figcaption>Lo que ven Andreu y sus alumnos al ejecutar la demo. Las cifras del HUD son ilustrativas.</figcaption>
+<figcaption>Lo que ven Andreu y sus alumnos al ejecutar la demo, con las cifras del HUD al arrancar.</figcaption>
 </figure>
 
-Detrás de esa ventana hay siete clases y dos interfaces, repartidas según la arquitectura MVP: modelo, vista y presentador. Cada sprite avanza en su propio hilo y otro hilo pinta. Así Andreu enseña a la vez las tres ideas que sus alumnos necesitan: el recorte de la hoja, la separación entre estado y dibujo, y los dos ritmos. Las secciones siguientes las recorren una a una.
+Detrás de esa ventana hay nueve clases, tres interfaces y un record, repartidos según la arquitectura MVP: modelo, vista y presentador. Cada sprite avanza en su propio hilo y otro hilo pinta. Así Andreu enseña a la vez las tres ideas que sus alumnos necesitan: el recorte de la hoja, la separación entre estado y dibujo, y los dos ritmos. Las secciones siguientes las recorren una a una.
 
 ## Qué le cuesta a quien empieza
 
@@ -89,7 +89,7 @@ Las dos hojas son de dominio público (CC0). El pato es «[16x16 Duck](https://o
 
 <div class="caso"><p class="caso-etiqueta">El caso · capítulo 3 · ¿quién manda aquí?</p><p>Hasta ahora, Andreu explicaba MVP con un formulario de altas y bajas, y la clase se le dormía. Esta vez tiene fotogramas que alguien tiene que elegir, alguien tiene que pintar y un ratón que cambia cosas. ¿Quién hace cada cosa?</p></div>
 
-La demo reparte el trabajo según MVP, con el mínimo de clases con que la separación se ve. Son siete clases y dos interfaces, una para la vista y otra para el presentador. Las interfaces enseñan el contrato entre las capas: qué puede pedir cada una a la otra.
+La demo reparte el trabajo según MVP, con el mínimo de clases con que la separación se ve. Son nueve clases, tres interfaces y un record, cada uno en su archivo. Las interfaces son el contrato entre las capas, una por capa: qué puede pedir cada una a las otras. El record, `SpriteView`, lleva a la vista lo que tiene que pintar de cada sprite, porque el sprite no sale del modelo.
 
 <figure class="vertical">
 <svg viewBox="0 0 560 520" role="img" aria-label="Las clases de la demo según MVP y los dos recorridos: pintar y ratón" style="font-family:var(--fuente-texto);display:block">
@@ -98,16 +98,16 @@ La demo reparte el trabajo según MVP, con el mínimo de clases con que la separ
 <text x="80" y="58" font-size="12" fill="#555555">el lienzo: un Canvas sobre el que se pinta</text>
 <rect x="60" y="112" width="440" height="78" rx="10" fill="none" stroke="#b2deda"/>
 <text x="80" y="136" font-size="14" font-weight="700" fill="#00726b">View</text>
-<text x="128" y="136" font-size="12" fill="#888888">· implementa la interfaz de la vista</text>
-<text x="80" y="157" font-size="12" fill="#555555">crea la ventana · tiene el hilo de pintado</text>
-<text x="80" y="176" font-size="12" fill="#555555">escucha el ratón sobre el Viewer</text>
+<text x="128" y="136" font-size="12" fill="#888888">· implementa ViewContract</text>
+<text x="80" y="157" font-size="12" fill="#555555">crea la ventana y el HUD · tiene el hilo de pintado</text>
+<text x="80" y="176" font-size="12" fill="#555555">su MouseHandler escucha el ratón sobre el Viewer</text>
 <rect x="60" y="252" width="440" height="66" rx="10" fill="none" stroke="#b2deda"/>
 <text x="80" y="277" font-size="14" font-weight="700" fill="#00726b">Presenter</text>
-<text x="160" y="277" font-size="12" fill="#888888">· implementa la interfaz del presentador</text>
+<text x="160" y="277" font-size="12" fill="#888888">· implementa PresenterContract</text>
 <text x="80" y="300" font-size="12" fill="#555555">une el modelo y la vista; no pinta ni guarda estado propio</text>
 <rect x="60" y="380" width="440" height="126" rx="10" fill="none" stroke="#b2deda"/>
 <text x="80" y="404" font-size="14" font-weight="700" fill="#00726b">Model</text>
-<text x="132" y="404" font-size="12" fill="#555555">· los dos sprites; los arranca y los para</text>
+<text x="132" y="404" font-size="12" fill="#555555">· implementa ModelContract · los sprites no salen de él</text>
 <text x="96" y="434" font-size="13" font-weight="700" fill="#004d47">Sprite pato</text>
 <text x="96" y="452" font-size="12" fill="#555555">4 fotogramas · su hilo · su velocidad · su posición</text>
 <text x="96" y="478" font-size="13" font-weight="700" fill="#004d47">Sprite explosión</text>
@@ -117,9 +117,9 @@ La demo reparte el trabajo según MVP, con el mínimo de clases con que la separ
 <text x="150" y="98" font-size="12" fill="#00726b">pinta en cada vuelta</text>
 <line x1="140" y1="192" x2="140" y2="248" stroke="#00726b" stroke-width="1.6" marker-end="url(#fv)"/>
 <text x="150" y="216" font-size="12" fill="#00726b">pide qué dibujar</text>
-<text x="150" y="232" font-size="12" fill="#00726b">y recibe los datos</text>
+<text x="150" y="232" font-size="12" fill="#00726b">y recibe un SpriteView por sprite</text>
 <line x1="140" y1="320" x2="140" y2="376" stroke="#00726b" stroke-width="1.6" marker-end="url(#fv)"/>
-<text x="150" y="346" font-size="12" fill="#00726b">lee fotograma</text>
+<text x="150" y="346" font-size="12" fill="#00726b">pide una copia del fotograma</text>
 <text x="150" y="362" font-size="12" fill="#00726b">y posición</text>
 <line x1="420" y1="192" x2="420" y2="248" stroke="#2c6e9b" stroke-width="1.6" marker-end="url(#fa)"/>
 <text x="410" y="216" font-size="12" fill="#2c6e9b" text-anchor="end">rueda o arrastre</text>
@@ -130,11 +130,11 @@ La demo reparte el trabajo según MVP, con el mínimo de clases con que la separ
 <figcaption>Las flechas de la izquierda son el recorrido de pintar; las de la derecha, el del ratón. <code>SpriteAnimation</code>, la clase principal, crea las piezas y las conecta; <code>SpriteSheet</code> prepara los fotogramas.</figcaption>
 </figure>
 
-Para pintar, la iniciativa es de la vista. En cada vuelta, el hilo de pintado de `View` le pide al presentador qué tiene que dibujar. El presentador lo lee del modelo y se lo devuelve, y `View` lo pinta sobre el `Viewer`. Nadie empuja nada hacia la vista: ella pide cuando le toca.
+Para pintar, la iniciativa es de la vista. En cada vuelta, el hilo de pintado de `View` le pide al presentador qué tiene que dibujar. El presentador se lo pide al modelo y se lo devuelve como una lista de `SpriteView`, con una copia de cada fotograma, y `View` lo pinta sobre el `Viewer`. Nadie empuja nada hacia la vista: ella pide cuando le toca.
 
-Para el ratón, el recorrido va al revés. `View` recoge el gesto sobre el lienzo y avisa al presentador, que cambia el modelo: la velocidad o la posición de un sprite. La vista no mueve nada por su cuenta. En la vuelta siguiente, el sprite aparece donde diga el modelo.
+Para el ratón, el recorrido va al revés. `MouseHandler`, la parte de la vista que escucha el ratón, recoge el gesto sobre el lienzo y avisa al presentador, que cambia el modelo: la velocidad o la posición de un sprite. La vista no mueve nada por su cuenta. En la vuelta siguiente, el sprite aparece donde diga el modelo.
 
-Así cada clase tiene una sola razón para cambiar. Si un alumno quiere otro personaje, toca `SpriteSheet` y el modelo; si quiere otra ventana, solo la vista.
+Así cada clase tiene una sola razón para cambiar. Si un alumno quiere otro personaje, añade una línea en `main`; si quiere otra ventana, solo toca la vista.
 
 ## Dos ritmos que no dependen uno del otro
 
@@ -159,12 +159,12 @@ La demo separa dos velocidades. La **velocidad de renderización** es cuántas v
 <line x1="40" y1="268" x2="520" y2="268" stroke="#888888"/>
 <g font-size="12" fill="#888888"><text x="40" y="288">0 s</text><text x="268" y="288">0,5 s</text><text x="508" y="288">1 s</text></g>
 </svg>
-<figcaption>Un segundo de la demo con las cifras del HUD (ilustrativas). Cada repintado dibuja el fotograma que toca en ese momento.</figcaption>
+<figcaption>Un segundo de la demo con las cifras del HUD al arrancar. Cada repintado dibuja el fotograma que toca en ese momento.</figcaption>
 </figure>
 
 Si el pintado va más rápido que la animación, dibuja el mismo fotograma varias veces. Si va más despacio, se salta alguno, pero la animación no se ralentiza. Para que el ritmo sea constante, cada hilo **mide el tiempo** en lugar de contar vueltas. Es la idea que los programadores de juegos conocen como «[Fix Your Timestep](https://gafferongames.com/post/fix_your_timestep/)», reducida a lo mínimo.
 
-Los hilos son aquí un tema secundario, pero son la pieza que hace visible esta diferencia. Hay uno por sprite, en el modelo, y uno de pintado, en la vista. La demo enseña a crearlos, a pararlos limpiamente y a mantener su velocidad. Los gestos del ratón llegan por un tercer hilo, el de eventos de Swing. El código resuelve con lo mínimo el estado que comparte con el de pintado.
+Los hilos son aquí un tema secundario, pero son la pieza que hace visible esta diferencia. Hay uno por sprite, en el modelo, y uno de pintado, en la vista. La demo enseña a crearlos y a mantener su velocidad. No los para uno a uno: al cerrar la ventana, `EXIT_ON_CLOSE` termina el programa y, con él, todos los hilos. Los gestos del ratón llegan por un tercer hilo, el de eventos de Swing. El código resuelve con lo mínimo el estado que comparte con el de pintado.
 
 <div class="escena" role="note" aria-label="Escena ilustrativa">
 <p class="escena-etiqueta">Escena ilustrativa · el aula, el lunes</p>
@@ -186,7 +186,7 @@ La escena enseña lo que ningún párrafo consigue tan rápido: tocar una veloci
 
 La demo admite dos gestos con el ratón. La rueda sobre una cifra del HUD sube o baja esa velocidad. Arrastrar un sprite lo cambia de sitio; si dos se solapan, se coge el de arriba.
 
-Los dos gestos recorren MVP de vuelta, como en el gráfico de «Cada pieza en su sitio». `View` los recoge sobre el `Viewer` y avisa al presentador, que cambia el modelo. Por eso el pato sigue aleteando mientras se arrastra. Su hilo no sabe nada del ratón: la posición y la animación son datos distintos del mismo sprite.
+Los dos gestos recorren MVP de vuelta, como en el gráfico de «Cada pieza en su sitio». `MouseHandler`, de la vista, los recoge sobre el `Viewer` y avisa al presentador, que cambia el modelo. Por eso el pato sigue aleteando mientras se arrastra. Su hilo no sabe nada del ratón: la posición y la animación son datos distintos del mismo sprite.
 
 Con muy poco código, el ratón le da a Andreu lo que le faltaba para explicar MVP: que se vea que la vista no decide nada. Solo recoge el gesto y pinta lo que el modelo diga.
 
@@ -196,7 +196,7 @@ Con muy poco código, el ratón le da a Andreu lo que le faltaba para explicar M
 
 No es un olvido. SpriteAnimation es un ejemplo mínimo, no un juego: no tiene teclas de movimiento, ni física, ni colisiones. Cada cosa que no está la deja fuera para que lo que sí está se vea sin ruido.
 
-La misma regla vale para el código. Tiene el mínimo de clases y de líneas con que se ven los tres temas: las hojas de sprites, MVP y los hilos. Cada clase se gana su sitio por lo que enseña, y no hay utilidades, capas ni bibliotecas de concurrencia que no hagan falta. Las dos interfaces están porque enseñan el contrato entre las capas.
+La misma regla vale para el código. Tiene el mínimo de clases y de líneas con que se ven los tres temas: las hojas de sprites, MVP y los hilos. Cada clase se gana su sitio por lo que enseña, y no hay utilidades, capas ni bibliotecas de concurrencia que no hagan falta. Las tres interfaces están porque enseñan el contrato entre las capas.
 
 Para Andreu, esa ausencia es un ejercicio: añadir las colisiones es fácil cuando el alumno sabe en qué clase va cada cosa.
 
@@ -226,7 +226,7 @@ SpriteAnimation no les ha hecho la práctica a los alumnos de Andreu. Les ha dad
 
 Andreu, sus alumnos Laia y Pau, y su compañera Marta son ficticios. El caso se ha construido para ilustrar los tres tropiezos de «Qué le cuesta a quien empieza». Los momentos de la historia (las prácticas sobre la mesa, la clase del lunes, la entrega dos semanas después) son ilustrativos.
 
-Las cifras del HUD (60 repintados, 8 fotogramas del pato y 12 de la explosión por segundo) son un ejemplo, no valores de la demo. Con ellas, el pato da una vuelta completa a su animación cada medio segundo y la explosión, cada 0,67 segundos. A los 0,3 segundos, el pato está en su fotograma 2 (0,3 × 8 = 2,4) y la explosión, en el 3 (0,3 × 12 = 3,6).
+Las cifras del HUD (60 repintados, 8 fotogramas del pato y 12 de la explosión por segundo) son las de la demo al arrancar; con la rueda cambian. Con ellas, el pato da una vuelta completa a su animación cada medio segundo y la explosión, cada 0,67 segundos. A los 0,3 segundos, el pato está en su fotograma 2 (0,3 × 8 = 2,4) y la explosión, en el 3 (0,3 × 12 = 3,6).
 
 #### Las hojas de sprites
 

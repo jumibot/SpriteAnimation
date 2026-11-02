@@ -48,7 +48,7 @@
     .bloque-39 { --primario: #2c6e9b; --oscuro: #1b4460; --fondo: #f4f8fa; --borde: #d7e3ec; --linea: #e6eef3; --tenue: #a0bed2; --fondo-suave: #f9fbfc; --fondo-medio: #dde8ef; --primario-vivo: #6192b4; --primario-rgb: 44, 110, 155; }
     .bloque-40 { --primario: #b23a2a; --oscuro: #6e241a; --fondo: #fbf5f4; --borde: #f0dad7; --linea: #f6e7e5; --tenue: #dca69f; --fondo-suave: #fdf9f9; --fondo-medio: #f3dfdd; --primario-vivo: #c56b5f; --primario-rgb: 178, 58, 42; }
   </style>
-  <style data-kit="skills/documento_fundacional/assets/estilo_fundacional.css">
+  <style data-kit="skills/crear_documentos/assets/estilo_documento.css">
 /* Maqueta editorial del documento fundacional (skill documento_fundacional).
  * Portada (clara u oscura, con cifras), menú fijo, secciones numeradas «01 / ETIQUETA», entradilla,
  * recuadros (aviso, decisión), tarjetas, columnas, fichas con buscador, fuentes y referencias.
@@ -212,6 +212,31 @@ button:disabled { opacity: .45; cursor: default; }
 .ficha { border-top: 4px solid var(--tenue); }
 .ficha h3 { font-size: 1.6rem; letter-spacing: -.01em; }
 
+/* Tarjetas con cabecera («#### Título {color=… icono=…}» o «::: tarjetas N plegables»): la cabecera lleva el color
+ * de la tarjeta de fondo y su icono; plegables, son <details> con la cabecera siempre a la vista (plegadas al cargar
+ * en el móvil, abiertas al imprimir). Dentro, cada campo lleva su marca de color y una lista en un campo sale en chips. */
+details.tarjeta { display: block; }
+.tarjeta.con-cabecera { padding: 0; overflow: hidden; }
+.tarjeta-cabecera { display: flex; align-items: center; gap: .65rem; padding: .85rem 1.2rem; margin: 0;
+                    background: var(--fondo-medio); color: var(--oscuro); list-style: none; }
+.con-color > .tarjeta-cabecera { background: var(--c); color: #fff; }
+.tarjeta-cabecera .tarjeta-titulo { margin: 0; color: inherit; font-size: 1.18rem; line-height: 1.25; }
+.tarjeta-icono { flex: none; }
+.tarjeta-cuerpo { padding: 1rem 1.3rem .5rem; }
+.tarjeta-cuerpo > :first-child { margin-top: 0; }
+.tarjeta-cuerpo > dl:first-child > dt:first-child { border-top: 0; padding-top: 0; }
+summary.tarjeta-cabecera { cursor: pointer; min-height: 44px; }
+summary.tarjeta-cabecera::-webkit-details-marker { display: none; }
+summary.tarjeta-cabecera::after { content: ""; flex: none; margin-left: auto; width: .55rem; height: .55rem; border-right: 2px solid currentColor;
+                                  border-bottom: 2px solid currentColor; transform: translateY(-2px) rotate(45deg); transition: transform .2s; }
+details.tarjeta:not([open]) > summary.tarjeta-cabecera::after { transform: rotate(-45deg); }
+summary.tarjeta-cabecera:focus-visible { outline: 3px solid var(--c-oscuro, var(--primario)); outline-offset: -3px; }
+.tarjeta.con-color dt { display: flex; align-items: center; gap: .45rem; color: var(--c-oscuro); border-top-color: var(--c-borde); }
+.tarjeta.con-color dt::before { content: ""; flex: none; width: .55rem; height: .55rem; border-radius: 2px; background: var(--c); }
+.con-color dd > ul { list-style: none; padding: 0; margin: .35rem 0; display: flex; flex-wrap: wrap; gap: .4rem; }
+.con-color dd > ul > li { margin: 0; padding: .15rem .7rem; border: 1px solid var(--c-borde); border-radius: 999px; background: var(--c-suave);
+                          color: var(--c-oscuro); font-size: .875rem; font-weight: 650; }
+
 /* Campos: lista de definición («Término» / «:   definición») para los campos que se repiten en tarjetas, fichas
  * y apartados (cuándo aporta valor, límite, qué medir, lectura para el proyecto…). El rótulo es pequeño, con un
  * filete encima, y el texto del campo empieza sin negrita. */
@@ -222,6 +247,38 @@ button:disabled { opacity: .45; cursor: default; }
 .seccion dd { margin: 0; }
 .seccion dd p { margin: .3rem 0; }
 .seccion dd > :last-child { margin-bottom: 0; }
+
+/* Botón «Plegar las tarjetas» delante de un bloque de tarjetas plegables (assets/plegado.js). No se imprime. */
+.plegar-tarjetas { display: block; margin: .8rem 0 -.4rem auto; min-height: 28px; padding: .2rem .7rem; border: 1px solid var(--borde);
+                   border-radius: 6px; background: #fff; color: var(--oscuro); font: inherit; font-size: .875rem; font-weight: 650; cursor: pointer; }
+.plegar-tarjetas:hover { background: var(--fondo); }
+.plegar-tarjetas:focus-visible { outline: 3px solid var(--primario); outline-offset: 2px; }
+
+/* Preguntas con opciones («::: preguntas»): tarjetas con cabecera y la marca de su estado (abierta, decidida,
+ * separada). La opción recomendada lleva un filete del color del tema y su marca; la elegida, la suya, y las demás
+ * pasan a gris. «Recomendación» y «Decisión» van en un recuadro suave. El estado no usa los colores de la serie,
+ * que en el documento ya significan otra cosa. */
+.pregunta > .tarjeta-cabecera { flex-wrap: wrap; row-gap: .35rem; }
+.pregunta > summary.tarjeta-cabecera { position: relative; padding-right: 2.6rem; }
+.pregunta > summary.tarjeta-cabecera::after { position: absolute; right: 1.2rem; top: 1.3rem; margin: 0; }
+.estado-pregunta { margin-left: auto; flex: none; padding: .12rem .6rem; border-radius: 999px; font-size: .8125rem; font-weight: 700;
+                   letter-spacing: .04em; line-height: 1.5; white-space: nowrap; }
+.estado-pregunta.abierta { background: #fff; color: var(--acento); border: 1.5px solid var(--acento); }
+.estado-pregunta.decidida { background: var(--primario); color: #fff; border: 1.5px solid var(--primario); }
+.estado-pregunta.separada { background: #fff; color: var(--texto-suave); border: 1.5px dashed var(--texto-tenue); }
+.pregunta dt.opcion { display: flex; flex-wrap: wrap; align-items: center; gap: .45rem; }
+.pregunta dt.opcion.recomendada, .pregunta dd.opcion.recomendada,
+.pregunta dt.opcion.elegida, .pregunta dd.opcion.elegida { border-left: 3px solid var(--primario); padding-left: .75rem; }
+.pregunta dt.opcion.elegida, .pregunta dd.opcion.elegida { border-left-color: var(--oscuro); }
+.pregunta dd.opcion.descartada { color: var(--texto-suave); }
+.marca-opcion { padding: .05rem .5rem; border-radius: 4px; font-size: .8125rem; letter-spacing: .06em; font-weight: 750; color: #fff;
+                background: var(--primario); }
+.marca-opcion.elegida { background: var(--oscuro); }
+.pregunta dt.recomendacion, .pregunta dt.decision { margin-bottom: 0; padding: .6rem .85rem 0; border-top: 0;
+                                                     background: var(--fondo); border-radius: 8px 8px 0 0; }
+.pregunta dd.recomendacion, .pregunta dd.decision { padding: .25rem .85rem .7rem; background: var(--fondo); border-radius: 0 0 8px 8px; }
+.pregunta dt.decision, .pregunta dd.decision { background: var(--fondo-medio); }
+.pregunta dt.decision { color: var(--oscuro); }
 
 /* Insignias, referencias y saltos */
 a.insignia { display: inline-block; padding: .22rem .5rem; margin: .1rem .1rem .1rem 0; border-radius: 5px; background: var(--fondo-medio);
@@ -286,13 +343,16 @@ code { font-size: .88em; background: var(--fondo-suave); padding: .05em .3em; bo
   .portada, .portada.oscura { background: #fff; color: var(--texto); padding: 0 0 1rem; break-after: page; border: 0; }
   .oscura .marca, .oscura .cifras strong { color: var(--primario); }
   .oscura .subtitulo, .oscura .idea p, .oscura .datos-version, .oscura .datos-version span, .oscura .cifras span { color: var(--texto); }
-  .menu, .buscador, .sin-resultados, .imprimir, .saltar { display: none !important; }
+  .menu, .buscador, .sin-resultados, .imprimir, .saltar, .plegar-tarjetas { display: none !important; }
   .seccion-titulo::after { display: none; }
   details.seccion::details-content { content-visibility: visible; display: block; } /* abiertas aunque no haya JS */
   .ficha[hidden] { display: flex !important; }
   .seccion { padding-top: 1.4rem; }
   .cols-2, .cols-3, .columnas.cols-2 { display: block; }
   .tarjeta { break-inside: avoid; margin-bottom: .8rem; }
+  details.tarjeta::details-content { content-visibility: visible; display: block; }
+  summary.tarjeta-cabecera::after { display: none; }
+  .con-color > .tarjeta-cabecera, .estado-pregunta, .marca-opcion { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .seccion h2, .etiqueta, .seccion h3, .seccion h4, .seccion dt { break-after: avoid; }
   .seccion ol > li, .seccion tr, .fuentes p { break-inside: avoid; }
   .fuentes { display: block; }
@@ -312,7 +372,7 @@ code { font-size: .88em; background: var(--fondo-suave); padding: .05em .3em; bo
 .herramienta button:focus-visible, .herramienta input:focus-visible, .herramienta textarea:focus-visible, .abrir-herramienta:focus-visible { outline: 3px solid var(--acento); outline-offset: 2px; }
 .herramienta ol, .herramienta p { margin: 0; padding: 0; }
 .bd-campo { display: block; }
-/* Columna de herramientas y buscador, según el modelo de los 20 casos de OncoCore.
+/* Columna de herramientas y buscador.
  * Desde 1400 px, la herramienta va anclada en una columna a la derecha, de ancho ajustable y plegable;
  * la chincheta de la barra (a la derecha del engranaje) las despega todas como ventanas flotantes, que se arrastra y se minimiza. Por debajo, minimizada del todo
  * hasta pulsar «Buscar» en el menú; entonces se abre como panel inferior, sin tapar la cabecera ni el menú. */
@@ -384,7 +444,7 @@ mark.bd-hit.actual { background: var(--oscuro); color: #fff; box-shadow: none; }
 .dc-guardar { font: inherit; font-size: .8125rem; font-weight: 700; cursor: pointer; border: 1px solid var(--primario); border-radius: var(--esquinas, 6px);
   background: var(--primario); color: #fff; padding: .3rem .75rem; min-height: 24px; }
 .dc-guardar:hover { background: var(--oscuro); border-color: var(--oscuro); }
-/* En la columna, la barra es su primera tarjeta, como en OncoCore: versión y herramientas, estado y «Guardar». */
+/* En la columna, la barra es su primera tarjeta: versión y herramientas, estado y «Guardar». */
 .columna-herramientas > .barra-doc { display: flex; flex-wrap: nowrap; min-width: 0; box-sizing: border-box; justify-content: space-between; align-items: center; gap: .7rem;
   padding: .45rem .45rem .45rem .8rem; font-size: .78rem; border: 1px solid var(--linea); border-radius: var(--esquinas, 10px);
   background: linear-gradient(180deg, var(--fondo) 0, #fff 100%); box-shadow: 0 4px 14px rgba(var(--primario-rgb, 0, 0, 0), .10); }
@@ -399,7 +459,7 @@ mark.bd-hit.actual { background: var(--oscuro); color: #fff; box-shadow: none; }
 .nt-nota textarea { resize: vertical; min-height: 4.2em; line-height: 1.45; }
 .nt-ayuda, .nt-vacio { font-size: .8125rem; color: var(--texto-suave); }
 .nt-lista { list-style: none; display: grid; gap: .6rem; }
-/* Tarjetas de nota (modelo gene_associations de OncoCore). En la columna no hay panel común: cada nota es su propia
+/* Tarjetas de nota. En la columna no hay panel común: cada nota es su propia
  * tarjeta, con el aspecto de una herramienta; en la ventana flotante y en el móvil van dentro del panel «Notas». */
 .nt-general-zona, .nt-foco { display: grid; gap: .8rem; }
 .nt-general-zona:empty, .nt-foco:empty { display: none; }
@@ -452,7 +512,7 @@ mark.nota-cita.destello { background: var(--acento); color: #fff; transition: ba
   background: var(--oscuro); color: #fff; padding: .4rem .8rem; min-height: 32px; box-shadow: 0 6px 18px rgba(0, 0, 0, .25); }
 .boton-anotar[hidden] { display: none; }
 
-/* Aspecto de tarjeta (como en OncoCore): franja de color arriba, fondo tintado y sombra del color del tema. */
+/* Aspecto de tarjeta: franja de color arriba, fondo tintado y sombra del color del tema. */
 html.con-columna .columna-herramientas { background: var(--fondo-suave); box-shadow: -6px 0 18px rgba(var(--primario-rgb, 0, 0, 0), .08); }
 .herramienta { position: relative; padding: .9rem 1rem 1rem; border: 1px solid var(--linea); border-radius: var(--esquinas, 10px);
   background: linear-gradient(180deg, var(--fondo) 0, #fff 3.2rem); box-shadow: 0 4px 14px rgba(var(--primario-rgb, 0, 0, 0), .10); }
@@ -618,7 +678,7 @@ p.editando { outline: 2px solid var(--primario); outline-offset: 4px; border-rad
 /* Pie con la procedencia del documento (la ponen los generadores). */
 .procedencia { font-size: .75rem; color: var(--texto-suave); margin-top: .35rem; font-variant-numeric: tabular-nums; }
 
-/* Tamaño de las notas en la columna (modelo OncoCore): el panel ocupa lo que dejan las demás herramientas y cada
+/* Tamaño de las notas en la columna: el panel ocupa lo que dejan las demás herramientas y cada
  * nota abierta se reparte ese alto con las otras, entre 12em y el 60 % de la pantalla; su texto llena la tarjeta. */
 html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="columna"] { display: flex; }
 html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="columna"]:has(.nt-tarjeta:not(.plegada):not(.nt-todas)) { flex: 1 0 auto; }
@@ -630,7 +690,7 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
 .herr-notas.por-seccion[data-modo="columna"] .nt-nota:has(> textarea.nt-amplia) { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 7em; }
 .herr-notas.por-seccion[data-modo="columna"] textarea.nt-amplia { flex: 1 1 auto; min-height: 7em; resize: none; }
 
-/* Notas en su sitio (1.8.0; discretas desde la 1.8.1): sin columna, como en OncoCore, cada sección acaba con un
+/* Notas en su sitio (1.8.0; discretas desde la 1.8.1): sin columna, cada sección acaba con un
    rótulo pequeño, el campo de texto abierto y «Convertir en párrafo» a la derecha, sin caja ni plegado. La nota general
    y «Tus notas» van al principio del documento. */
 :is(.nt-sitio, .nt-sitio-inicio) button { font: inherit; font-size: .8rem; font-weight: 600; line-height: 1.2; cursor: pointer;
@@ -656,15 +716,30 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
 @media print { .nt-sitio, .nt-sitio-inicio { display: none; } }
 .abrir-herramienta[hidden] { display: none !important; }
 </style>
+  <style>
+/* Bloques de código de los documentos del proyecto. El kit de la SF solo da estilo al código en línea. */
+pre {
+  background: var(--fondo-suave);
+  border-left: 3px solid var(--primario);
+  border-radius: 4px;
+  padding: .8em 1em;
+  margin: 1em 0 1.2em;
+  overflow-x: auto;
+  line-height: 1.45;
+}
+pre code { background: none; padding: 0; font-size: .82em; white-space: pre; }
+@media print { pre { overflow: visible; white-space: pre-wrap; break-inside: avoid; } pre code { white-space: pre-wrap; } }
+
+  </style>
 </head>
 <body>
 <a class="saltar" href="#contenido">Saltar al contenido</a>
-<header class="portada oscura"><div class="portada-dentro"><p class="marca">SpriteAnimation · Documento fundacional · Octubre 2026</p><h1 class="titular">SpriteAnimation<span class="lema">Animar sprites,<br>separar el estado del dibujo.</span></h1><p class="subtitulo">Un ejemplo mínimo en Java para enseñar hojas de sprites, MVP e hilos en segundo de DAM.</p></div></header>
+<header class="portada oscura"><div class="portada-dentro"><p class="marca">SpriteAnimation · Documento fundacional · Noviembre 2026</p><h1 class="titular">SpriteAnimation<span class="lema">Animar sprites,<br>separar el estado del dibujo.</span></h1><p class="subtitulo">Un ejemplo mínimo en Java para enseñar hojas de sprites, MVP e hilos en segundo de DAM.</p></div></header>
 <nav class="menu" aria-label="Secciones del documento"><div class="menu-dentro"><span class="menu-botones"><button type="button" class="plegar">Plegar todo</button><button type="button" class="imprimir" onclick="window.print()">Imprimir / PDF</button></span></div></nav>
 <div class="hoja">
-  <main id="contenido" tabindex="-1"><div class="avisos-globales"><aside class="recuadro"><p class="recuadro-etiqueta">Alcance</p><p>El proyecto está en definición y aún no tiene código. Lo que este documento describe de la demo son objetivos de diseño. Las cifras de velocidad (60 repintados, 8 y 12 fotogramas por segundo) son ilustrativas. Solo las referencias externas son hechos publicados.</p></aside></div><details class="seccion" id="razon" open><summary class="seccion-titulo"><span class="etiqueta">01 / Razón</span><h2>Razón para desarrollar</h2></summary><div class="seccion-cuerpo"><p class="entradilla">SpriteAnimation es una demo en Java, con Swing y Java2D, pensada para que un profesor de segundo de DAM enseñe a animar sprites en el módulo optativo de videojuegos y sus alumnos la consulten cuando la necesiten. Su propósito es que, en una sola ventana y con muy poco código, se vean tres ideas: cómo se recorta una hoja de sprites, por qué conviene separar el estado del dibujo y por qué la velocidad de una animación no depende de la de pintado.</p>
+  <main id="contenido" tabindex="-1"><div class="avisos-globales"><aside class="recuadro"><p class="recuadro-etiqueta">Alcance</p><p>La demo ya está construida, con sus pruebas, en el repositorio del proyecto. Lo que este documento describe de ella es lo que hace su código, y las cifras de velocidad (60 repintados, 8 y 12 fotogramas por segundo) son las de la demo al arrancar. Lo que falta por comprobar es su uso en clase.</p></aside></div><details class="seccion" id="razon" open><summary class="seccion-titulo"><span class="etiqueta">01 / Razón</span><h2>Razón para desarrollar</h2></summary><div class="seccion-cuerpo"><p class="entradilla">SpriteAnimation es una demo en Java, con Swing y Java2D, pensada para que un profesor de segundo de DAM enseñe a animar sprites en el módulo optativo de videojuegos y sus alumnos la consulten cuando la necesiten. Su propósito es que, en una sola ventana y con muy poco código, se vean tres ideas: cómo se recorta una hoja de sprites, por qué conviene separar el estado del dibujo y por qué la velocidad de una animación no depende de la de pintado.</p>
 <p>Lo que ya existe resuelve otras cosas. El tutorial de Java de Oracle avanza el fotograma con un temporizador de Swing y pide repintar, sin separar capas <a class="ref" href="#src-T1" title="Oracle, Performing Animation">[T1]</a>. El libro de Andrew Davison explica el pintado activo con todo detalle, en cerca de mil páginas <a class="ref" href="#src-T2" title="Davison, 2005">[T2]</a>. Los motores como libGDX recortan la hoja y eligen el fotograma según el tiempo, pero lo esconden tras su propia clase <code>Animation</code> <a class="ref" href="#src-T3" title="libGDX, 2D Animation">[T3]</a>. SpriteAnimation se queda a medio camino: pequeño como un tutorial, con lo que un motor esconde a la vista.</p>
-<p>La tesis es que <strong>merece construirse ahora un ejemplo mínimo y ejemplar</strong>, y que tendrá valor si los alumnos dejan de atar la animación al repintado y aprenden a repartir el código en capas. Se apoya en dos hechos: los mismos alumnos estudian hilos ese curso, en Programación de Servicios y Procesos <a class="ref" href="#src-C1" title="IES Historiador Chabás, 2023-24">[C1]</a>, y separar el ritmo de la simulación del de pintado es una práctica asentada en la programación de juegos <a class="ref" href="#src-T4" title="Fiedler, Fix Your Timestep">[T4]</a>. Lo que falta por saber es si los alumnos lo usan y si sus prácticas cambian, y eso es lo que debe medir el piloto.</p>
+<p>La tesis es que <strong>merece la pena un ejemplo mínimo y ejemplar</strong>, y que tendrá valor si los alumnos dejan de atar la animación al repintado y aprenden a repartir el código en capas. Se apoya en dos hechos: los mismos alumnos estudian hilos ese curso, en Programación de Servicios y Procesos <a class="ref" href="#src-C1" title="IES Historiador Chabás, 2023-24">[C1]</a>, y separar el ritmo de la simulación del de pintado es una práctica asentada en la programación de juegos <a class="ref" href="#src-T4" title="Fiedler, Fix Your Timestep">[T4]</a>. Lo que falta por saber es si los alumnos lo usan y si sus prácticas cambian, y eso es lo que debe medir el piloto.</p>
 <div class="tarjetas cols-2">
 <article class="tarjeta">
 <h3>Los hilos están en el temario</h3>
@@ -687,8 +762,8 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
 <div class="tarjetas cols-3">
 <article class="tarjeta">
 <h3>Clases</h3>
-<p class="metrica"><strong>7</strong> clases y 2 interfaces</p>
-<p><code>SpriteAnimation</code>, <code>SpriteSheet</code>, <code>Sprite</code>, <code>Model</code>, <code>View</code>, <code>Viewer</code> y <code>Presenter</code>, con una interfaz para la vista y otra para el presentador.</p>
+<p class="metrica"><strong>9</strong> clases, 3 contratos y 1 record</p>
+<p><code>SpriteAnimation</code> monta la aplicación; <code>Model</code>, <code>Sprite</code> y <code>SpriteSheet</code> forman el modelo; <code>View</code>, <code>Viewer</code>, <code>Hud</code> y <code>MouseHandler</code>, la vista; y <code>Presenter</code>, el presentador. Los contratos son <code>ModelContract</code>, <code>ViewContract</code> y <code>PresenterContract</code>, y el record <code>SpriteView</code> lleva a la vista lo que pinta. Cada uno, en su archivo.</p>
 </article>
 <article class="tarjeta">
 <h3>Hojas de sprites</h3>
@@ -704,7 +779,7 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
 <h3>Cómo se recorta una hoja</h3>
 <p><code>SpriteSheet</code> carga cada hoja una vez y la parte en fotogramas sueltos, listos para pintar. Recortar es calcular un rectángulo por fotograma a partir de su tamaño y del sentido en que avanzan. Las dos hojas se recortan en sentidos distintos, hacia abajo el pato y hacia la derecha la explosión, para que se vea que el recorte depende de cómo está colocada la hoja.</p>
 <h3>Cómo se reparte el trabajo</h3>
-<p>El reparto sigue MVP, y la vista se divide en dos clases: <code>View</code> crea la ventana, tiene el hilo de pintado y escucha el ratón, y <code>Viewer</code> es solo el lienzo, un <code>Canvas</code>, sobre el que se pinta.</p>
+<p>El reparto sigue MVP, y las capas se hablan por tres contratos, uno por capa: la vista y el modelo no se conocen. La vista se divide en cuatro clases: <code>View</code> crea la ventana y tiene el hilo de pintado, <code>Viewer</code> es solo el lienzo, un <code>Canvas</code>, sobre el que se pinta, <code>Hud</code> pinta las velocidades y <code>MouseHandler</code> escucha el ratón.</p>
 <figure class="vertical">
 <svg viewBox="0 0 560 470" role="img" style="font-family:var(--fuente-texto);display:block">
 <title>Las clases de SpriteAnimation según MVP, con el recorrido de pintar y el del ratón</title>
@@ -713,11 +788,11 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
 <text x="80" y="60" font-size="15" style="fill:var(--texto-suave)">el lienzo, un Canvas</text>
 <rect x="60" y="110" width="440" height="80" rx="10" fill="none" style="stroke:var(--linea)" stroke-width="2"/>
 <text x="80" y="138" font-size="18" font-weight="700" style="fill:var(--primario)">View</text>
-<text x="80" y="160" font-size="15" style="fill:var(--texto-suave)">ventana · hilo de pintado</text>
-<text x="80" y="180" font-size="15" style="fill:var(--texto-suave)">escucha el ratón</text>
+<text x="80" y="160" font-size="15" style="fill:var(--texto-suave)">ventana · hilo de pintado · Hud</text>
+<text x="80" y="180" font-size="15" style="fill:var(--texto-suave)">MouseHandler escucha el ratón</text>
 <rect x="60" y="250" width="440" height="60" rx="10" fill="none" style="stroke:var(--linea)" stroke-width="2"/>
 <text x="80" y="278" font-size="18" font-weight="700" style="fill:var(--primario)">Presenter</text>
-<text x="80" y="300" font-size="15" style="fill:var(--texto-suave)">une el modelo y la vista</text>
+<text x="80" y="300" font-size="15" style="fill:var(--texto-suave)">une el modelo y la vista; no pinta ni guarda estado</text>
 <rect x="60" y="370" width="440" height="90" rx="10" fill="none" style="stroke:var(--linea)" stroke-width="2"/>
 <text x="80" y="398" font-size="18" font-weight="700" style="fill:var(--primario)">Model</text>
 <text x="80" y="422" font-size="15" style="fill:var(--texto-suave)">Sprite pato · su hilo, velocidad y posición</text>
@@ -726,20 +801,20 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
 <line x1="140" y1="108" x2="140" y2="74" style="stroke:var(--primario)" stroke-width="2" marker-end="url(#fa)"/>
 <text x="152" y="96" font-size="15" style="fill:var(--primario)">pinta</text>
 <line x1="140" y1="192" x2="140" y2="246" style="stroke:var(--primario)" stroke-width="2" marker-end="url(#fa)"/>
-<text x="152" y="224" font-size="15" style="fill:var(--primario)">pide qué dibujar</text>
+<text x="152" y="224" font-size="15" style="fill:var(--primario)">pide SpriteView</text>
 <line x1="140" y1="312" x2="140" y2="366" style="stroke:var(--primario)" stroke-width="2" marker-end="url(#fa)"/>
-<text x="152" y="344" font-size="15" style="fill:var(--primario)">lee el estado</text>
+<text x="152" y="344" font-size="15" style="fill:var(--primario)">pide copias</text>
 <line x1="420" y1="192" x2="420" y2="246" style="stroke:var(--oscuro)" stroke-width="2" marker-end="url(#fb)"/>
 <text x="408" y="224" font-size="15" text-anchor="end" style="fill:var(--oscuro)">rueda, arrastre</text>
 <line x1="420" y1="312" x2="420" y2="366" style="stroke:var(--oscuro)" stroke-width="2" marker-end="url(#fb)"/>
 <text x="408" y="344" font-size="15" text-anchor="end" style="fill:var(--oscuro)">cambia el modelo</text>
 </svg>
-<figcaption>A la izquierda, el recorrido de pintar: la vista pide y el presentador lee el modelo. A la derecha, el del ratón, que vuelve hasta el modelo.</figcaption>
+<figcaption>A la izquierda, el recorrido de pintar: la vista pide qué pintar y el presentador se lo pide al modelo. A la derecha, el del ratón, que vuelve hasta el modelo.</figcaption>
 </figure>
 
-<p>Para pintar, la iniciativa es de la vista: en cada vuelta, su hilo le pide al presentador qué dibujar, y el presentador lo lee del modelo. Para el ratón, <code>View</code> recoge el gesto y avisa al presentador, que cambia la velocidad o la posición en el modelo. La vista nunca mueve nada por su cuenta.</p>
+<p>Para pintar, la iniciativa es de la vista: en cada vuelta, su hilo le pide al presentador qué dibujar, y el presentador se lo pide al modelo y se lo da como una lista de <code>SpriteView</code>, con una copia de cada fotograma: el sprite no sale del modelo. Para el ratón, <code>MouseHandler</code> recoge el gesto y avisa al presentador, que cambia la velocidad o la posición en el modelo. La vista nunca mueve nada por su cuenta.</p>
 <h3>Cómo se mantienen los dos ritmos</h3>
-<p>Cada sprite tiene un hilo que avanza sus fotogramas midiendo el tiempo transcurrido, no contando vueltas, y por eso su ritmo es constante en cualquier equipo. El hilo de pintado dibuja el fotograma que toque en cada instante. Si pinta más rápido que la animación, repite fotogramas; si pinta más despacio, se salta alguno, pero la animación no se ralentiza. Los gestos del ratón llegan por el hilo de eventos de Swing, y el código resuelve con lo mínimo el estado que comparte con el de pintado.</p>
+<p>Cada sprite tiene un hilo que avanza sus fotogramas midiendo el tiempo transcurrido, no contando vueltas, y por eso su ritmo es constante en cualquier equipo. El hilo de pintado dibuja el fotograma que toque en cada instante. Si pinta más rápido que la animación, repite fotogramas; si pinta más despacio, se salta alguno, pero la animación no se ralentiza. Los gestos del ratón llegan por el hilo de eventos de Swing, y el código resuelve con lo mínimo el estado que comparte con el de pintado. Los hilos no se paran uno a uno: al cerrar la ventana, <code>EXIT_ON_CLOSE</code> termina el programa y, con él, todos los hilos.</p>
 <h3>Qué no hace</h3>
 <p>No es un juego: no tiene teclas de movimiento, ni física, ni colisiones. Tampoco tiene utilidades, capas ni bibliotecas de concurrencia que no hagan falta para ver los tres temas. Cada clase se justifica por lo que enseña, y lo que falta queda como ejercicio para quien lo amplíe.</p></div></details><details class="seccion" id="escenarios"><summary class="seccion-titulo"><span class="etiqueta">03 / Escenarios</span><h2>Escenarios de uso</h2></summary><div class="seccion-cuerpo"><p class="entradilla">SpriteAnimation se usa en cuatro situaciones, todas en segundo de DAM. En dos, el profesor la usa para explicar; en otra, la consulta el alumno por su cuenta; en la última, sirve de ejemplo de arquitectura. Los escenarios son compatibles: el mismo grupo puede pasar por varios en un curso.</p>
 <p>El valor de todos depende de lo mismo: que el ejemplo sea lo bastante pequeño para leerse y lo bastante correcto para imitarse. Ninguno está medido todavía.</p>
@@ -761,7 +836,7 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
 <p>El alumno abre la demo mientras hace su práctica y busca en el código cómo se resuelve cada parte.</p>
 <dl>
 <dt>Cuándo aporta valor</dt>
-<dd>Cuando el alumno tiene una duda concreta: cómo recortar la hoja, quién guarda el estado, cómo parar un hilo.</dd>
+<dd>Cuando el alumno tiene una duda concreta: cómo recortar la hoja, quién guarda el estado, cómo lleva un hilo su ritmo.</dd>
 <dt>Límite del argumento</dt>
 <dd>Un ejemplo que se copia sin entender reproduce la estructura, no la comprensión.</dd>
 <dt>Qué medir</dt>
@@ -770,14 +845,14 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
 </article>
 <article class="tarjeta">
 <h3 id="S3">S3 · Ejemplo de hilos en Servicios y Procesos</h3>
-<p>El profesor de Programación de Servicios y Procesos usa la misma demo, con el mismo grupo, para enseñar a crear y parar hilos y a mantener un ritmo constante <a class="ref" href="#src-C1" title="IES Historiador Chabás, 2023-24">[C1]</a>.</p>
+<p>El profesor de Programación de Servicios y Procesos usa la misma demo, con el mismo grupo, para enseñar a crear hilos, a mantener un ritmo constante y a compartir datos entre ellos sin pisarse <a class="ref" href="#src-C1" title="IES Historiador Chabás, 2023-24">[C1]</a>.</p>
 <dl>
 <dt>Cuándo aporta valor</dt>
-<dd>Cuando se busca un caso visible: un hilo que se para o se acelera se ve en pantalla.</dd>
+<dd>Cuando se busca un caso visible: un hilo que se acelera o se frena se ve en pantalla.</dd>
 <dt>Límite del argumento</dt>
 <dd>La demo no trata la sincronización a fondo; es un primer ejemplo, no el temario del módulo.</dd>
 <dt>Qué medir</dt>
-<dd>Si los alumnos crean y paran hilos correctamente en sus propios ejercicios.</dd>
+<dd>Si los alumnos crean hilos y comparten datos entre ellos correctamente en sus propios ejercicios.</dd>
 </dl>
 </article>
 <article class="tarjeta">
@@ -787,13 +862,13 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
 <dt>Cuándo aporta valor</dt>
 <dd>Cuando MVP se ha presentado antes con un formulario y los alumnos lo ven como un trámite.</dd>
 <dt>Límite del argumento</dt>
-<dd>Siete clases para una ventana pueden parecer excesivas a quien aún no ha sufrido el código mezclado.</dd>
+<dd>Nueve clases y tres contratos para una ventana pueden parecer excesivos a quien aún no ha sufrido el código mezclado.</dd>
 <dt>Qué medir</dt>
 <dd>Si los alumnos reparten una aplicación propia en modelo, vista y presentador sin que se les pida.</dd>
 </dl>
 </article>
 </div></div></details><details class="seccion" id="riesgos"><summary class="seccion-titulo"><span class="etiqueta">04 / Riesgos</span><h2>Riesgos</h2></summary><div class="seccion-cuerpo"><p class="entradilla">El riesgo principal es didáctico: tres temas a la vez (hojas de sprites, MVP e hilos) pueden ser demasiado para una sola unidad. Lo reduce que los hilos se trabajan en paralelo en Programación de Servicios y Procesos. El plan lo detecta pronto, porque la primera fase en el aula (<a class="insignia" href="#S1">S1</a>) mide si los alumnos entienden la diferencia de ritmos antes de pedirles nada más.</p>
-<p>Los otros dos son técnicos y se comprueban al construir la demo, antes de llevarla a clase.</p>
+<p>Los otros dos son técnicos y se comprueban en la demo ya construida, antes de llevarla a clase.</p>
 <div class="tarjetas cols-3">
 <article class="tarjeta">
 <h3>Tres temas en una unidad</h3>
@@ -810,7 +885,7 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
 <p class="etiqueta-tarjeta">Técnico</p>
 <dl>
 <dt>Mitigación</dt>
-<dd>El estado compartido entre hilos se resuelve con lo mínimo y correcto, y un comentario explica por qué.</dd>
+<dd>El estado compartido entre hilos se resuelve con lo mínimo y correcto (campos <code>volatile</code> y datos que nadie puede cambiar), y un comentario explica por qué.</dd>
 <dt>Se comprueba en</dt>
 <dd>La fase 1, con una revisión del código antes de usarlo en clase.</dd>
 </dl>
@@ -825,7 +900,7 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
 <dd>La fase 1, en dos equipos distintos.</dd>
 </dl>
 </article>
-</div></div></details><details class="seccion" id="demostrar"><summary class="seccion-titulo"><span class="etiqueta">05 / Demostrar</span><h2>Qué debe demostrar</h2></summary><div class="seccion-cuerpo"><p class="entradilla">El paso siguiente es construir la demo y usarla en un curso. El piloto tiene que demostrar dos cosas: que el ejemplo es correcto y constante en cualquier equipo, y que cambia la forma en que los alumnos escriben sus prácticas. La primera se comprueba en el laboratorio; la segunda, solo en el aula.</p>
+</div></div></details><details class="seccion" id="demostrar"><summary class="seccion-titulo"><span class="etiqueta">05 / Demostrar</span><h2>Qué debe demostrar</h2></summary><div class="seccion-cuerpo"><p class="entradilla">La demo ya está construida; el paso siguiente es comprobarla y usarla en un curso. El piloto tiene que demostrar dos cosas: que el ejemplo es correcto y constante en cualquier equipo, y que cambia la forma en que los alumnos escriben sus prácticas. La primera se comprueba en el laboratorio; la segunda, solo en el aula.</p>
 <p>Se propone avanzar por fases, cada una con una condición. Si una no se cumple, se corrige el ejemplo antes de seguir, en lugar de ampliarlo.</p>
 <div class="tarjetas cols-2">
 <article class="tarjeta">
@@ -834,7 +909,7 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
 <dt>Motivo</dt>
 <dd>Un ejemplo de consulta tiene que ser correcto antes que completo.</dd>
 <dt>Condición para avanzar</dt>
-<dd>Las dos animaciones mantienen su ritmo en dos equipos distintos con velocidades de pintado diferentes, y el código no pasa de siete clases y dos interfaces.</dd>
+<dd>Las dos animaciones mantienen su ritmo en dos equipos distintos con velocidades de pintado diferentes; cada tipo está en su archivo, las capas están separadas y cada clase se explica en una línea.</dd>
 </dl>
 </article>
 <article class="tarjeta">
@@ -865,7 +940,7 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
 </dl>
 </article>
 </div>
-<aside class="recuadro decision"><p class="recuadro-etiqueta">Decisión propuesta</p><p>Construir la demo con el reparto de clases decidido y llevarla a la unidad de animación del módulo optativo de videojuegos de segundo de DAM. La medida principal es la proporción de prácticas que separan el ritmo de pintado del de la animación, comparada con el curso anterior.</p></aside></div></details><details class="seccion" id="fuentes"><summary class="seccion-titulo"><span class="etiqueta">06 / Fuentes</span><h2>Fuentes y referencias</h2></summary><div class="seccion-cuerpo"><p class="entradilla">Las fuentes se revisaron el 30 de octubre de 2026. C es currículo; T, técnica; R, recursos gráficos; M, documentos del propio proyecto.</p>
+<aside class="recuadro decision"><p class="recuadro-etiqueta">Decisión propuesta</p><p>Llevar la demo, ya construida, a la unidad de animación del módulo optativo de videojuegos de segundo de DAM. La medida principal es la proporción de prácticas que separan el ritmo de pintado del de la animación, comparada con el curso anterior.</p></aside></div></details><details class="seccion" id="fuentes"><summary class="seccion-titulo"><span class="etiqueta">06 / Fuentes</span><h2>Fuentes y referencias</h2></summary><div class="seccion-cuerpo"><p class="entradilla">Las fuentes se revisaron el 30 de octubre de 2026. C es currículo; T, técnica; R, recursos gráficos; M, documentos del propio proyecto.</p>
 <div class="fuentes">
 <p id="src-C1"><strong>[C1] IES Historiador Chabás.</strong> Programación del módulo 0490, Programación de Servicios y Procesos, de 2.º de DAM, curso 2023-24. Es la programación de un centro, no el texto oficial del currículo. <a href="https://portal.edu.gva.es/ieschabas/wp-content/uploads/sites/1291/2023/12/2DAM_M0490_PROGRAMACIO_DE_SERVICIS_23_24.pdf" class="externo" target="_blank" rel="noopener noreferrer">Enlace</a></p>
 <p id="src-C2"><strong>[C2] Real Decreto 450/2010</strong>, de 16 de abril, por el que se establece el título de Técnico Superior en Desarrollo de Aplicaciones Multiplataforma. BOE. <a href="https://www.boe.es/eli/es/rd/2010/04/16" class="externo" target="_blank" rel="noopener noreferrer">Enlace</a></p>
@@ -878,13 +953,14 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
 <p id="src-M1"><strong>[M1] SpriteAnimation.</strong> Decisiones del proyecto, en <code>sf/decisiones/</code>. <a href="../../../sf/decisiones/README.md">Enlace</a></p>
 <p id="src-M2"><strong>[M2] SpriteAnimation.</strong> Documento de visión. <a href="vision-spriteanimation.html">Enlace</a></p>
 </div></div></details></main>
-  <footer class="pie"><p>SpriteAnimation · Documento fundacional · Versión 0.1 · 30/10/2026 · Definición · Documento de proyecto</p><p>SpriteAnimation es un material de consulta para profesores y alumnos de segundo de DAM. Lo que describe es diseño; lo validará su uso en clase.</p><p class="procedencia">Generado el 30/10/2026 19:47 · fuente fundacional-spriteanimation.md · huella 5056eed69b89 · commit 8d0d7d5 (con cambios sin commit)</p></footer>
+  <footer class="pie"><p>SpriteAnimation · Documento fundacional · Versión 0.2 · 02/11/2026 · Demo construida · Documento de proyecto</p><p>SpriteAnimation es un material de consulta para profesores y alumnos de segundo de DAM. La demo está construida; su valor lo validará su uso en clase.</p><p class="procedencia">Generado el 02/11/2026 18:59 · fuente fundacional-spriteanimation.md · huella 5508375dcc28 · commit 6a52bbb (con cambios sin commit)</p></footer>
 </div>
-<script data-kit="skills/documento_fundacional/assets/plegado.js">
-/* Secciones plegables del documento fundacional (skill documento_fundacional).
+<script data-kit="skills/crear_documentos/assets/plegado.js">
+/* Secciones y tarjetas plegables de los documentos del generador común (skill crear_documentos).
  * Cada sección es un <details> que se pliega tocando su título. Este script añade:
  * abrir la sección de destino al seguir un enlace interno (menú, referencias, insignias),
- * el botón «Plegar todo / Desplegar todo» del menú y abrir todo al imprimir.
+ * el botón «Plegar todo / Desplegar todo» del menú, un botón «Plegar las tarjetas / Desplegar las tarjetas»
+ * delante de cada bloque de tarjetas plegables y abrir todo al imprimir.
  * Sin JavaScript, las secciones se ven abiertas y se pliegan igual tocando el título. */
 (function () {
   document.documentElement.classList.add('js');
@@ -900,8 +976,27 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
     if (el) abrirHasta(el);
   });
   const alCargar = () => { const el = destino(location.hash); if (el) { abrirHasta(el); el.scrollIntoView(); } };
+  // Tarjetas plegables («::: tarjetas N plegables»): abiertas en pantallas anchas, plegadas al cargar en el móvil.
+  if (matchMedia('(max-width: 640px)').matches)
+    document.querySelectorAll('details.tarjeta.plegable').forEach(d => { d.open = false; });
+
+  // «Plegar las tarjetas / Desplegar las tarjetas» delante de cada bloque con tarjetas plegables (también preguntas y fichas).
+  (window.alCopiarDocumento = window.alCopiarDocumento || []).push(c => c.querySelectorAll('.plegar-tarjetas').forEach(x => x.remove()));
+  document.querySelectorAll('.tarjetas, .fichas').forEach(bloque => {
+    const tarjetas = [...bloque.querySelectorAll(':scope > details.tarjeta.plegable')];
+    if (tarjetas.length < 2) return;
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'plegar-tarjetas';
+    const rotularBloque = () => { b.textContent = tarjetas.some(d => d.open) ? 'Plegar las tarjetas' : 'Desplegar las tarjetas'; };
+    b.addEventListener('click', () => { const abrir = !tarjetas.some(d => d.open); tarjetas.forEach(d => { d.open = abrir; }); rotularBloque(); });
+    tarjetas.forEach(d => d.addEventListener('toggle', rotularBloque));
+    rotularBloque();
+    bloque.before(b);
+  });
+
   window.addEventListener('hashchange', alCargar);
-  alCargar();
+  alCargar();  // después de plegar las tarjetas, para que el destino del enlace quede abierto
 
   const boton = document.querySelector('.plegar');
   const rotular = () => { if (boton) boton.textContent = secciones.some(d => d.open) ? 'Plegar todo' : 'Desplegar todo'; };
@@ -913,10 +1008,13 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
   secciones.forEach(d => d.addEventListener('toggle', rotular));
   rotular();
 
-  // Al imprimir se abre todo; después se recupera cómo estaba.
-  let antes = null;
-  window.addEventListener('beforeprint', () => { antes = secciones.map(d => d.open); secciones.forEach(d => { d.open = true; }); });
-  window.addEventListener('afterprint', () => { if (antes) secciones.forEach((d, i) => { d.open = antes[i]; }); antes = null; });
+  // Al imprimir se abre todo (secciones y tarjetas); después se recupera cómo estaba.
+  let antes = null, plegables = [];
+  window.addEventListener('beforeprint', () => {
+    plegables = [...document.querySelectorAll('details')];
+    antes = plegables.map(d => d.open); plegables.forEach(d => { d.open = true; });
+  });
+  window.addEventListener('afterprint', () => { if (antes) plegables.forEach((d, i) => { d.open = antes[i]; }); antes = null; });
 })();
 </script>
 <script data-kit="tools/kit_documentos/herramientas.js">
@@ -925,7 +1023,7 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
  * Lo usan documento_vision (.report-body con bloques .bloque) y documento_fundacional (main con secciones .seccion);
  * el estilo está en herramientas.css. Al cambiar cualquiera de estos archivos, se sube VERSION (aquí).
  * Las demás piezas usan window.herramientasDocumento (herramienta(), aplicar(), mostrar()…).
- * Modelo: el documento de los 20 casos de referencia de OncoCore (kit_documentos v1.0.57). Reescrito para la SF.
+ * Procedencia: docs/referencias/procedencia/kit_documentos.md del repositorio de la SF.
  * · Pantalla grande (≥ 1400 px): cada herramienta va anclada en una columna a la derecha, de ancho ajustable, y se
  *   pliega con su flecha. La chincheta de la barra, a la derecha del engranaje, despega todas las herramientas como
  *   ventanas flotantes (se arrastran por la cabecera, se minimizan, doble clic las devuelve a su sitio) y las vuelve a anclar.
@@ -934,17 +1032,17 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
  * Buscador: no distingue mayúsculas ni tildes, resalta, salta con Intro / Mayús+Intro, agrupa por sección y abre la
  *   sección plegada.
  * Notas: personales, de tres clases que el documento activa por separado: sobre un texto seleccionado («Anotar»,
- *   nota-texto), una por sección (nota-seccion) y una general de todo el documento (nota-global). Como en
- *   gene_associations de OncoCore, la columna muestra sola la nota de la sección que se lee, plegada si está vacía,
- *   y lo escrito se ve también al final de su sección. Sin columna (ventanas flotantes o pantalla pequeña), como en
- *   OncoCore, cada nota vuelve a su sitio: una tarjeta editable al final de su sección, y la nota general y «Tus
+ *   nota-texto), una por sección (nota-seccion) y una general de todo el documento (nota-global). En
+ *   la columna se muestra sola la nota de la sección que se lee, plegada si está vacía,
+ *   y lo escrito se ve también al final de su sección. Sin columna (ventanas flotantes o pantalla pequeña),
+ *   cada nota vuelve a su sitio: una tarjeta editable al final de su sección, y la nota general y «Tus
  *   notas» al principio del documento; la ventana «Notas» no aparece. Si el documento
  *   no nombra ninguna de las tres, van las tres. Se guardan solas en el
  *   navegador; «Guardar» crea un documento anotado (copia del HTML con las notas dentro, en el bloque JSON
  *   #notas-documento) y sube la versión. Esa copia se puede pasar al autor: tools/kit_documentos/extraer_notas.py las lista.
  * Sin JavaScript no aparece nada; no se imprime. */
 (function () {
-  const VERSION = '1.8.1';
+  const VERSION = '1.9.2';
   const main = document.querySelector('main, .report-body');
   if (!main) return;
   const SECCION = 'details.seccion, details.bloque', TITULO = '.etiqueta, .bloque-title';
@@ -1376,7 +1474,7 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
   function persistir() { if (CON_NOTAS) escribir(CLAVE_NOTAS, { notas, borradas: [...borradas], guardado }); estado(); }
 
   if (CON_NOTAS) {
-  // Modelo de gene_associations (kit de OncoCore): sin botones para crear notas. La columna muestra sola la nota de la
+  // Sin botones para crear notas. La columna muestra sola la nota de la
   // sección que se lee (y las de las secciones que la contienen), cada una con su cabecera, plegada si está vacía; lo
   // escrito se ve también, solo para leer, al final de su sección. La nota general va arriba y «Todas las notas»
   // resume las demás.
@@ -1399,7 +1497,7 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
     const v = todasEl.classList.toggle('plegada'); e.currentTarget.setAttribute('aria-expanded', String(!v));
   });
   autorEl.addEventListener('input', () => escribir(CLAVE_AUTOR, autorEl.value.trim()));
-  // Sin columna, las notas van en su sitio (modelo de OncoCore): la general y «Tus notas», al principio del documento.
+  // Sin columna, las notas van en su sitio: la general y «Tus notas», al principio del documento.
   function sitio() { return enSitio(notasT); }  // función: la usa también el arranque, fuera de este bloque
   const inicioSitio = document.createElement('div');
   inicioSitio.className = 'nt-sitio-inicio';
@@ -1447,7 +1545,7 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
   const enFoco = () => secActual ? cadena(secActual).map(x => x.id).join('|') : '';
   let pintado = null;
   const escribiendo = () => focoEl.contains(document.activeElement) || generalEl.contains(document.activeElement);
-  notasT.el.classList.add('por-seccion');  // en la columna, cada nota es su propia tarjeta, como en OncoCore
+  notasT.el.classList.add('por-seccion');  // en la columna, cada nota es su propia tarjeta
   function actualizarFoco() { if (!sitio() && enFoco() !== pintado && !escribiendo()) pintarNotas(); }
   function seguirSeccion() {
     let s = null;
@@ -1581,7 +1679,7 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
     pintarResumen();
     espejos();
   }
-  // Sin columna, como en OncoCore: un rótulo pequeño, el campo abierto y las acciones; sin caja ni plegado.
+  // Sin columna: un rótulo pequeño, el campo abierto y las acciones; sin caja ni plegado.
   function bloqueSitio(titulo, items) {
     const b = document.createElement('section');
     b.className = 'nt-sitio-bloque';
@@ -1870,13 +1968,13 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
 /* Opciones de lectura del documento (biblioteca tools/kit_documentos/, con herramientas.js, que va antes).
  * Cada opción se elige en <html data-herramientas> (catálogo y valores iniciales en tema_identidad.py). Las que el
  * lector ajusta (el engranaje junto a «Guardar» abre «Lectura») parten del valor del autor y se recuerdan por documento:
- * · modo: claro, oscuro o el del sistema (por defecto el del sistema; «oscuro» en la lista = empezar en oscuro);
+ * · modo: claro, oscuro o el del sistema; el documento abre siempre en claro y el oscuro lo elige el lector;
  * · acordeon: un solo bloque abierto a la vez;
  * · cabecera: el título de la sección abierta se queda arriba mientras se lee;
  * · fuentes: al pasar por una referencia [E1], bocadillo con la fuente y la frase que respalda resaltada;
  * · bocadillos: los subapartados de detalle (visión) se abren en un bocadillo, sin desplazar el texto.
  * Las que elige solo el autor: tablas (anchos ajustables) y leyenda («Cómo leer este documento»).
- * Modelo: kit_documentos de OncoCore (v1.0.57: ANCHOS_JS, ACORDEON_JS, FIJO_JS, FUENTE_JS, RESALTA_JS). */
+ * Procedencia: docs/referencias/procedencia/kit_documentos.md del repositorio de la SF. */
 (function () {
   const api = window.herramientasDocumento;
   if (!api) return;
@@ -1890,7 +1988,9 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
   const CLAVE = 'documento-lectura:' + ruta;
   const guardadas = leer(CLAVE, {}) || {};
   const pref = {
-    modo: guardadas.modo || (ACTIVAS.has('oscuro') ? 'oscuro' : 'sistema'),
+    // Hasta la 1.8 se guardaba «sistema» sin que el lector lo eligiera: solo vale el modo que eligió en «Lectura».
+    modo: (guardadas.modoElegido && guardadas.modo) || 'claro',
+    modoElegido: !!guardadas.modoElegido,
     acordeon: guardadas.acordeon ?? ACTIVAS.has('acordeon'),
     cabecera: guardadas.cabecera ?? ACTIVAS.has('cabecera'),
     fuentes: guardadas.fuentes ?? ACTIVAS.has('fuentes'),
@@ -2207,7 +2307,7 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
     alCopiar.push(c => c.querySelectorAll('.modal-lectura, .dc-config').forEach(x => x.remove()));
     const sel = lec.q('select');
     sel.value = pref.modo;
-    sel.addEventListener('change', () => { pref.modo = sel.value; guardar(); aplicarModo(); });
+    sel.addEventListener('change', () => { pref.modo = sel.value; pref.modoElegido = true; guardar(); aplicarModo(); });
     lec.el.querySelectorAll('input[data-clave]').forEach(c => {
       c.checked = !!pref[c.dataset.clave];
       c.addEventListener('change', () => {
@@ -2238,7 +2338,7 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
  * · Los párrafos añadidos desde una nota («Convertir en párrafo», herramientas.js) llevan «Añadido · fecha» y
  *   «Retirar», que pide confirmación en el propio botón.
  * Lo pintado (lápiz, barra, etiquetas) no viaja en la copia guardada: se vuelve a poner al abrirla.
- * Modelo: _EDICION_JS y _PARRAFOS_JS del kit_documentos de OncoCore (v1.0.57), sin sus etiquetas clínicas. */
+ * Procedencia: docs/referencias/procedencia/kit_documentos.md del repositorio de la SF. */
 (function () {
   const api = window.herramientasDocumento;
   const EDITA = api && api.ACTIVAS.has('edicion');
@@ -2413,6 +2513,18 @@ html.con-columna .columna-herramientas > .herr-notas.por-seccion[data-modo="colu
     c.querySelectorAll('[contenteditable]').forEach(x => x.removeAttribute('contenteditable'));
   });
 })();
+</script>
+<script>
+// Modo claro por defecto: si el lector no ha elegido modo en «Lectura», el documento empieza en claro
+// en lugar de seguir el modo del sistema. El kit de documentos de la SF aún no tiene esta opción.
+(function () {
+  try {
+    var api = window.herramientasDocumento;
+    var guardadas = api ? api.leer('documento-lectura:' + api.ruta, {}) : null;
+    if (!guardadas || !guardadas.modo) document.documentElement.dataset.modo = 'claro';
+  } catch (e) { /* sin almacenamiento: se queda el modo del kit */ }
+})();
+
 </script>
 </body>
 </html>
