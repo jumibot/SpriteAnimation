@@ -19,6 +19,7 @@ Este índice no se escribe a mano: se regenera con `python -I -X utf8 tools/indi
 
 | Nº | Fecha | Decisión |
 | --- | --- | --- |
+| 18 | 2026-11-02 | [Sufijo Interface en las interfaces de la demo](018-2026-11-02-sufijo-interface-en-las-interfaces-de-la-demo.md) |
 | 17 | 2026-11-02 | [El presentador recibe el modelo y la vista por sus interfaces](017-2026-11-02-el-presentador-recibe-el-modelo-y-la-vista-por-sus-interfaces.md) |
 | 16 | 2026-11-02 | [El constructor del presentador conecta y start() solo arranca](016-2026-11-02-el-constructor-del-presentador-conecta-y-start-solo-arranca.md) |
 | 15 | 2026-11-02 | [main pide los sprites al modelo, no el presentador](015-2026-11-02-main-pide-los-sprites-al-modelo-no-el-presentador.md) |
