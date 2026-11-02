@@ -19,6 +19,7 @@ Este índice no se escribe a mano: se regenera con `python -I -X utf8 tools/indi
 
 | Nº | Fecha | Decisión |
 | --- | --- | --- |
+| 12 | 2026-10-31 | [Interfaces y constructores de la demo](012-2026-10-31-interfaces-y-constructores-de-la-demo.md) |
 | 11 | 2026-10-30 | [Para segundo de DAM: videojuegos y Servicios y Procesos](011-2026-10-30-para-segundo-de-dam-videojuegos-y-servicios-y-procesos.md) |
 | 10 | 2026-10-30 | [Dos hojas de sprites: pato y explosión](010-2026-10-30-dos-hojas-de-sprites-pato-y-explosion.md) |
 | 9 | 2026-10-30 | [Clases de la demo con Viewer](009-2026-10-30-clases-de-la-demo-con-viewer.md) |
