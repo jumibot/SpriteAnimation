@@ -33,11 +33,28 @@ Dos hojas, cada una con su ritmo. En la demo, la velocidad de pintado y la de ca
 
 También se puede leer [en Markdown](docs/material/mvp-interfaces-inyeccion.md), sin maquetar.
 
+## Ejecutar la demo
+
+Necesitas el **JDK 21**. No hace falta Gradle ni Maven: los scripts compilan con `javac` y ejecutan con `java`.
+
+| Qué | Windows | Linux, macOS o Git Bash |
+| --- | --- | --- |
+| Ejecutar la demo | `ejecutar.cmd` | `./ejecutar.sh` |
+| Pasar las pruebas | `probar.cmd` | `./probar.sh` |
+
+Las pruebas son tres: `PresenterTest` prueba el presentador sin ventana, con una vista y un modelo falsos; `SpriteSheetTest` comprueba el recorte de las dos hojas, y `MouseTest` abre la ventana de verdad y mueve el ratón solo, con `java.awt.Robot`: gira la rueda sobre cada cifra del HUD y arrastra cada sprite. Mientras dura, unos segundos, no toques el ratón.
+
+En **VS Code**, abre la carpeta del repositorio y usa *Terminal > Ejecutar tarea…*: «Ejecutar demo» o «Probar». Para depurar con puntos de ruptura y F5, instala el Extension Pack for Java:
+
+```text
+code --install-extension vscjava.vscode-java-pack
+```
+
 ## Estado
 
 - **Documentación:** el material para alumnos y las decisiones de diseño están escritos.
 - **Hojas de sprites:** incluidas, en `src/main/resources/sprites/`.
-- **Código de la demo:** en preparación. Este repositorio lo recibirá cuando esté listo.
+- **Código de la demo:** listo, en `src/main/java/`, con pruebas en `src/test/java/`.
 
 ## Estructura del repositorio
 
@@ -48,8 +65,11 @@ docs/
   specs/vision/  Visión y documento fundacional del proyecto
   identidad/     Estilos de los documentos HTML
   imagenes/      Imágenes de este README
+src/main/java/   Código de la demo
 src/main/resources/sprites/
                  Hojas de sprites y su origen
+src/test/java/   Pruebas: sin ventana, de las hojas y con el ratón
+.vscode/         Tareas «Ejecutar demo» y «Probar», y F5 para depurar
 ```
 
 ## Créditos

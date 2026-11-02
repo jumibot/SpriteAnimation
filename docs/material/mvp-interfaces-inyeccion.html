@@ -737,7 +737,7 @@ html[data-modo="oscuro"] .ej-px{filter:url(#ej-inv)}
 <li><strong>Quién crea a quién.</strong> Cómo se juntan, al arrancar, la ventana, el estado y las reglas: es <a href="#inyeccion">la inyección de dependencias</a>.</li>
 <li><strong>Cada animación en su hilo.</strong> Por qué el pato y la explosión no se esperan, y la ventana pinta a su propio ritmo: es <a href="#hilos">MVP con hilos</a>.</li>
 </ul>
-<p>Todos los apartados vuelven a esta ventana: cuando leas «la demo», es ella.</p></div></details><details class="seccion" id="estructura"><summary class="seccion-titulo"><span class="etiqueta">02 / Por qué</span><h2>Por qué hace falta una estructura</h2></summary><div class="seccion-cuerpo"><p class="entradilla">Ya sabes crear clases, y no escribirías un programa entero en una sola. Pero cada programa nuevo te obliga a decidir qué clases hacen falta, qué hace cada una y cómo se hablan entre ellas. Ese diseño lo haces desde cero cada vez: gasta tiempo y casi nunca sale tan bien como algo ya pensado y probado.</p>
+<p>Todos los apartados vuelven a esta ventana: cuando leas «la demo», es ella. Y no se queda en el papel: puedes descargar el programa y ejecutarlo, desde su repositorio <a class="ref" href="#src-R6" title="SpriteAnimation, Código de la demo">[R6]</a>.</p></div></details><details class="seccion" id="estructura"><summary class="seccion-titulo"><span class="etiqueta">02 / Por qué</span><h2>Por qué hace falta una estructura</h2></summary><div class="seccion-cuerpo"><p class="entradilla">Ya sabes crear clases, y no escribirías un programa entero en una sola. Pero cada programa nuevo te obliga a decidir qué clases hacen falta, qué hace cada una y cómo se hablan entre ellas. Ese diseño lo haces desde cero cada vez: gasta tiempo y casi nunca sale tan bien como algo ya pensado y probado.</p>
 <p>La demo del apartado anterior es pequeña, pero tiene todo lo que complica un programa de verdad: estado que cambia, dibujo, ratón y varios hilos.</p>
 <p>Sin un patrón, cada programa es una carretera de curvas. En cada curva tienes que pararte a decidir algo, y la respuesta es distinta cada vez:</p>
 <figure class="vertical">
@@ -1311,6 +1311,7 @@ public void changeSpriteSpeed(int sprite, int delta) {
 </dl>
 </article>
 </div></div></details><details class="seccion" id="practicar"><summary class="seccion-titulo"><span class="etiqueta">13 / Practicar</span><h2>Para practicar</h2></summary><div class="seccion-cuerpo"><p class="entradilla">Cada ejercicio cambia una sola cosa de la demo. Antes de empezar, intenta adivinar qué clases tendrás que tocar: si la estructura está bien hecha, son muy pocas.</p>
+<p>El código completo de la demo está en su repositorio <a class="ref" href="#src-R6" title="SpriteAnimation, Código de la demo">[R6]</a>, con cómo ejecutarlo y sus pruebas. Parte de él para cada ejercicio.</p>
 <div class="tarjetas cols-2">
 <article class="tarjeta">
 <h3>Una tercera animación</h3>
@@ -1363,6 +1364,7 @@ public void changeSpriteSpeed(int sprite, int delta) {
 <p id="src-R3"><strong>[R3] Refactoring.Guru.</strong> «Extract Interface» (en inglés). Cómo se saca a una interfaz la parte de una clase que otra necesita, como <code>AnimationContract.Model</code>. <a href="https://refactoring.guru/es/extract-interface" class="externo" target="_blank" rel="noopener noreferrer">Enlace</a></p>
 <p id="src-R4"><strong>[R4] Wikipedia.</strong> «Inyección de dependencias». Por qué una clase recibe lo que necesita en lugar de crearlo ella. <a href="https://es.wikipedia.org/wiki/Inyecci%C3%B3n_de_dependencias" class="externo" target="_blank" rel="noopener noreferrer">Enlace</a></p>
 <p id="src-R5"><strong>[R5] Refactoring.Guru.</strong> «Observer». En la demo, la vista se suscribe a los eventos del ratón de Swing; el modelo, en cambio, no avisa a nadie. <a href="https://refactoring.guru/es/design-patterns/observer" class="externo" target="_blank" rel="noopener noreferrer">Enlace</a></p>
+<p id="src-R6"><strong>[R6] SpriteAnimation.</strong> «Código de la demo». El programa completo de este documento, con cómo ejecutarlo y sus pruebas. <a href="https://github.com/jumibot/SpriteAnimation" class="externo" target="_blank" rel="noopener noreferrer">Enlace</a></p>
 </div></div></details></main>
   <footer class="pie"><p>SpriteAnimation · Documento explicativo · Versión 0.1 · 31/10/2026 · Borrador · Material didáctico</p><p>Material de consulta de SpriteAnimation para segundo de DAM.</p><p class="procedencia">Generado el 31/10/2026 09:24 · fuente mvp-interfaces-inyeccion.md · huella 7ec0086c7f2f · commit 8ab0a1a (con cambios sin commit)</p></footer>
 </div>

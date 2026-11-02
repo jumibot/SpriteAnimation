@@ -77,7 +77,7 @@ Con este ejemplo vas a aprender cuatro cosas:
 - **Quién crea a quién.** Cómo se juntan, al arrancar, la ventana, el estado y las reglas: es [la inyección de dependencias](#inyeccion).
 - **Cada animación en su hilo.** Por qué el pato y la explosión no se esperan, y la ventana pinta a su propio ritmo: es [MVP con hilos](#hilos).
 
-Todos los apartados vuelven a esta ventana: cuando leas «la demo», es ella.
+Todos los apartados vuelven a esta ventana: cuando leas «la demo», es ella. Y no se queda en el papel: puedes descargar el programa y ejecutarlo, desde su repositorio [[R6]](#src-R6 "SpriteAnimation, Código de la demo"){: .ref}.
 
 ## Por qué | Por qué hace falta una estructura {#estructura}
 
@@ -748,6 +748,8 @@ Cómo se arregla
 
 Cada ejercicio cambia una sola cosa de la demo. Antes de empezar, intenta adivinar qué clases tendrás que tocar: si la estructura está bien hecha, son muy pocas.
 
+El código completo de la demo está en su repositorio [[R6]](#src-R6 "SpriteAnimation, Código de la demo"){: .ref}, con cómo ejecutarlo y sus pruebas. Parte de él para cada ejercicio.
+
 ::: tarjetas 2
 
 ### Una tercera animación
@@ -816,5 +818,8 @@ Para ampliar lo que cuenta este documento: la Wikipedia en español para las ide
 
 **[R5] Refactoring.Guru.** «Observer». En la demo, la vista se suscribe a los eventos del ratón de Swing; el modelo, en cambio, no avisa a nadie. [Enlace](https://refactoring.guru/es/design-patterns/observer)
 {: #src-R5}
+
+**[R6] SpriteAnimation.** «Código de la demo». El programa completo de este documento, con cómo ejecutarlo y sus pruebas. [Enlace](https://github.com/jumibot/SpriteAnimation)
+{: #src-R6}
 
 :::

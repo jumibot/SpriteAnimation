@@ -7,3 +7,17 @@
 .claude/worktrees/
 .sf/subagentes.json
 docs/decisiones/README.html
+
+# Java
+out/
+build/
+target/
+*.class
+.idea/
+*.iml
+
+# VS Code: se comparten las tareas, el lanzador y la configuración del proyecto Java
+.vscode/*
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/settings.json
