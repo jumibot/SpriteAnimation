@@ -19,6 +19,7 @@ Este índice no se escribe a mano: se regenera con `python -I -X utf8 tools/indi
 
 | Nº | Fecha | Decisión |
 | --- | --- | --- |
+| 35 | 2026-11-02 | [Los datos entre vista y modelo pasan por el presentador, son inmutables y no comparten referencias](035-2026-11-02-los-datos-entre-vista-y-modelo-pasan-por-el-presentador-son-inmutables-y-no-comparten-referencias.md) |
 | 34 | 2026-11-02 | [El sprite no sale del modelo: la vista solo recibe lo que pinta](034-2026-11-02-el-sprite-no-sale-del-modelo-la-vista-solo-recibe-lo-que-pinta.md) |
 | 33 | 2026-11-02 | [Los accesos a la propia clase se escriben con this](033-2026-11-02-los-accesos-a-la-propia-clase-se-escriben-con-this.md) |
 | 32 | 2026-11-02 | [La demo se cierra con EXIT_ON_CLOSE, sin cierre ordenado](032-2026-11-02-la-demo-se-cierra-con-exit-on-close-sin-cierre-ordenado.md) |
