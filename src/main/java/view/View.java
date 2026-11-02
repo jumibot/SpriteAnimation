@@ -10,13 +10,13 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+import contract.SpriteView;
 import contract.PresenterContract;
-import contract.SpriteState;
 import contract.ViewContract;
 
 /**
  * La vista de MVP: es la ventana. Pinta lo que le da el presentador y le avisa de lo que hace el usuario.
- * No toma decisiones.
+ * No toma decisiones. De cada sprite solo recibe un SpriteView: lo que tiene que enseñar.
  *
  * La usan tres hilos: el de main, que la construye; el de pintado (renderLoop);
  * y el de eventos de Swing, que trae el ratón y el cierre de la ventana.
@@ -97,9 +97,9 @@ public class View extends JFrame implements ViewContract {
         while (true) {
             long start = System.nanoTime();
 
-            List<SpriteState> sprites = this.presenter.sprites();   // la foto fija
+            List<SpriteView> spriteViews = this.presenter.spriteViews();     // qué enseñar
             Graphics2D g = (Graphics2D) buffers.getDrawGraphics();   // el búfer que no se ve
-            this.paintScene(g, sprites);
+            this.paintScene(g, spriteViews);         // las usa y las suelta: no las guarda
             g.dispose();
             buffers.show();                       // ahora se ve lo que acabamos de pintar
             Toolkit.getDefaultToolkit().sync();   // en algunos sistemas, que se vea ya
@@ -118,14 +118,14 @@ public class View extends JFrame implements ViewContract {
         }
     }
 
-    private void paintScene(Graphics2D g, List<SpriteState> sprites) {
+    private void paintScene(Graphics2D g, List<SpriteView> spriteViews) {
         g.setColor(BACKGROUND);
         g.fillRect(0, 0, this.viewer.getWidth(), this.viewer.getHeight());
 
-        for (SpriteState state : sprites) {
-            g.drawImage(state.frame(), state.x(), state.y(), null);
+        for (SpriteView spriteView : spriteViews) {
+            g.drawImage(spriteView.image(), spriteView.x(), spriteView.y(), null);
         }
 
-        this.hud.paint(g, this.renderFps, sprites);
+        this.hud.paint(g, this.renderFps, spriteViews);
     }
 }

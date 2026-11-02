@@ -6,7 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.util.List;
 
-import contract.SpriteState;
+import contract.SpriteView;
 
 /**
  * El HUD: el recuadro de arriba con las velocidades, una por línea.
@@ -27,18 +27,18 @@ public class Hud {
     private static final Font FONT_BOLD = FONT.deriveFont(Font.BOLD);
 
     /** Pinta la velocidad de pintado y la de cada sprite, una por línea. */
-    public void paint(Graphics2D g, int renderFps, List<SpriteState> sprites) {
+    public void paint(Graphics2D g, int renderFps, List<SpriteView> spriteViews) {
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-        int lines = 1 + sprites.size();
+        int lines = 1 + spriteViews.size();
         g.setColor(BACKGROUND);
         // El recuadro de fondo, con las esquinas redondeadas: 8 px de margen a la izquierda y abajo.
         g.fillRoundRect(X - 8, Y - LINE, WIDTH, lines * LINE + 8, 10, 10);
 
         this.paintLine(g, 0, "Pintado", renderFps + " veces por segundo");
-        for (int i = 0; i < sprites.size(); i++) {
-            SpriteState state = sprites.get(i);
-            this.paintLine(g, i + 1, state.name(), state.fps() + " fotogramas por segundo");
+        for (int i = 0; i < spriteViews.size(); i++) {
+            SpriteView spriteView = spriteViews.get(i);
+            this.paintLine(g, i + 1, spriteView.name(), spriteView.fps() + " fotogramas por segundo");
         }
     }
 

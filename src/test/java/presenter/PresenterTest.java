@@ -3,7 +3,7 @@ package presenter;
 import java.util.List;
 
 import check.Check;
-import contract.SpriteState;
+import contract.SpriteView;
 
 /**
  * Prueba el presentador sin ventana, con FakeView y FakeModel.
@@ -17,8 +17,8 @@ public class PresenterTest {
         starts();
         renderSpeedStaysBetween1And120();
         spriteSpeedStaysBetween1And120();
-        spritesGivesAPhoto();
-        spriteAtAndMove();
+        spriteViewsGiveWhatTheViewShows();
+        moves();
         Check.finish("PresenterTest");
     }
 
@@ -59,37 +59,36 @@ public class PresenterTest {
         presenter.setFpsLimits(1, 120);
 
         presenter.changeSpriteSpeed(0, +1);
-        Check.equal("la rueda sube el pato de 8 a 9", 9, model.duck.fps());
+        Check.equal("la rueda sube el pato de 8 a 9", 9, model.fps);
         presenter.changeSpriteSpeed(0, +500);
-        Check.equal("el pato no pasa de 120", 120, model.duck.fps());
+        Check.equal("el pato no pasa de 120", 120, model.fps);
         presenter.changeSpriteSpeed(0, -500);
-        Check.equal("el pato no baja de 1", 1, model.duck.fps());
+        Check.equal("el pato no baja de 1", 1, model.fps);
     }
 
-    static void spritesGivesAPhoto() {
+    static void spriteViewsGiveWhatTheViewShows() {
         FakeModel model = new FakeModel();
         Presenter presenter = new Presenter(model, new FakeView());
 
-        List<SpriteState> photo = presenter.sprites();
-        Check.equal("sprites() da un SpriteState por sprite", 1, photo.size());
-        SpriteState duck = photo.get(0);
-        Check.that("con su nombre, posición y velocidad",
-                   duck.name().equals("Pato") && duck.x() == 100 && duck.y() == 200 && duck.fps() == 8);
+        List<SpriteView> spriteViews = presenter.spriteViews();
+        Check.equal("spriteViews() da un SpriteView por sprite", 1, spriteViews.size());
+        Check.equal("y spriteCount() dice cuántos hay", 1, presenter.spriteCount());
+        SpriteView duck = spriteViews.get(0);
+        Check.that("con su imagen, posición, nombre y velocidad",
+                   duck.image() == model.frame && duck.x() == 100 && duck.y() == 200
+                   && duck.name().equals("Pato") && duck.fps() == 8);
 
-        model.duck.moveTo(0, 0);
-        Check.that("la foto no cambia aunque cambie el modelo", duck.x() == 100 && duck.y() == 200);
+        model.moveTo(0, 0, 0);
+        Check.that("el SpriteView no cambia aunque cambie el modelo", duck.x() == 100 && duck.y() == 200);
     }
 
-    static void spriteAtAndMove() {
-        FakeModel model = new FakeModel();   // el pato está en (100, 200) y mide 64×64
+    static void moves() {
+        FakeModel model = new FakeModel();
         Presenter presenter = new Presenter(model, new FakeView());
 
-        Check.equal("spriteAt encuentra el pato en su esquina", 0, presenter.spriteAt(100, 200));
-        Check.equal("y dentro", 0, presenter.spriteAt(163, 263));
-        Check.equal("fuera no hay sprite", -1, presenter.spriteAt(164, 200));
-
         presenter.moveSprite(0, 10, 20);
-        Check.that("moveSprite lleva el pato a (10, 20)", model.duck.x() == 10 && model.duck.y() == 20);
-        Check.equal("y ya no está donde estaba", -1, presenter.spriteAt(100, 200));
+        Check.that("moveSprite lleva el pato a (10, 20)", model.x == 10 && model.y == 20);
+        SpriteView duck = presenter.spriteViews().get(0);
+        Check.that("y el siguiente SpriteView lo enseña allí", duck.x() == 10 && duck.y() == 20);
     }
 }

@@ -1,8 +1,19 @@
 package contract;
 
-/** El contrato del modelo: lo que el presentador puede pedirle. */
+import java.awt.image.BufferedImage;
+
+/**
+ * El contrato del modelo: lo que el presentador puede pedirle.
+ * Los sprites no salen del modelo: se piden sus datos por su número (0, 1, 2…).
+ */
 public interface ModelContract {
-    void start();                      // pone en marcha las animaciones (un hilo por sprite)
-    int spriteCount();                 // cuántos sprites hay
-    SpriteContract sprite(int index);  // uno de los sprites, por su número
+    void start();                        // pone en marcha las animaciones (un hilo por sprite)
+    int spriteCount();                   // cuántos sprites hay
+    BufferedImage frame(int index);      // el fotograma que toca ahora
+    int x(int index);                    // dónde está
+    int y(int index);
+    String name(int index);              // cómo se llama
+    int fps(int index);                  // a cuántos fotogramas por segundo va
+    void setFps(int index, int fps);     // cambiar esa velocidad
+    void moveTo(int index, int x, int y);  // llevarlo a otro sitio
 }

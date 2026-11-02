@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.net.URL;
 import javax.imageio.ImageIO;
 
-/** Ayuda del modelo: carga una hoja de sprites y la recorta en fotogramas. */
-public final class SpriteSheet {
+/** Ayuda del modelo: carga una hoja de sprites y la recorta en fotogramas. No es pública: solo la usa el modelo. */
+final class SpriteSheet {
 
     private SpriteSheet() {}   // solo tiene métodos estáticos: no se crean objetos
 

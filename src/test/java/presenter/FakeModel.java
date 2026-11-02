@@ -3,23 +3,28 @@ package presenter;
 import java.awt.image.BufferedImage;
 
 import contract.ModelContract;
-import model.Sprite;
 
-/** Un modelo falso: un sprite fijo, sin hilos y sin hojas de sprites. */
+/** Un modelo falso: un solo sprite, el pato, sin hilos y sin hojas de sprites. Da igual el número que pidan. */
 class FakeModel implements ModelContract {
 
-    final Sprite duck = new Sprite("Pato", blankFrames(4, 64, 64), 8, 100, 200);
+    final BufferedImage frame = new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB);
+    int fps = 8;
+    int x = 100;
+    int y = 200;
     boolean started;
 
-    @Override public void start() { this.started = true; }   // no arranca el hilo del sprite
+    @Override public void start() { this.started = true; }   // no arranca ningún hilo
     @Override public int spriteCount() { return 1; }
-    @Override public Sprite sprite(int index) { return this.duck; }
+    @Override public BufferedImage frame(int index) { return this.frame; }
+    @Override public int x(int index) { return this.x; }
+    @Override public int y(int index) { return this.y; }
+    @Override public String name(int index) { return "Pato"; }
+    @Override public int fps(int index) { return this.fps; }
+    @Override public void setFps(int index, int fps) { this.fps = fps; }
 
-    private static BufferedImage[] blankFrames(int count, int width, int height) {
-        BufferedImage[] frames = new BufferedImage[count];
-        for (int i = 0; i < count; i++) {
-            frames[i] = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        }
-        return frames;
+    @Override
+    public void moveTo(int index, int x, int y) {
+        this.x = x;
+        this.y = y;
     }
 }

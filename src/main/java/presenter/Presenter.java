@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import contract.ModelContract;
+import contract.SpriteView;
 import contract.PresenterContract;
-import contract.SpriteContract;
-import contract.SpriteState;
 import contract.ViewContract;
 
 /** El presentador de MVP: traduce el modelo a lo que la vista pinta y aplica las reglas a cada gesto. */
@@ -38,15 +37,21 @@ public class Presenter implements PresenterContract {
         this.view.start();
     }
 
+    /** De cada sprite, solo lo que la vista enseña: su imagen, dónde va, y su nombre y velocidad. */
     @Override
-    public List<SpriteState> sprites() {
-        List<SpriteState> states = new ArrayList<>();
+    public List<SpriteView> spriteViews() {
+        List<SpriteView> spriteViews = new ArrayList<>();
         for (int i = 0; i < this.model.spriteCount(); i++) {
-            SpriteContract sprite = this.model.sprite(i);
-            states.add(new SpriteState(sprite.name(), sprite.frame(), sprite.x(), sprite.y(), sprite.fps()));
+            spriteViews.add(new SpriteView(this.model.frame(i), this.model.x(i), this.model.y(i),
+                                     this.model.name(i), this.model.fps(i)));
         }
 
-        return states;
+        return List.copyOf(spriteViews);   // una lista que nadie puede cambiar
+    }
+
+    @Override
+    public int spriteCount() {
+        return this.model.spriteCount();
     }
 
     @Override
@@ -56,28 +61,12 @@ public class Presenter implements PresenterContract {
 
     @Override
     public void changeSpriteSpeed(int index, int delta) {
-        SpriteContract sprite = this.model.sprite(index);
-        sprite.setFps(this.limit(sprite.fps() + delta));   // entre minFps y maxFps
-    }
-
-    /** Busca de arriba abajo: se pinta en orden, así que el último es el que queda encima. */
-    @Override
-    public int spriteAt(int x, int y) {
-        for (int i = this.model.spriteCount() - 1; i >= 0; i--) {
-            SpriteContract sprite = this.model.sprite(i);
-            boolean inside = x >= sprite.x() && x < sprite.x() + sprite.width()
-                          && y >= sprite.y() && y < sprite.y() + sprite.height();
-            if (inside) {
-                return i;
-            }
-        }
-
-        return -1;
+        this.model.setFps(index, this.limit(this.model.fps(index) + delta));   // entre minFps y maxFps
     }
 
     @Override
     public void moveSprite(int index, int x, int y) {
-        this.model.sprite(index).moveTo(x, y);
+        this.model.moveTo(index, x, y);
     }
 
     /** Deja la velocidad entre minFps y maxFps. */

@@ -17,7 +17,7 @@ Una ventana con un pato que vuela y una explosión, hechos con Swing y Java2D. E
 
 - **Sprites:** recortar una hoja de sprites en fotogramas y avanzarlos con el tiempo, no con el repintado.
 - **MVP:** qué hace el modelo, qué hace la vista y por qué el presentador es el único que habla con los dos.
-- **Interfaces:** cuatro contratos en el paquete `contract`, cada uno en su archivo: `PresenterContract` (lo que la vista puede pedir al presentador), `ViewContract` y `ModelContract` (lo que el presentador puede pedir a la vista y al modelo) y `SpriteContract` (lo que puede pedir a cada sprite). El record `SpriteState` es la foto de un sprite que la vista pinta.
+- **Interfaces:** tres contratos en el paquete `contract`, cada uno en su archivo: `PresenterContract` (lo que la vista puede pedir al presentador), `ViewContract` y `ModelContract` (lo que el presentador puede pedir a la vista y al modelo). Los sprites no salen del modelo: la vista recibe de cada uno un `SpriteView`, un record con una copia de su imagen, su posición, su nombre y su velocidad.
 - **Inyección de dependencias:** quién crea a quién y por qué cada clase recibe lo que necesita en lugar de crearlo.
 - **Hilos:** un hilo por sprite, uno de pintado y el de eventos de Swing, cada uno en su capa, y cómo comparten datos sin pisarse.
 
@@ -42,7 +42,7 @@ Necesitas el **JDK 21**. No hace falta Gradle ni Maven: los scripts compilan con
 | Ejecutar la demo | `ejecutar.cmd` | `./ejecutar.sh` |
 | Pasar las pruebas | `probar.cmd` | `./probar.sh` |
 
-Las pruebas son tres: `PresenterTest` prueba el presentador sin ventana, con una vista y un modelo falsos; `SpriteSheetTest` comprueba el recorte de las dos hojas, y `MouseTest` abre la ventana de verdad y mueve el ratón solo, con `java.awt.Robot`: gira la rueda sobre cada cifra del HUD y arrastra cada sprite. Mientras dura, unos segundos, no toques el ratón.
+Las pruebas son cuatro: `PresenterTest` prueba el presentador sin ventana, con una vista y un modelo falsos; `SpriteSheetTest` comprueba el recorte de las dos hojas; `ModelTest`, que el modelo da copias de sus fotogramas, y `MouseTest` abre la ventana de verdad y mueve el ratón solo, con `java.awt.Robot`: gira la rueda sobre cada cifra del HUD y arrastra cada sprite. Mientras dura, unos segundos, no toques el ratón.
 
 En **VS Code**, abre la carpeta del repositorio y usa *Terminal > Ejecutar tarea…*: «Ejecutar demo» o «Probar». Para depurar con puntos de ruptura y F5, instala el Extension Pack for Java:
 

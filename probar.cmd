@@ -16,6 +16,7 @@ set RESULT=1
 call "%~dp0compilar.cmd" || goto fin
 java %UTF8% -cp "%CP%" presenter.PresenterTest || goto fin
 java %UTF8% -cp "%CP%" model.SpriteSheetTest || goto fin
+java %UTF8% -cp "%CP%" model.ModelTest || goto fin
 java %UTF8% %CAPTURA% -cp "%CP%" view.MouseTest || goto fin
 echo Todas las pruebas correctas.
 set RESULT=0

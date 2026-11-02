@@ -5,6 +5,7 @@
     { "type": "java", "name": "Demo (SpriteAnimation)", "request": "launch", "mainClass": "main.SpriteAnimation" },
     { "type": "java", "name": "Prueba sin ventana (PresenterTest)", "request": "launch", "mainClass": "presenter.PresenterTest" },
     { "type": "java", "name": "Prueba de las hojas (SpriteSheetTest)", "request": "launch", "mainClass": "model.SpriteSheetTest" },
+    { "type": "java", "name": "Prueba del modelo (ModelTest)", "request": "launch", "mainClass": "model.ModelTest" },
     { "type": "java", "name": "Prueba con el ratón (MouseTest)", "request": "launch", "mainClass": "view.MouseTest" }
   ]
 }

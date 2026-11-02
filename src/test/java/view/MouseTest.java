@@ -12,8 +12,8 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import check.Check;
+import contract.SpriteView;
 import model.Model;
-import model.Sprite;
 import presenter.Presenter;
 
 /**
@@ -24,21 +24,22 @@ import presenter.Presenter;
 public class MouseTest {
 
     private static Robot robot;
-    private static Model model;
+    private static Presenter presenter;   // lo que la vista ve de los sprites se comprueba con él, como ella
     private static View view;
     private static Viewer viewer;
     private static boolean disturbed;   // alguien ha movido el ratón durante la prueba
 
     public static void main(String[] args) throws Exception {
         System.out.println("MouseTest (ventana real y Robot): no toques el ratón hasta que termine");
-        // El mismo montaje que SpriteAnimation.main, guardando el modelo y la vista para comprobarlos.
-        model = new Model();
+        // El mismo montaje que SpriteAnimation.main, guardando la vista y el presentador para comprobarlos.
+        // El modelo solo se nombra aquí, para montar: lo que hay en pantalla se mira con presenter.spriteViews().
+        Model model = new Model();
         model.addSprite("Pato", "/sprites/pato.png", 16, 16, 4, 8, 120, 220);
         model.addSprite("Explosión", "/sprites/explosion.png", 48, 48, 3, 12, 360, 160);
         view = new View();
         view.setCanvasSize(640, 400);
         view.setRenderFps(60);
-        Presenter presenter = new Presenter(model, view);
+        presenter = new Presenter(model, view);
         presenter.setFpsLimits(1, 120);
         presenter.start();
 
@@ -65,7 +66,7 @@ public class MouseTest {
     // ---------------------------------------------------------------- rueda
 
     static void wheelOverEachHudLine() {
-        int lines = 1 + model.spriteCount();
+        int lines = 1 + presenter.spriteCount();
         for (int line = 0; line < lines; line++) {
             int x = Hud.X + 60;
             int y = Hud.Y + line * Hud.LINE - Hud.LINE / 2;   // en medio de la línea
@@ -105,7 +106,7 @@ public class MouseTest {
         if (line == 0) {
             return view.renderFps();
         }
-        return model.sprite(line - 1).fps();
+        return spriteView(line - 1).fps();
     }
 
     // ---------------------------------------------------------------- arrastre
@@ -116,15 +117,15 @@ public class MouseTest {
     }
 
     static void drag(int index, int dx, int dy) {
-        Sprite sprite = model.sprite(index);
         // Hasta tres intentos: si alguien mueve el ratón, el arrastre no acaba donde debe.
         for (int attempt = 1; attempt <= 3; attempt++) {
             boolean disturbedBefore = disturbed;
             disturbed = false;
-            int x0 = sprite.x();
-            int y0 = sprite.y();
-            int grabX = x0 + sprite.width() / 2;
-            int grabY = y0 + sprite.height() / 2;
+            SpriteView before = spriteView(index);
+            int x0 = before.x();
+            int y0 = before.y();
+            int grabX = x0 + before.image().getWidth() / 2;    // en el centro del sprite
+            int grabY = y0 + before.image().getHeight() / 2;
             moveTo(grabX, grabY);
             robot.delay(100);
             checkPointerAt(grabX, grabY);
@@ -134,16 +135,18 @@ public class MouseTest {
                 moveTo(grabX + dx * i / steps, grabY + dy * i / steps);
             }
             // Con el sprite cogido, su animación sigue: el fotograma cambia.
-            boolean animates = changesFrame(sprite, 400);
+            boolean animates = changesFrame(index, 400);
             checkPointerAt(grabX + dx, grabY + dy);
             robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
             robot.delay(200);
             boolean retry = disturbed && attempt < 3;
             disturbed |= disturbedBefore;
             if (retry) continue;
-            Check.that("arrastre de " + sprite.name() + ": (" + x0 + ", " + y0 + ") → (" + sprite.x() + ", " + sprite.y() + ")",
-                       sprite.x() == x0 + dx && sprite.y() == y0 + dy);
-            Check.that(sprite.name() + " sigue animándose mientras se arrastra", animates);
+            SpriteView after = spriteView(index);
+            String name = after.name();
+            Check.that("arrastre de " + name + ": (" + x0 + ", " + y0 + ") → (" + after.x() + ", " + after.y() + ")",
+                       after.x() == x0 + dx && after.y() == y0 + dy);
+            Check.that(name + " sigue animándose mientras se arrastra", animates);
             break;
         }
     }
@@ -157,7 +160,7 @@ public class MouseTest {
         Check.that("el hilo de eventos de Swing responde (" + ms + " ms)", ms < 1000);
         Check.that("el hilo de pintado sigue vivo", alive("Render"));
         Check.that("los hilos de los sprites siguen vivos", alive("Sprite Pato") && alive("Sprite Explosión"));
-        Check.that("la explosión sigue avanzando fotogramas", changesFrame(model.sprite(1), 300));
+        Check.that("la explosión sigue avanzando fotogramas", changesFrame(1, 300));
     }
 
     // ---------------------------------------------------------------- cierre
@@ -212,15 +215,30 @@ public class MouseTest {
         robot.mouseMove(origin.x + x, origin.y + y);
     }
 
-    /** Mira el fotograma cada 20 ms durante un rato. (Mirar solo al final engaña: con 4 fotogramas,
-     *  tras avanzar 4 vuelve a estar en el mismo.) */
-    private static boolean changesFrame(Sprite sprite, int ms) {
-        int first = sprite.frameIndex();
+    /** Mira el fotograma de un sprite cada 20 ms durante un rato. (Mirar solo al final engaña: con 4 fotogramas,
+     *  tras avanzar 4 vuelve a estar en el mismo.) Cada imagen es una copia: se comparan sus píxeles. */
+    private static boolean changesFrame(int index, int ms) {
+        BufferedImage first = spriteView(index).image();
         for (int waited = 0; waited < ms; waited += 20) {
             robot.delay(20);
-            if (sprite.frameIndex() != first) return true;
+            if (!samePixels(spriteView(index).image(), first)) return true;
         }
         return false;
+    }
+
+    /** Cómo se ve ahora un sprite: lo mismo que recibe la vista. */
+    private static SpriteView spriteView(int index) {
+        return presenter.spriteViews().get(index);
+    }
+
+    /** Si dos imágenes del mismo tamaño tienen los mismos píxeles. */
+    private static boolean samePixels(BufferedImage a, BufferedImage b) {
+        for (int y = 0; y < a.getHeight(); y++) {
+            for (int x = 0; x < a.getWidth(); x++) {
+                if (a.getRGB(x, y) != b.getRGB(x, y)) return false;
+            }
+        }
+        return true;
     }
 
     /** Comprueba que el puntero sigue donde lo dejó el Robot; si no, alguien ha tocado el ratón. */

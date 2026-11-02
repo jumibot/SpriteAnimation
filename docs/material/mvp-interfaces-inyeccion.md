@@ -172,11 +172,11 @@ No sabe
 
 :::
 
-En la demo, la vista toma la iniciativa para pintar: su hilo le pide al presentador, en cada vuelta, lo que tiene que dibujar. El presentador lo lee del modelo y se lo devuelve como una lista de `SpriteState`, una foto fija de cada sprite. Así se ve una vuelta de pintado:
+En la demo, la vista toma la iniciativa para pintar: su hilo le pide al presentador, en cada vuelta, lo que tiene que dibujar. El presentador lo lee del modelo y se lo devuelve como una lista de `SpriteView`: de cada sprite, solo lo que hay que enseñar. El sprite no sale del modelo. Así se ve una vuelta de pintado:
 
 <figure class="vertical">
 <svg viewBox="0 0 560 440" role="img" style="font-family:var(--fuente-texto);display:block">
-<title>Animación: la vista pide qué pintar, el presentador lee el modelo y devuelve una lista de SpriteState, y la vista pinta</title>
+<title>Animación: la vista pide qué pintar, el presentador pide al modelo los datos de cada sprite y devuelve una lista de SpriteView, y la vista pinta</title>
 <style>
 .a1-ida{animation:a1-ida 6s ease-in-out infinite}
 .a1-vuelta{animation:a1-vuelta 6s ease-in-out infinite}
@@ -193,15 +193,15 @@ En la demo, la vista toma la iniciativa para pintar: su hilo le pide al presenta
 <text class="a1-pinta" x="500" y="62" font-size="18" font-weight="700" text-anchor="end" style="fill:var(--primario)">pinta</text>
 <rect x="40" y="185" width="480" height="70" rx="10" fill="none" style="stroke:var(--primario)" stroke-width="2"/>
 <text x="60" y="215" font-size="18" font-weight="700" style="fill:var(--primario)">Presenter</text>
-<text x="60" y="239" font-size="15" style="fill:var(--texto-suave)">traduce cada Sprite a un SpriteState</text>
+<text x="60" y="239" font-size="15" style="fill:var(--texto-suave)">monta un SpriteView por sprite</text>
 <rect x="40" y="350" width="480" height="70" rx="10" fill="none" style="stroke:var(--primario)" stroke-width="2"/>
 <text x="60" y="380" font-size="18" font-weight="700" style="fill:var(--primario)">Model</text>
 <text x="60" y="404" font-size="15" style="fill:var(--texto-suave)">Sprite pato · Sprite explosión</text>
 <g style="stroke:var(--linea)" stroke-width="2"><line x1="110" y1="92" x2="110" y2="183"/><line x1="110" y1="257" x2="110" y2="348"/><line x1="450" y1="92" x2="450" y2="183"/><line x1="450" y1="257" x2="450" y2="348"/></g>
-<text x="122" y="142" font-size="15" style="fill:var(--texto-suave)">sprites()</text>
-<text x="122" y="307" font-size="15" style="fill:var(--texto-suave)">lee cada Sprite</text>
-<text x="438" y="142" font-size="15" text-anchor="end" style="fill:var(--texto-suave)">List&lt;SpriteState&gt;</text>
-<text x="438" y="307" font-size="15" text-anchor="end" style="fill:var(--texto-suave)">fotograma, posición</text>
+<text x="122" y="142" font-size="15" style="fill:var(--texto-suave)">spriteViews()</text>
+<text x="122" y="307" font-size="15" style="fill:var(--texto-suave)">frame(i), x(i)…</text>
+<text x="438" y="142" font-size="15" text-anchor="end" style="fill:var(--texto-suave)">List&lt;SpriteView&gt;</text>
+<text x="438" y="307" font-size="15" text-anchor="end" style="fill:var(--texto-suave)">copias y números</text>
 <circle class="a1-ida" cx="110" cy="96" r="9" style="fill:var(--primario)"/>
 <rect class="a1-vuelta" x="438" y="330" width="24" height="18" rx="3" opacity="0" style="fill:var(--oscuro)"/>
 </svg>
@@ -243,7 +243,7 @@ Las tres promesas juntas forman el **contrato** de la aplicación:
 <figcaption>Cada flecha va de quien pide a quien responde, y pasa por la interfaz que lo permite. En discontinuo, lo opcional: el modelo solo le pide algo al presentador si tiene que avisarle de cambios. Las tres interfaces, juntas, son el contrato.</figcaption>
 </figure>
 
-En la demo, el modelo no pide nada: la vista pregunta al presentador cada vez que pinta, así que nadie tiene que avisarla. Por eso `ModelContract` no recibe al presentador. El contrato está en el paquete `contract`, un archivo por interfaz: `ModelContract`, `ViewContract` y `PresenterContract`, y una cuarta, `SpriteContract`, con lo que el presentador puede pedirle a cada sprite. Son cortas a propósito: cada método es algo que la otra parte necesita de verdad.
+En la demo, el modelo no pide nada: la vista pregunta al presentador cada vez que pinta, así que nadie tiene que avisarla. Por eso `ModelContract` no recibe al presentador. El contrato está en el paquete `contract`, un archivo por interfaz: `ModelContract`, `ViewContract` y `PresenterContract`. Los sprites no salen del modelo: el presentador pide sus datos por su número. Son cortas a propósito: cada método es algo que la otra parte necesita de verdad.
 
 ::: tarjetas 3
 
@@ -251,7 +251,9 @@ En la demo, el modelo no pide nada: la vista pregunta al presentador cada vez qu
 
 - `start()`: poner en marcha las animaciones.
 - `spriteCount()`: decir cuántos sprites hay.
-- `sprite(index)`: dar uno de los sprites, por su número.
+- `frame(index)`, `x(index)`, `y(index)`, `name(index)` y `fps(index)`: dar un dato de un sprite, por su número. El fotograma va en una copia.
+- `setFps(index, fps)`: cambiar la velocidad de un sprite.
+- `moveTo(index, x, y)`: llevar un sprite a otro sitio.
 
 ### `ViewContract`: lo que el presentador puede pedirle a la vista
 
@@ -262,14 +264,14 @@ En la demo, el modelo no pide nada: la vista pregunta al presentador cada vez qu
 
 ### `PresenterContract`: lo que la vista puede pedirle al presentador
 
-- `sprites()`: dar la foto de todos los sprites, para pintarlos.
+- `spriteViews()`: dar lo que hay que enseñar de cada sprite, para pintarlo.
+- `spriteCount()`: decir cuántos sprites hay, para contar las líneas del HUD.
 - `changeRenderSpeed(delta)`: subir o bajar el ritmo de pintado, sin salirse de los límites.
 - `changeSpriteSpeed(index, delta)`: lo mismo con la velocidad de un sprite.
-- `spriteAt(x, y)`: decir qué sprite hay en un punto de la ventana.
 - `moveSprite(index, x, y)`: llevar un sprite a otro sitio.
 - `start()`: poner en marcha la aplicación. No lo pide la vista: lo llama `main`.
 
-La foto de cada sprite es un `SpriteState`: su nombre, su fotograma, su posición y su velocidad. Nadie la cambia mientras se pinta. Va en su propio archivo, también en `contract`, pero no es un contrato: son datos.
+Lo que se enseña de cada sprite es un `SpriteView`: una copia de su fotograma, su posición, su nombre y su velocidad. Va en su propio archivo, también en `contract`, pero no es un contrato: son datos. Entre capas solo viajan datos que nadie puede cambiar (records, números y textos), y lo que sí se podría cambiar, como una imagen, viaja en copia. Así ninguna capa tiene en sus manos un objeto de otra.
 
 :::
 
@@ -283,8 +285,7 @@ El contrato se escribe así, una interfaz en cada archivo, y cada clase implemen
 public interface ModelContract { … }
 public interface ViewContract { … }
 public interface PresenterContract { … }
-public interface SpriteContract { … }
-public record SpriteState(String name, BufferedImage frame, int x, int y, int fps) {}
+public record SpriteView(BufferedImage image, int x, int y, String name, int fps) {}
 
 public class Model implements ModelContract { … }
 public class View extends JFrame implements ViewContract { … }
@@ -292,6 +293,8 @@ public class Presenter implements PresenterContract { … }
 ```
 
 Cada pieza va en su paquete: el contrato en `contract`; `Model`, `View` y `Presenter` en `model`, `view` y `presenter`; y la clase con `main`, en `main`.
+
+Lo puedes comprobar mirando los `import`. Los archivos de `view` solo importan de `contract` `PresenterContract`, `ViewContract` y `SpriteView`; los de `model`, solo `ModelContract`. Ninguno de los dos importa nada del otro. En definitiva, la vista no necesita nada del modelo, ni el modelo de la vista.
 
 A `ModelContract` le falta algo a propósito: `addSprite`. Decidir qué animaciones hay es cosa de `main`, así que ese método es de la clase `Model`, pero no del contrato. Sacar a una interfaz solo la parte de una clase que otra necesita es una técnica de refactorización con nombre propio: *extraer interfaz* [[R3]](#src-R3 "Refactoring.Guru, Extract Interface"){: .ref}.
 
@@ -573,7 +576,7 @@ En la demo trabajan tres clases de hilos, y cada uno sabe qué puede tocar y qu�
 
 Cada `Sprite` tiene su hilo, que avanza el fotograma según el tiempo que ha pasado. Por eso su ritmo es el mismo en cualquier equipo, y no depende de lo rápido que se pinte.
 
-Los campos que escribe un hilo y lee otro son `volatile`, para que cada hilo vea el último valor escrito. Y la vista no lee los sprites: recibe una lista de `SpriteState` que no cambia mientras pinta.
+Los campos que escribe un hilo y lee otro son `volatile`, para que cada hilo vea el último valor escrito. Y la vista no lee los sprites: recibe una lista de `SpriteView` que nadie puede cambiar, con copias de los fotogramas.
 
 Así se cumple la idea del principio: el hilo de pintado nunca toca un `Sprite`, y los hilos de los sprites nunca tocan Swing.
 
@@ -633,7 +636,7 @@ En código, el recorrido es corto. La vista solo averigua sobre qué línea del 
 ```java
 // MouseHandler, de la vista: el evento llega por el hilo de eventos de Swing
 public void mouseWheelMoved(MouseWheelEvent e) {
-    int lines = 1 + this.presenter.sprites().size();        // la de pintado y una por sprite
+    int lines = 1 + this.presenter.spriteCount();           // la de pintado y una por sprite
     int line = this.hud.lineAt(e.getX(), e.getY(), lines);  // 0: pintado; 1, 2…: sprites
     if (line < 0) {
         return;                                              // fuera del HUD, no hace nada
@@ -649,12 +652,11 @@ public void mouseWheelMoved(MouseWheelEvent e) {
 
 // Presenter: aplica la regla
 public void changeSpriteSpeed(int index, int delta) {
-    SpriteContract sprite = this.model.sprite(index);
-    sprite.setFps(this.limit(sprite.fps() + delta));   // entre minFps y maxFps
+    this.model.setFps(index, this.limit(this.model.fps(index) + delta));   // entre minFps y maxFps
 }
 ```
 
-Arrastrar un sprite sigue el mismo camino. La vista pregunta al presentador qué sprite hay bajo el puntero (`spriteAt`) y, mientras arrastras, le pide que lo mueva (`moveSprite`). El pato sigue aleteando todo el rato, porque su hilo no sabe nada del ratón.
+Arrastrar un sprite sigue el mismo camino. Qué sprite hay bajo el puntero lo averigua la vista: al pulsar, le pide al presentador los `SpriteView` de ese momento y busca el que queda encima. No guarda los `SpriteView`: los pide cuando los necesita, los usa y los suelta. Mientras arrastras, le pide al presentador que mueva el sprite (`moveSprite`). El pato sigue aleteando todo el rato, porque su hilo no sabe nada del ratón.
 
 Para enterarse de la rueda, la vista usa el patrón Observer [[R5]](#src-R5 "Refactoring.Guru, Observer"){: .ref}: se suscribe a los eventos del ratón de Swing, y Swing la avisa llamando a `mouseWheelMoved`. Entre el modelo y la vista, en cambio, la demo no lo usa: el modelo no avisa a nadie, y la vista pide los datos cuando le toca pintar. En otros MVP, el modelo sí avisa de sus cambios al presentador, y también suele hacerlo con Observer.
 
@@ -679,7 +681,7 @@ MVP no sale gratis. Ordena el programa, pero a cambio pide más código. Antes d
 
 :::
 
-En la demo, el precio se puede contar. El contrato declara 16 métodos: 4 del modelo, 5 de la vista y 7 del presentador. Cada uno se escribe dos veces, en la interfaz y en la clase que lo cumple. Sin MVP, el pato y la explosión cabrían en una sola clase de ventana que guarda los sprites, los pinta y escucha el ratón. Haría lo mismo con menos código, pero no podrías cambiar ni probar una parte sin las demás.
+En la demo, el precio se puede contar. El contrato declara 19 métodos: 9 del modelo, 4 de la vista y 6 del presentador. Cada uno se escribe dos veces, en la interfaz y en la clase que lo cumple. Sin MVP, el pato y la explosión cabrían en una sola clase de ventana que guarda los sprites, los pinta y escucha el ratón. Haría lo mismo con menos código, pero no podrías cambiar ni probar una parte sin las demás.
 
 > **Cuándo compensa**
 > Cuando el programa va a crecer, va a cambiar de interfaz o necesita pruebas. Para un ejercicio de una tarde, una sola clase basta.
@@ -699,7 +701,7 @@ Por qué es un problema
 :   La vista queda atada a las clases del modelo, y el hilo de pintado toca objetos que otros hilos están cambiando.
 
 Cómo se arregla
-:   La vista solo conoce `PresenterContract` y pinta `SpriteState`.
+:   La vista solo conoce `PresenterContract` y pinta `SpriteView`: datos preparados para enseñar, nunca un objeto del modelo, ni suelto ni dentro de una lista o un record.
 
 ### El presentador pinta
 
@@ -710,7 +712,7 @@ Por qué es un problema
 :   El presentador deja de poder probarse sin ventana, y la vista se queda sin trabajo.
 
 Cómo se arregla
-:   El presentador devuelve datos; pintar es cosa de la vista.
+:   El presentador devuelve datos y no guarda ninguno: cada vez se los pide al modelo, los prepara y los entrega. Pintar es cosa de la vista.
 
 ### El `new` escondido
 
@@ -806,7 +808,7 @@ Qué tienes que hacer
 :   Con un doble clic sobre un sprite, su animación se para o vuelve a empezar.
 
 Qué clases cambian
-:   `MouseHandler` (el gesto), `PresenterContract` y `Presenter` (el método nuevo) y `Sprite` (la pausa).
+:   `MouseHandler` (el gesto), `PresenterContract` y `Presenter` (el método nuevo), `ModelContract` y `Model` (lo que el presentador le pide) y `Sprite` (la pausa).
 
 Qué aprendes
 :   Cómo atraviesa una funcionalidad nueva las tres capas, y cómo se para y se reanuda un hilo.
