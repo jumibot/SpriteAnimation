@@ -19,6 +19,7 @@ Este índice no se escribe a mano: se regenera con `python -I -X utf8 tools/indi
 
 | Nº | Fecha | Decisión |
 | --- | --- | --- |
+| 30 | 2026-11-02 | [Sin clases anónimas ni lambdas](030-2026-11-02-sin-clases-anonimas-ni-lambdas.md) |
 | 29 | 2026-11-02 | [El proyecto sigue el principio KISS](029-2026-11-02-el-proyecto-sigue-el-principio-kiss.md) |
 | 28 | 2026-11-02 | [La configuración que solo usa main queda fuera de los contratos](028-2026-11-02-la-configuracion-que-solo-usa-main-queda-fuera-de-los-contratos.md) |
 | 27 | 2026-11-02 | [No se usan clases ni interfaces contenedoras](027-2026-11-02-no-se-usan-clases-ni-interfaces-contenedoras.md) |
