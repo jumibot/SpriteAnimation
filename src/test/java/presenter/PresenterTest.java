@@ -20,6 +20,7 @@ public class PresenterTest {
         spriteScaleStaysBetween1And8();
         spriteViewsGiveWhatTheViewShows();
         moves();
+        createsDucksUpToTheMaximum();
         Check.finish("PresenterTest");
     }
 
@@ -97,6 +98,19 @@ public class PresenterTest {
 
         model.moveTo(0, 0, 0);
         Check.that("el SpriteView no cambia aunque cambie el modelo", duck.x() == 100 && duck.y() == 200);
+    }
+
+    static void createsDucksUpToTheMaximum() {
+        FakeModel model = new FakeModel();
+        Presenter presenter = new Presenter(model, new FakeView());
+        presenter.setMaxSprites(3);
+
+        presenter.createDuck(50, 60);
+        Check.that("createDuck pide al modelo un pato en (50, 60)", model.duckX == 50 && model.duckY == 60);
+        presenter.createDuck(70, 80);
+        Check.equal("ya hay 3 sprites", 3, model.sprites);
+        presenter.createDuck(90, 90);
+        Check.that("con 3, el máximo, no pide más", model.sprites == 3 && model.duckX == 70);
     }
 
     static void moves() {

@@ -18,4 +18,5 @@ public interface ModelContract {
     int scale(int index);                // cuántas veces se amplía
     void setScale(int index, int scale); // cambiar ese tamaño, sin mover su centro
     void moveTo(int index, int x, int y);  // llevarlo a otro sitio
+    void createDuck(int centerX, int centerY);  // un pato nuevo con su centro ahí, ya animándose
 }

@@ -5,6 +5,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.imageio.ImageIO;
@@ -18,7 +19,8 @@ import presenter.Presenter;
 
 /**
  * Prueba con el ratón de verdad: abre la ventana real y mueve el ratón con java.awt.Robot.
- * Gira la rueda sobre cada cifra del HUD y sobre cada sprite, arrastra cada sprite y comprueba cómo se cierra.
+ * Gira la rueda sobre cada cifra del HUD y sobre cada sprite, arrastra cada sprite, crea patos con Ctrl+clic
+ * y comprueba cómo se cierra.
  * Durante la prueba no toques el ratón. Con -Dcaptura=carpeta guarda una captura de la ventana.
  */
 public class MouseTest {
@@ -42,6 +44,7 @@ public class MouseTest {
         presenter = new Presenter(model, view);
         presenter.setFpsLimits(1, 120);
         presenter.setScaleLimits(1, 8);
+        presenter.setMaxSprites(12);
         presenter.start();
 
         if (System.getProperty("depurar") != null) printMouseEvents();
@@ -55,6 +58,7 @@ public class MouseTest {
         wheelOverEachHudLine();
         wheelOverEachSprite();
         dragEachSprite();
+        ctrlClickCreatesADuck();
         capture("captura-final.png");
         stillResponds();
         closesWithTheX();
@@ -185,6 +189,38 @@ public class MouseTest {
             Check.that(name + " sigue animándose mientras se arrastra", animates);
             break;
         }
+    }
+
+    // ---------------------------------------------------------------- Ctrl+clic
+
+    /** Ctrl+clic en una zona vacía crea un pato con su centro en el punto, ya animándose. Encima de un sprite, también, sin arrastrarlo. */
+    static void ctrlClickCreatesADuck() {
+        int count = presenter.spriteCount();
+        int x = 520;
+        int y = 320;
+        ctrlClick(x, y);
+        Check.equal("Ctrl+clic crea un sprite", count + 1, presenter.spriteCount());
+        SpriteView duck = spriteView(count);
+        Check.that("es un pato centrado donde se ha pulsado",
+                   duck.name().equals("Pato") && duck.x() + duck.image().getWidth() / 2 == x
+                   && duck.y() + duck.image().getHeight() / 2 == y);
+        Check.that("y ya se anima", changesFrame(count, 400));
+
+        SpriteView below = spriteView(0);
+        ctrlClick(below.x() + 5, below.y() + 5);
+        SpriteView after = spriteView(0);
+        Check.that("Ctrl+clic encima de un sprite también crea un pato y no lo mueve",
+                   presenter.spriteCount() == count + 2 && after.x() == below.x() && after.y() == below.y());
+    }
+
+    private static void ctrlClick(int x, int y) {
+        moveTo(x, y);
+        robot.delay(100);
+        robot.keyPress(KeyEvent.VK_CONTROL);
+        robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+        robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+        robot.keyRelease(KeyEvent.VK_CONTROL);
+        robot.delay(200);
     }
 
     // ---------------------------------------------------------------- sigue respondiendo

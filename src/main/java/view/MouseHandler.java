@@ -53,8 +53,14 @@ public class MouseHandler extends MouseAdapter {
         }
     }
 
+    /** Con Ctrl, pide un pato en ese punto; sin Ctrl, coge el sprite que haya debajo para arrastrarlo. */
     @Override
     public void mousePressed(MouseEvent e) {
+        if (e.isControlDown()) {
+            this.presenter.createDuck(e.getX(), e.getY());   // también encima de un sprite; no arrastra nada
+            return;
+        }
+
         List<SpriteView> spriteViews = this.presenter.spriteViews();     // cómo se ve todo ahora
         this.draggedSprite = this.spriteAt(spriteViews, e.getX(), e.getY());
         if (this.draggedSprite < 0) {

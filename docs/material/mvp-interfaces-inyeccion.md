@@ -18,7 +18,7 @@ Todo este documento gira alrededor de un solo programa: SpriteAnimation, una ven
 
 Al ejecutarlo, ves un pato que vuela y una explosión que estalla una y otra vez. Cada una va a su ritmo: el pato, a 8 fotogramas por segundo, y la explosión, a 12. Arriba, un pequeño HUD (las cifras que flotan sobre la escena) muestra tres velocidades: cuántas veces por segundo se pinta la ventana y a qué ritmo avanza cada animación.
 
-Se maneja con el ratón. Con la rueda sobre una cifra del HUD, la subes o la bajas; sobre un sprite, lo agrandas o lo encoges. La línea del HUD que está bajo el ratón se ilumina en amarillo, para que sepas cuál vas a cambiar. Y puedes arrastrar el pato o la explosión a otro sitio: mientras lo llevas, sigue animándose.
+Se maneja con el ratón. Con la rueda sobre una cifra del HUD, la subes o la bajas; sobre un sprite, lo agrandas o lo encoges. La línea del HUD que está bajo el ratón se ilumina en amarillo, para que sepas cuál vas a cambiar. Y puedes arrastrar el pato o la explosión a otro sitio: mientras lo llevas, sigue animándose. Con Ctrl+clic aparece un pato nuevo donde pulsas, hasta 12 sprites.
 
 <figure class="vertical">
 <svg viewBox="0 0 560 350" role="img" style="font-family:var(--fuente-texto);display:block">
@@ -258,6 +258,7 @@ En la demo, el modelo no pide nada: la vista pregunta al presentador cada vez qu
 - `setFps(index, fps)`: cambiar la velocidad de un sprite.
 - `setScale(index, scale)`: cambiar su tamaño, sin mover su centro.
 - `moveTo(index, x, y)`: llevar un sprite a otro sitio.
+- `createDuck(centerX, centerY)`: crear un pato con su centro en ese punto, ya animándose.
 
 ### `ViewContract`: lo que el presentador puede pedirle a la vista
 
@@ -274,6 +275,7 @@ En la demo, el modelo no pide nada: la vista pregunta al presentador cada vez qu
 - `changeSpriteSpeed(index, delta)`: lo mismo con la velocidad de un sprite.
 - `changeSpriteScale(index, delta)`: agrandar o encoger un sprite, también entre unos límites.
 - `moveSprite(index, x, y)`: llevar un sprite a otro sitio.
+- `createDuck(x, y)`: crear un pato en ese punto, si aún cabe otro sprite.
 - `start()`: poner en marcha la aplicación. No lo pide la vista: lo llama `main`.
 
 Lo que se enseña de cada sprite es un `SpriteView`: una copia de su fotograma, su posición, su nombre y su velocidad. Va en su propio archivo, también en `contract`, pero no es un contrato: son datos. Entre capas solo viajan datos que nadie puede cambiar (records, números y textos), y lo que sí se podría cambiar, como una imagen, viaja en copia. Así ninguna capa tiene en sus manos un objeto de otra.
@@ -301,7 +303,7 @@ Cada pieza va en su paquete: el contrato en `contract`; `Model`, `View` y `Prese
 
 Lo puedes comprobar mirando los `import`. Los archivos de `view` solo importan de `contract` `PresenterContract`, `ViewContract` y `SpriteView`; los de `model`, solo `ModelContract`. Ninguno de los dos importa nada del otro. En definitiva, la vista no necesita nada del modelo, ni el modelo de la vista.
 
-A `ModelContract` le falta algo a propósito: `addSprite`. Decidir qué animaciones hay es cosa de `main`, así que ese método es de la clase `Model`, pero no del contrato. Sacar a una interfaz solo la parte de una clase que otra necesita es una técnica de refactorización con nombre propio: *extraer interfaz* [[R3]](#src-R3 "Refactoring.Guru, Extract Interface"){: .ref}.
+A `ModelContract` le falta algo a propósito: `addSprite`. Decidir qué animaciones hay es cosa de `main`, así que ese método es de la clase `Model`, pero no del contrato. El presentador sí puede pedir un pato con `createDuck`, pero no inventarse una animación: cómo es un pato lo sabe el modelo. Sacar a una interfaz solo la parte de una clase que otra necesita es una técnica de refactorización con nombre propio: *extraer interfaz* [[R3]](#src-R3 "Refactoring.Guru, Extract Interface"){: .ref}.
 
 Gracias al contrato, el presentador funciona igual con cualquier vista que lo cumpla: la de Swing, una de texto o una falsa para probar sin ventana.
 
@@ -467,12 +469,13 @@ public static void main(String[] args) {
     Presenter presenter = new Presenter(model, view);
     presenter.setFpsLimits(1, 120);       // la rueda no baja de 1 ni pasa de 120 por segundo
     presenter.setScaleLimits(1, 8);       // ni encoge un sprite por debajo de 1 ni lo amplía más de 8 veces
+    presenter.setMaxSprites(12);          // Ctrl+clic crea patos hasta que haya 12 sprites
 
     presenter.start();
 }
 ```
 
-`main` declara cada pieza con su clase, `Model`, `View` y `Presenter`, porque las configura con métodos que no son del contrato: `addSprite`, que crea cada sprite a partir de su hoja, `setCanvasSize`, `setFpsLimits` y `setScaleLimits`. Así la configuración queda a la vista, en un solo sitio. El presentador recibe el modelo y la vista como `ModelContract` y `ViewContract`, sin esos métodos. `setRenderFps` sí es del contrato, porque el presentador lo usa cuando giras la rueda.
+`main` declara cada pieza con su clase, `Model`, `View` y `Presenter`, porque las configura con métodos que no son del contrato: `addSprite`, que crea cada sprite a partir de su hoja, `setCanvasSize`, `setFpsLimits`, `setScaleLimits` y `setMaxSprites`. Así la configuración queda a la vista, en un solo sitio. El presentador recibe el modelo y la vista como `ModelContract` y `ViewContract`, sin esos métodos. `setRenderFps` sí es del contrato, porque el presentador lo usa cuando giras la rueda.
 
 Fíjate en que el presentador no sabe qué animaciones hay: trabaja con los sprites que tenga el modelo. Por eso sirve igual para dos sprites que para veinte, y cambiar las animaciones no lo toca.
 
@@ -582,7 +585,7 @@ En la demo trabajan tres clases de hilos, y cada uno sabe qué puede tocar y qu�
 
 Cada `Sprite` tiene su hilo, que avanza el fotograma según el tiempo que ha pasado. Por eso su ritmo es el mismo en cualquier equipo, y no depende de lo rápido que se pinte.
 
-Los campos que escribe un hilo y lee otro son `volatile`, para que cada hilo vea el último valor escrito. Y la vista no lee los sprites: recibe una lista de `SpriteView` que nadie puede cambiar, con copias de los fotogramas.
+Los campos que escribe un hilo y lee otro son `volatile`, para que cada hilo vea el último valor escrito. Con la lista de sprites pasa algo parecido: el hilo de pintado la recorre mientras el de eventos le añade patos. Por eso es una `CopyOnWriteArrayList`, que al añadir hace una lista nueva y cambia una por otra. Y la vista no lee los sprites: recibe una lista de `SpriteView` que nadie puede cambiar, con copias de los fotogramas.
 
 Así se cumple la idea del principio: el hilo de pintado nunca toca un `Sprite`, y los hilos de los sprites nunca tocan Swing.
 
@@ -666,7 +669,7 @@ public void changeSpriteSpeed(int index, int delta) {
 }
 ```
 
-Arrastrar un sprite sigue el mismo camino. Qué sprite hay bajo el puntero lo averigua la vista: al pulsar, le pide al presentador los `SpriteView` de ese momento y busca el que queda encima. No guarda los `SpriteView`: los pide cuando los necesita, los usa y los suelta. Mientras arrastras, le pide al presentador que mueva el sprite (`moveSprite`). El pato sigue aleteando todo el rato, porque su hilo no sabe nada del ratón. Con la rueda sobre un sprite pasa lo mismo: la vista busca el sprite y avisa con `changeSpriteScale`, el presentador lo deja entre 1 y 8 y el modelo, con `setScale`, lo agranda sin mover su centro. La diana roja que aparece sobre el sprite bajo el puntero sale de la misma búsqueda: la vista solo recuerda dónde está el ratón y, al pintar, mira qué sprite hay ahí.
+Arrastrar un sprite sigue el mismo camino. Qué sprite hay bajo el puntero lo averigua la vista: al pulsar, le pide al presentador los `SpriteView` de ese momento y busca el que queda encima. No guarda los `SpriteView`: los pide cuando los necesita, los usa y los suelta. Mientras arrastras, le pide al presentador que mueva el sprite (`moveSprite`). El pato sigue aleteando todo el rato, porque su hilo no sabe nada del ratón. Con la rueda sobre un sprite pasa lo mismo: la vista busca el sprite y avisa con `changeSpriteScale`, el presentador lo deja entre 1 y 8 y el modelo, con `setScale`, lo agranda sin mover su centro. Con Ctrl+clic, el viaje es el más corto: la vista pide un pato (`createDuck`), el presentador mira si cabe otro sprite y el modelo lo crea con los fotogramas que ya tiene y arranca su hilo. La diana roja que aparece sobre el sprite bajo el puntero sale de la misma búsqueda: la vista solo recuerda dónde está el ratón y, al pintar, mira qué sprite hay ahí.
 
 Para enterarse de la rueda, la vista usa el patrón Observer [[R5]](#src-R5 "Refactoring.Guru, Observer"){: .ref}: se suscribe a los eventos del ratón de Swing, y Swing la avisa llamando a `mouseWheelMoved`. Entre el modelo y la vista, en cambio, la demo no lo usa: el modelo no avisa a nadie, y la vista pide los datos cuando le toca pintar. En otros MVP, el modelo sí avisa de sus cambios al presentador, y también suele hacerlo con Observer.
 
@@ -691,7 +694,7 @@ MVP no sale gratis. Ordena el programa, pero a cambio pide más código. Antes d
 
 :::
 
-En la demo, el precio se puede contar. El contrato declara 19 métodos: 9 del modelo, 4 de la vista y 6 del presentador. Cada uno se escribe dos veces, en la interfaz y en la clase que lo cumple. Sin MVP, el pato y la explosión cabrían en una sola clase de ventana que guarda los sprites, los pinta y escucha el ratón. Haría lo mismo con menos código, pero no podrías cambiar ni probar una parte sin las demás.
+En la demo, el precio se puede contar. El contrato declara 24 métodos: 12 del modelo, 4 de la vista y 8 del presentador. Cada uno se escribe dos veces, en la interfaz y en la clase que lo cumple. Sin MVP, el pato y la explosión cabrían en una sola clase de ventana que guarda los sprites, los pinta y escucha el ratón. Haría lo mismo con menos código, pero no podrías cambiar ni probar una parte sin las demás.
 
 > **Cuándo compensa**
 > Cuando el programa va a crecer, va a cambiar de interfaz o necesita pruebas. Para un ejercicio de una tarde, una sola clase basta.

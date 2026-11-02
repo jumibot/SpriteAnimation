@@ -22,6 +22,9 @@ public class Presenter implements PresenterContract {
     private int minScale = 1;
     private int maxScale = 8;
 
+    // Cuántos sprites puede haber como mucho: con 12 el HUD cabe en el lienzo. main lo cambia con setMaxSprites.
+    private int maxSprites = 12;
+
     public Presenter(ModelContract model, ViewContract view) {   // las recibe, no las crea
         this.model = model;
         this.view = view;
@@ -39,6 +42,11 @@ public class Presenter implements PresenterContract {
     public void setScaleLimits(int min, int max) {
         this.minScale = min;
         this.maxScale = max;
+    }
+
+    /** El máximo de sprites. No es del contrato: solo lo usa main, al montar la aplicación. */
+    public void setMaxSprites(int max) {
+        this.maxSprites = max;
     }
 
     @Override
@@ -82,6 +90,14 @@ public class Presenter implements PresenterContract {
     @Override
     public void moveSprite(int index, int x, int y) {
         this.model.moveTo(index, x, y);
+    }
+
+    /** La regla: si aún cabe otro sprite, se lo pide al modelo; si no, no hace nada. Cómo se hace un pato lo sabe el modelo. */
+    @Override
+    public void createDuck(int x, int y) {
+        if (this.model.spriteCount() < this.maxSprites) {
+            this.model.createDuck(x, y);
+        }
     }
 
     /** Deja el valor entre min y max. */

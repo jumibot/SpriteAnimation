@@ -134,7 +134,7 @@ Son trece archivos, uno por clase, interfaz o record ([026](https://github.com/j
 :   El recuadro de arriba con las velocidades. Lo pinta y dice sobre qué línea está el ratón.
 
 `MouseHandler`
-:   Escucha el ratón sobre el lienzo y avisa al presentador: la rueda cambia una velocidad y el arrastre mueve un sprite.
+:   Escucha el ratón sobre el lienzo y avisa al presentador: la rueda cambia una velocidad o una escala, el arrastre mueve un sprite y Ctrl+clic pide un pato.
 
 :::
 
@@ -147,7 +147,7 @@ La estructura no es solo dónde está cada archivo: también qué puede ver cada
 3. Lo que cruza un contrato son datos mínimos y que no se pueden cambiar: números, textos, records y listas fijas. La imagen va como copia ([042](https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/042-2026-11-02-las-interfaces-entregan-los-datos-minimos-inmutables-si-se-puede-nunca-objetos-internos.md)).
 4. El presentador no pinta ni guarda estado. Cada vez que le piden algo, lo pregunta al modelo y lo entrega ([041](https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/041-2026-11-02-el-presentador-no-pinta-ni-guarda-estado.md)).
 5. La vista no guarda lo que le da el presentador: lo pide, lo usa y lo suelta ([038](https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/038-2026-11-02-la-vista-no-guarda-referencias-a-datos-del-presentador.md)).
-6. Lo que solo usa `main` al montar no está en los contratos: `addSprite` del modelo, `setCanvasSize` de la vista y `setFpsLimits` del presentador ([028](https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/028-2026-11-02-la-configuracion-que-solo-usa-main-queda-fuera-de-los-contratos.md)). Por eso `main` usa las clases concretas, y el presentador no puede crear animaciones ([015](https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/015-2026-11-02-main-pide-los-sprites-al-modelo-no-el-presentador.md)).
+6. Lo que solo usa `main` al montar no está en los contratos: `addSprite` del modelo, `setCanvasSize` de la vista y `setFpsLimits`, `setScaleLimits` y `setMaxSprites` del presentador ([028](https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/028-2026-11-02-la-configuracion-que-solo-usa-main-queda-fuera-de-los-contratos.md)). Por eso `main` usa las clases concretas, y el presentador no puede crear animaciones ([015](https://github.com/jumibot/SpriteAnimation/blob/main/sf/decisiones/015-2026-11-02-main-pide-los-sprites-al-modelo-no-el-presentador.md)).
 
 ## Funcionamiento | En qué orden se monta y funciona {#orden}
 
@@ -170,7 +170,7 @@ Añadir una animación
 :   Pon su hoja en `src/main/resources/sprites/` y añade una línea `model.addSprite(…)` en `SpriteAnimation`. El HUD le hace sitio solo.
 
 Cambiar el tamaño de la ventana o las velocidades
-:   En `SpriteAnimation`: `setCanvasSize`, la velocidad de pintado inicial (`setRenderFps`) y los límites de la rueda (`setFpsLimits`).
+:   En `SpriteAnimation`: `setCanvasSize`, la velocidad de pintado inicial (`setRenderFps`) los límites de la rueda (`setFpsLimits`, `setScaleLimits`) y el máximo de sprites (`setMaxSprites`).
 
 Cambiar el aspecto del HUD
 :   En `Hud`: su posición, sus colores, su letra y el texto de cada línea.
