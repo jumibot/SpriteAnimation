@@ -1,3 +1,7 @@
+package presenter;
+
+import contract.AnimationContract;
+
 /** Una vista falsa: cumple el contrato sin abrir ninguna ventana. */
 class FakeView implements AnimationContract.View {
 

@@ -5,4 +5,4 @@ cd "$(dirname "$0")"
 ./compilar.sh
 # En Windows (Git Bash), java separa el classpath con ';'; en Linux y macOS, con ':'.
 case "$(uname -s)" in MINGW*|MSYS*|CYGWIN*) S=';' ;; *) S=':' ;; esac
-java -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -cp "out/main${S}src/main/resources" SpriteAnimation
+java -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -cp "out/main${S}src/main/resources" main.SpriteAnimation

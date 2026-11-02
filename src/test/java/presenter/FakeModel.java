@@ -1,4 +1,9 @@
+package presenter;
+
 import java.awt.image.BufferedImage;
+
+import contract.AnimationContract;
+import model.Sprite;
 
 /** Un modelo falso: un sprite fijo, sin hilos y sin hojas de sprites. */
 class FakeModel implements AnimationContract.Model {

@@ -9,7 +9,7 @@ set "OLDCP=%OLDCP:.=%"
 chcp 65001 >nul
 set RESULT=1
 call "%~dp0compilar.cmd" || goto fin
-java -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -cp "out\main;src\main\resources" SpriteAnimation
+java -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -cp "out\main;src\main\resources" main.SpriteAnimation
 set RESULT=%ERRORLEVEL%
 :fin
 chcp %OLDCP% >nul

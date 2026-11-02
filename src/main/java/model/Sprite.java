@@ -1,10 +1,15 @@
+package model;
+
 import java.awt.image.BufferedImage;
+
+import contract.AnimationContract;
 
 /**
  * Una animación del modelo, con su propio hilo que va cambiando de fotograma.
  * El ritmo depende del tiempo que pasa, no de lo rápido que se pinte.
+ * Fuera del modelo se ve solo como AnimationContract.Sprite.
  */
-public class Sprite implements Runnable {
+public class Sprite implements AnimationContract.Sprite, Runnable {
 
     private static final long TICK_MS = 5;   // cada cuánto mira el hilo si toca cambiar de fotograma
 
@@ -28,18 +33,21 @@ public class Sprite implements Runnable {
         this.y = y;
     }
 
-    public String name() { return name; }
-    public BufferedImage frame() { return frames[frameIndex]; }
-    public int frameIndex() { return frameIndex; }
-    public int width() { return frames[0].getWidth(); }
-    public int height() { return frames[0].getHeight(); }
-    public int fps() { return fps; }
-    public void setFps(int fps) { this.fps = fps; }
-    public int x() { return x; }
-    public int y() { return y; }
+    // Los métodos del contrato
+    @Override public String name() { return name; }
+    @Override public BufferedImage frame() { return frames[frameIndex]; }
+    @Override public int width() { return frames[0].getWidth(); }
+    @Override public int height() { return frames[0].getHeight(); }
+    @Override public int fps() { return fps; }
+    @Override public void setFps(int fps) { this.fps = fps; }
+    @Override public int x() { return x; }
+    @Override public int y() { return y; }
+
+    public int frameIndex() { return frameIndex; }   // no es del contrato: solo lo usa MouseTest
 
     /** Mueve el sprite. Si se pinta justo entre las dos líneas, se verá a medio mover
      *  durante un fotograma: nada grave, así que no hace falta sincronizar. */
+    @Override
     public void moveTo(int x, int y) {
         this.x = x;
         this.y = y;

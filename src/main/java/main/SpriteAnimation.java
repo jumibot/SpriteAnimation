@@ -1,3 +1,10 @@
+package main;
+
+import contract.AnimationContract;
+import model.Model;
+import presenter.Presenter;
+import view.View;
+
 /** La clase principal: monta la aplicación y la arranca. Es el único sitio que crea las capas. */
 public class SpriteAnimation {
 

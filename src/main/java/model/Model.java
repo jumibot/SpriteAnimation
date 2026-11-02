@@ -1,5 +1,9 @@
+package model;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import contract.AnimationContract;
 
 /** El modelo de MVP: el estado de la aplicación, los sprites. No sabe que existe una ventana. */
 public class Model implements AnimationContract.Model {

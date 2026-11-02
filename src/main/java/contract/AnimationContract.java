@@ -1,9 +1,11 @@
+package contract;
+
 import java.awt.image.BufferedImage;
 import java.util.List;
 
 /**
  * El contrato de MVP: lo que cada pieza puede pedirle a las demás.
- * Una interfaz puede tener interfaces anidadas: aquí hay tres, una por pieza.
+ * Una interfaz puede tener interfaces anidadas: aquí hay una por pieza y otra para los sprites.
  */
 public interface AnimationContract {
 
@@ -13,6 +15,19 @@ public interface AnimationContract {
         void stop();               // las para al cerrar la aplicación
         int spriteCount();         // cuántos sprites hay
         Sprite sprite(int index);  // uno de los sprites, por su número
+    }
+
+    /** Lo que el presentador puede pedirle a un sprite del modelo. */
+    interface Sprite {
+        String name();
+        BufferedImage frame();     // el fotograma que toca ahora
+        int width();
+        int height();
+        int x();
+        int y();
+        int fps();
+        void setFps(int fps);
+        void moveTo(int x, int y);
     }
 
     /** Lo que el presentador puede pedirle a la vista. */

@@ -65,7 +65,7 @@ docs/
   specs/vision/  Visión y documento fundacional del proyecto
   identidad/     Estilos de los documentos HTML
   imagenes/      Imágenes de este README
-src/main/java/   Código de la demo
+src/main/java/   Código de la demo, en los paquetes main, model, view, presenter y contract
 src/main/resources/sprites/
                  Hojas de sprites y su origen
 src/test/java/   Pruebas: sin ventana, de las hojas y con el ratón

@@ -1,4 +1,9 @@
+package presenter;
+
 import java.util.List;
+
+import check.Check;
+import contract.AnimationContract;
 
 /**
  * Prueba el presentador sin ventana, con FakeView y FakeModel.

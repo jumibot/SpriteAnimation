@@ -243,7 +243,7 @@ Las tres promesas juntas forman el **contrato** de la aplicación:
 <figcaption>Cada flecha va de quien pide a quien responde, y pasa por la interfaz que lo permite. En discontinuo, lo opcional: el modelo solo le pide algo al presentador si tiene que avisarle de cambios. Las tres interfaces, juntas, son el contrato.</figcaption>
 </figure>
 
-En la demo, el modelo no pide nada: la vista pregunta al presentador cada vez que pinta, así que nadie tiene que avisarla. Por eso `AnimationContract.Model` no recibe al presentador. El contrato es un solo archivo, `AnimationContract`, con las tres interfaces dentro. Son cortas a propósito: cada método es algo que la otra parte necesita de verdad.
+En la demo, el modelo no pide nada: la vista pregunta al presentador cada vez que pinta, así que nadie tiene que avisarla. Por eso `AnimationContract.Model` no recibe al presentador. El contrato es un solo archivo, `AnimationContract`, con las tres interfaces dentro, y una cuarta, `Sprite`, con lo que el presentador puede pedirle a cada sprite. Son cortas a propósito: cada método es algo que la otra parte necesita de verdad.
 
 ::: tarjetas 3
 
@@ -287,12 +287,15 @@ public interface AnimationContract {
     interface Model { … }
     interface View { … }
     interface Presenter { … }
+    interface Sprite { … }
 }
 
 public class Model implements AnimationContract.Model { … }
 public class View extends JFrame implements AnimationContract.View { … }
 public class Presenter implements AnimationContract.Presenter { … }
 ```
+
+Cada pieza va en su paquete: el contrato en `contract`; `Model`, `View` y `Presenter` en `model`, `view` y `presenter`; y la clase con `main`, en `main`.
 
 A `AnimationContract.Model` le falta algo a propósito: `addSprite`. Decidir qué animaciones hay es cosa de `main`, así que ese método es de la clase `Model`, pero no del contrato. Sacar a una interfaz solo la parte de una clase que otra necesita es una técnica de refactorización con nombre propio: *extraer interfaz* [[R3]](#src-R3 "Refactoring.Guru, Extract Interface"){: .ref}.
 
@@ -639,7 +642,7 @@ public void mouseWheelMoved(MouseWheelEvent e) {
 
 // Presenter: aplica la regla
 public void changeSpriteSpeed(int sprite, int delta) {
-    Sprite s = model.sprite(sprite);
+    AnimationContract.Sprite s = model.sprite(sprite);
     s.setFps(limit(s.fps() + delta));                       // entre 1 y 120
 }
 ```

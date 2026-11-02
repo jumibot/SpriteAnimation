@@ -1,3 +1,5 @@
+package view;
+
 import java.awt.Frame;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -9,6 +11,11 @@ import java.io.File;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
+
+import check.Check;
+import model.Model;
+import model.Sprite;
+import presenter.Presenter;
 
 /**
  * Prueba con el ratón de verdad: abre la ventana real y mueve el ratón con java.awt.Robot.

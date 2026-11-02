@@ -3,6 +3,7 @@
 set -e
 cd "$(dirname "$0")"
 rm -rf out
-javac -encoding UTF-8 -d out/main src/main/java/*.java
-javac -encoding UTF-8 -cp out/main -d out/test src/test/java/*.java
+# Cada paquete es una carpeta: */*.java coge las clases de todas.
+javac -encoding UTF-8 -d out/main src/main/java/*/*.java
+javac -encoding UTF-8 -cp out/main -d out/test src/test/java/*/*.java
 echo "Compilado en out/"

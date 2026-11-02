@@ -1,4 +1,8 @@
+package model;
+
 import java.awt.image.BufferedImage;
+
+import check.Check;
 
 /** Comprueba que SpriteSheet recorta bien una hoja en columna (pato) y una en fila (explosión). */
 public class SpriteSheetTest {

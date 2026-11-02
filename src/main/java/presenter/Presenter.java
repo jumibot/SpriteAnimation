@@ -1,5 +1,9 @@
+package presenter;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import contract.AnimationContract;
 
 /** El presentador de MVP: traduce el modelo a lo que la vista pinta y aplica las reglas a cada gesto. */
 public class Presenter implements AnimationContract.Presenter {
@@ -26,7 +30,7 @@ public class Presenter implements AnimationContract.Presenter {
     public List<SpriteState> sprites() {
         List<SpriteState> states = new ArrayList<>();
         for (int i = 0; i < model.spriteCount(); i++) {
-            Sprite s = model.sprite(i);
+            AnimationContract.Sprite s = model.sprite(i);
             states.add(new SpriteState(s.name(), s.frame(), s.x(), s.y(), s.fps()));
         }
         return states;
@@ -39,7 +43,7 @@ public class Presenter implements AnimationContract.Presenter {
 
     @Override
     public void changeSpriteSpeed(int sprite, int delta) {
-        Sprite s = model.sprite(sprite);
+        AnimationContract.Sprite s = model.sprite(sprite);
         s.setFps(limit(s.fps() + delta));                       // entre 1 y 120
     }
 
@@ -47,7 +51,7 @@ public class Presenter implements AnimationContract.Presenter {
     @Override
     public int spriteAt(int x, int y) {
         for (int i = model.spriteCount() - 1; i >= 0; i--) {
-            Sprite s = model.sprite(i);
+            AnimationContract.Sprite s = model.sprite(i);
             boolean inside = x >= s.x() && x < s.x() + s.width()
                           && y >= s.y() && y < s.y() + s.height();
             if (inside) {
