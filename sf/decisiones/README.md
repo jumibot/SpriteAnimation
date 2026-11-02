@@ -19,6 +19,7 @@ Este índice no se escribe a mano: se regenera con `python -I -X utf8 tools/indi
 
 | Nº | Fecha | Decisión |
 | --- | --- | --- |
+| 44 | 2026-11-02 | [Documento de la estructura de la demo en docs/material](044-2026-11-02-documento-de-la-estructura-de-la-demo-en-docs-material.md) |
 | 43 | 2026-11-02 | [El record Picture se llama SpriteView y la rueda pide spriteCount()](043-2026-11-02-el-record-picture-se-llama-spriteview-y-la-rueda-pide-spritecount.md) |
 | 42 | 2026-11-02 | [Las interfaces entregan los datos mínimos, inmutables si se puede, nunca objetos internos](042-2026-11-02-las-interfaces-entregan-los-datos-minimos-inmutables-si-se-puede-nunca-objetos-internos.md) |
 | 41 | 2026-11-02 | [El presentador no pinta ni guarda estado](041-2026-11-02-el-presentador-no-pinta-ni-guarda-estado.md) |
