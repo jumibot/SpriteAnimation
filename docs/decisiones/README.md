@@ -19,6 +19,7 @@ Este índice no se escribe a mano: se regenera con `python -I -X utf8 tools/indi
 
 | Nº | Fecha | Decisión |
 | --- | --- | --- |
+| 21 | 2026-11-02 | [Publicar el repositorio ya, con un README](021-2026-11-02-publicar-el-repositorio-ya-con-un-readme.md) |
 | 20 | 2026-11-02 | [El repositorio se hace público cuando tenga el código de la demo](020-2026-11-02-el-repositorio-se-hace-publico-cuando-tenga-el-codigo-de-la-demo.md) |
 | 19 | 2026-11-02 | [Las interfaces de la demo, en un contrato](019-2026-11-02-las-interfaces-de-la-demo-en-un-contrato.md) |
 | 18 | 2026-11-02 | [Sufijo Interface en las interfaces de la demo](018-2026-11-02-sufijo-interface-en-las-interfaces-de-la-demo.md) |
