@@ -19,6 +19,7 @@ Este índice no se escribe a mano: se regenera con `python -I -X utf8 tools/indi
 
 | Nº | Fecha | Decisión |
 | --- | --- | --- |
+| 40 | 2026-11-02 | [El modelo no conoce ninguna clase de la vista](040-2026-11-02-el-modelo-no-conoce-ninguna-clase-de-la-vista.md) |
 | 39 | 2026-11-02 | [La vista no conoce ninguna clase del modelo](039-2026-11-02-la-vista-no-conoce-ninguna-clase-del-modelo.md) |
 | 38 | 2026-11-02 | [La vista no guarda referencias a datos del presentador](038-2026-11-02-la-vista-no-guarda-referencias-a-datos-del-presentador.md) |
 | 37 | 2026-11-02 | [El modelo no deja salir los objetos de su propiedad](037-2026-11-02-el-modelo-no-deja-salir-los-objetos-de-su-propiedad.md) |
