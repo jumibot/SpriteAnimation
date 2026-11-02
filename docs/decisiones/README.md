@@ -19,6 +19,7 @@ Este índice no se escribe a mano: se regenera con `python -I -X utf8 tools/indi
 
 | Nº | Fecha | Decisión |
 | --- | --- | --- |
+| 15 | 2026-11-02 | [main pide los sprites al modelo, no el presentador](015-2026-11-02-main-pide-los-sprites-al-modelo-no-el-presentador.md) |
 | 14 | 2026-11-02 | [Los sprites se crean en el modelo y el presentador arranca la aplicación](014-2026-11-02-los-sprites-se-crean-en-el-modelo-y-el-presentador-arranca-la-aplicacion.md) |
 | 13 | 2026-11-02 | [Viñetas para mostrar el montaje paso a paso](013-2026-11-02-vinetas-para-mostrar-el-montaje-paso-a-paso.md) |
 | 12 | 2026-10-31 | [Interfaces y constructores de la demo](012-2026-10-31-interfaces-y-constructores-de-la-demo.md) |
