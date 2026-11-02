@@ -11,7 +11,7 @@ class FakeView implements ViewContract {
     PresenterContract presenter;
 
     @Override public void setPresenter(PresenterContract presenter) { this.presenter = presenter; }
-    @Override public void start() { started = true; }
-    @Override public int renderFps() { return fps; }
+    @Override public void start() { this.started = true; }
+    @Override public int renderFps() { return this.fps; }
     @Override public void setRenderFps(int fps) { this.fps = fps; }
 }

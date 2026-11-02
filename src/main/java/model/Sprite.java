@@ -32,16 +32,16 @@ public class Sprite implements SpriteContract, Runnable {
     }
 
     // Los métodos del contrato
-    @Override public String name() { return name; }
-    @Override public BufferedImage frame() { return frames[frameIndex]; }
-    @Override public int width() { return frames[0].getWidth(); }
-    @Override public int height() { return frames[0].getHeight(); }
-    @Override public int fps() { return fps; }
+    @Override public String name() { return this.name; }
+    @Override public BufferedImage frame() { return this.frames[this.frameIndex]; }
+    @Override public int width() { return this.frames[0].getWidth(); }
+    @Override public int height() { return this.frames[0].getHeight(); }
+    @Override public int fps() { return this.fps; }
     @Override public void setFps(int fps) { this.fps = fps; }
-    @Override public int x() { return x; }
-    @Override public int y() { return y; }
+    @Override public int x() { return this.x; }
+    @Override public int y() { return this.y; }
 
-    public int frameIndex() { return frameIndex; }   // no es del contrato: solo lo usa MouseTest
+    public int frameIndex() { return this.frameIndex; }   // no es del contrato: solo lo usa MouseTest
 
     /** Mueve el sprite. Si se pinta justo entre las dos líneas, se verá a medio mover
      *  durante un fotograma: nada grave, así que no hace falta sincronizar. */
@@ -53,7 +53,7 @@ public class Sprite implements SpriteContract, Runnable {
 
     /** Crea y arranca el hilo del sprite. Dura lo que la aplicación: al cerrar la ventana, termina con ella. */
     public void start() {
-        Thread thread = new Thread(this, "Sprite " + name);
+        Thread thread = new Thread(this, "Sprite " + this.name);
         thread.start();
     }
 
@@ -66,11 +66,11 @@ public class Sprite implements SpriteContract, Runnable {
         while (true) {
             long now = System.nanoTime();
             double elapsedSeconds = (now - previous) / 1_000_000_000.0;
-            pending += elapsedSeconds * fps;   // los fotogramas que tocan en ese tiempo
+            pending += elapsedSeconds * this.fps;   // los fotogramas que tocan en ese tiempo
             previous = now;
 
             while (pending >= 1) {
-                frameIndex = (frameIndex + 1) % frames.length;   // tras el último, vuelve al primero
+                this.frameIndex = (this.frameIndex + 1) % this.frames.length;   // tras el último, vuelve al primero
                 pending--;
             }
 

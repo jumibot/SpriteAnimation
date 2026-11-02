@@ -9,6 +9,6 @@ import java.awt.Canvas;
 public class Viewer extends Canvas {
 
     public Viewer() {
-        setIgnoreRepaint(true);   // nada se dibuja solo: Swing no debe repintarlo por su cuenta
+        this.setIgnoreRepaint(true);   // nada se dibuja solo: Swing no debe repintarlo por su cuenta
     }
 }

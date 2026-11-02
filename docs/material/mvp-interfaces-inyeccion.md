@@ -480,8 +480,8 @@ El presentador hace de intermediario entre las capas [[R2]](#src-R2 "Refactoring
 ```java
 @Override
 public void start() {          // solo arranca
-    model.start();
-    view.start();
+    this.model.start();
+    this.view.start();
 }
 ```
 
@@ -633,24 +633,24 @@ En código, el recorrido es corto. La vista solo averigua sobre qué línea del 
 ```java
 // MouseHandler, de la vista: el evento llega por el hilo de eventos de Swing
 public void mouseWheelMoved(MouseWheelEvent e) {
-    int lines = 1 + presenter.sprites().size();             // la de pintado y una por sprite
-    int line = hud.lineAt(e.getX(), e.getY(), lines);       // 0: pintado; 1, 2…: sprites
+    int lines = 1 + this.presenter.sprites().size();        // la de pintado y una por sprite
+    int line = this.hud.lineAt(e.getX(), e.getY(), lines);  // 0: pintado; 1, 2…: sprites
     if (line < 0) {
         return;                                              // fuera del HUD, no hace nada
     }
 
     int delta = -e.getWheelRotation();                      // rueda hacia arriba: sube
     if (line == 0) {
-        presenter.changeRenderSpeed(delta);
+        this.presenter.changeRenderSpeed(delta);
     } else {
-        presenter.changeSpriteSpeed(line - 1, delta);
+        this.presenter.changeSpriteSpeed(line - 1, delta);
     }
 }
 
 // Presenter: aplica la regla
 public void changeSpriteSpeed(int index, int delta) {
-    SpriteContract sprite = model.sprite(index);
-    sprite.setFps(limit(sprite.fps() + delta));   // entre minFps y maxFps
+    SpriteContract sprite = this.model.sprite(index);
+    sprite.setFps(this.limit(sprite.fps() + delta));   // entre minFps y maxFps
 }
 ```
 

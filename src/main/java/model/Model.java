@@ -20,23 +20,23 @@ public class Model implements ModelContract {
     public void addSprite(String name, String sheet, int frameWidth, int frameHeight, int scale,
                           int fps, int x, int y) {
         BufferedImage[] frames = SpriteSheet.load(sheet, frameWidth, frameHeight, scale);
-        sprites.add(new Sprite(name, frames, fps, x, y));
+        this.sprites.add(new Sprite(name, frames, fps, x, y));
     }
 
     @Override
     public void start() {
-        for (Sprite sprite : sprites) {
+        for (Sprite sprite : this.sprites) {
             sprite.start();
         }
     }
 
     @Override
     public int spriteCount() {
-        return sprites.size();
+        return this.sprites.size();
     }
 
     @Override
     public Sprite sprite(int index) {
-        return sprites.get(index);
+        return this.sprites.get(index);
     }
 }

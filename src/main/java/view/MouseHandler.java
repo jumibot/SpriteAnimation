@@ -32,42 +32,42 @@ public class MouseHandler extends MouseAdapter {
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        int lines = 1 + presenter.sprites().size();             // la de pintado y una por sprite
-        int line = hud.lineAt(e.getX(), e.getY(), lines);       // 0: pintado; 1, 2…: sprites
+        int lines = 1 + this.presenter.sprites().size();        // la de pintado y una por sprite
+        int line = this.hud.lineAt(e.getX(), e.getY(), lines);  // 0: pintado; 1, 2…: sprites
         if (line < 0) {
             return;                                              // fuera del HUD, no hace nada
         }
 
         int delta = -e.getWheelRotation();                      // rueda hacia arriba: sube
         if (line == 0) {
-            presenter.changeRenderSpeed(delta);
+            this.presenter.changeRenderSpeed(delta);
         } else {
-            presenter.changeSpriteSpeed(line - 1, delta);
+            this.presenter.changeSpriteSpeed(line - 1, delta);
         }
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        draggedSprite = presenter.spriteAt(e.getX(), e.getY());
-        if (draggedSprite < 0) {
+        this.draggedSprite = this.presenter.spriteAt(e.getX(), e.getY());
+        if (this.draggedSprite < 0) {
             return;   // no hay sprite bajo el puntero
         }
 
         // Guardamos dónde se ha cogido el sprite, para que no salte al puntero.
-        SpriteState state = presenter.sprites().get(draggedSprite);
-        grabX = e.getX() - state.x();
-        grabY = e.getY() - state.y();
+        SpriteState state = this.presenter.sprites().get(this.draggedSprite);
+        this.grabX = e.getX() - state.x();
+        this.grabY = e.getY() - state.y();
     }
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        if (draggedSprite >= 0) {
-            presenter.moveSprite(draggedSprite, e.getX() - grabX, e.getY() - grabY);
+        if (this.draggedSprite >= 0) {
+            this.presenter.moveSprite(this.draggedSprite, e.getX() - this.grabX, e.getY() - this.grabY);
         }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        draggedSprite = -1;
+        this.draggedSprite = -1;
     }
 }

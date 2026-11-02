@@ -35,10 +35,10 @@ public class Hud {
         // El recuadro de fondo, con las esquinas redondeadas: 8 px de margen a la izquierda y abajo.
         g.fillRoundRect(X - 8, Y - LINE, WIDTH, lines * LINE + 8, 10, 10);
 
-        paintLine(g, 0, "Pintado", renderFps + " veces por segundo");
+        this.paintLine(g, 0, "Pintado", renderFps + " veces por segundo");
         for (int i = 0; i < sprites.size(); i++) {
             SpriteState state = sprites.get(i);
-            paintLine(g, i + 1, state.name(), state.fps() + " fotogramas por segundo");
+            this.paintLine(g, i + 1, state.name(), state.fps() + " fotogramas por segundo");
         }
     }
 

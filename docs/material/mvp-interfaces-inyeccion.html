@@ -1080,8 +1080,8 @@ figure ol.vin ol.vin-acc>li::before{content:"→";position:absolute;left:0;top:0
 <p>El presentador hace de intermediario entre las capas <a class="ref" href="#src-R2" title="Refactoring.Guru, Mediator">[R2]</a>, y en el montaje separa las dos fases. Su constructor, que ya has visto, guarda el modelo y la vista y se presenta a la vista: los conecta. Su método <code>start()</code> solo arranca:</p>
 <pre><code class="language-java">@Override
 public void start() {          // solo arranca
-    model.start();
-    view.start();
+    this.model.start();
+    this.view.start();
 }
 </code></pre>
 <p>Por eso arrancar va aparte, en el paso 3. Los hilos solo nacen cuando todo está construido y conectado: si el hilo de pintado empezara antes del paso 2, le pediría qué pintar a un presentador que la vista aún no tiene.</p></div></details><details class="seccion" id="hilos"><summary class="seccion-titulo"><span class="etiqueta">09 / Hilos</span><h2>MVP con hilos</h2></summary><div class="seccion-cuerpo"><p class="entradilla">Una aplicación con ventana suele tener varios hilos a la vez: uno atiende al usuario, otro pinta y otros trabajan de fondo. Si dos hilos tocan los mismos datos, pueden pisarse. MVP ayuda porque cada hilo vive en una capa. El hilo de pintado está en la vista y solo habla con el presentador; los hilos de fondo están en el modelo y no conocen la vista. Cada frontera entre capas es también una frontera entre hilos.</p>
@@ -1213,24 +1213,24 @@ public void start() {          // solo arranca
 <p>En código, el recorrido es corto. La vista solo averigua sobre qué línea del HUD está el ratón y avisa (lo hace <code>MouseHandler</code>, la parte de la vista que escucha el ratón); el presentador aplica la regla del límite y se lo pasa al modelo con <code>setFps</code>.</p>
 <pre><code class="language-java">// MouseHandler, de la vista: el evento llega por el hilo de eventos de Swing
 public void mouseWheelMoved(MouseWheelEvent e) {
-    int lines = 1 + presenter.sprites().size();             // la de pintado y una por sprite
-    int line = hud.lineAt(e.getX(), e.getY(), lines);       // 0: pintado; 1, 2…: sprites
+    int lines = 1 + this.presenter.sprites().size();        // la de pintado y una por sprite
+    int line = this.hud.lineAt(e.getX(), e.getY(), lines);  // 0: pintado; 1, 2…: sprites
     if (line < 0) {
         return;                                              // fuera del HUD, no hace nada
     }
 
     int delta = -e.getWheelRotation();                      // rueda hacia arriba: sube
     if (line == 0) {
-        presenter.changeRenderSpeed(delta);
+        this.presenter.changeRenderSpeed(delta);
     } else {
-        presenter.changeSpriteSpeed(line - 1, delta);
+        this.presenter.changeSpriteSpeed(line - 1, delta);
     }
 }
 
 // Presenter: aplica la regla
 public void changeSpriteSpeed(int index, int delta) {
-    SpriteContract sprite = model.sprite(index);
-    sprite.setFps(limit(sprite.fps() + delta));   // entre minFps y maxFps
+    SpriteContract sprite = this.model.sprite(index);
+    sprite.setFps(this.limit(sprite.fps() + delta));   // entre minFps y maxFps
 }
 </code></pre>
 <p>Arrastrar un sprite sigue el mismo camino. La vista pregunta al presentador qué sprite hay bajo el puntero (<code>spriteAt</code>) y, mientras arrastras, le pide que lo mueva (<code>moveSprite</code>). El pato sigue aleteando todo el rato, porque su hilo no sabe nada del ratón.</p>

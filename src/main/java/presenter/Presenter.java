@@ -28,21 +28,21 @@ public class Presenter implements PresenterContract {
 
     /** Los límites de velocidad. No es del contrato: solo lo usa main, al montar la aplicación. */
     public void setFpsLimits(int min, int max) {
-        minFps = min;
-        maxFps = max;
+        this.minFps = min;
+        this.maxFps = max;
     }
 
     @Override
     public void start() {          // solo arranca
-        model.start();
-        view.start();
+        this.model.start();
+        this.view.start();
     }
 
     @Override
     public List<SpriteState> sprites() {
         List<SpriteState> states = new ArrayList<>();
-        for (int i = 0; i < model.spriteCount(); i++) {
-            SpriteContract sprite = model.sprite(i);
+        for (int i = 0; i < this.model.spriteCount(); i++) {
+            SpriteContract sprite = this.model.sprite(i);
             states.add(new SpriteState(sprite.name(), sprite.frame(), sprite.x(), sprite.y(), sprite.fps()));
         }
 
@@ -51,20 +51,20 @@ public class Presenter implements PresenterContract {
 
     @Override
     public void changeRenderSpeed(int delta) {
-        view.setRenderFps(limit(view.renderFps() + delta));
+        this.view.setRenderFps(this.limit(this.view.renderFps() + delta));
     }
 
     @Override
     public void changeSpriteSpeed(int index, int delta) {
-        SpriteContract sprite = model.sprite(index);
-        sprite.setFps(limit(sprite.fps() + delta));   // entre minFps y maxFps
+        SpriteContract sprite = this.model.sprite(index);
+        sprite.setFps(this.limit(sprite.fps() + delta));   // entre minFps y maxFps
     }
 
     /** Busca de arriba abajo: se pinta en orden, así que el último es el que queda encima. */
     @Override
     public int spriteAt(int x, int y) {
-        for (int i = model.spriteCount() - 1; i >= 0; i--) {
-            SpriteContract sprite = model.sprite(i);
+        for (int i = this.model.spriteCount() - 1; i >= 0; i--) {
+            SpriteContract sprite = this.model.sprite(i);
             boolean inside = x >= sprite.x() && x < sprite.x() + sprite.width()
                           && y >= sprite.y() && y < sprite.y() + sprite.height();
             if (inside) {
@@ -77,16 +77,16 @@ public class Presenter implements PresenterContract {
 
     @Override
     public void moveSprite(int index, int x, int y) {
-        model.sprite(index).moveTo(x, y);
+        this.model.sprite(index).moveTo(x, y);
     }
 
     /** Deja la velocidad entre minFps y maxFps. */
     private int limit(int fps) {
-        if (fps < minFps) {
-            return minFps;
+        if (fps < this.minFps) {
+            return this.minFps;
         }
-        if (fps > maxFps) {
-            return maxFps;
+        if (fps > this.maxFps) {
+            return this.maxFps;
         }
         return fps;
     }
