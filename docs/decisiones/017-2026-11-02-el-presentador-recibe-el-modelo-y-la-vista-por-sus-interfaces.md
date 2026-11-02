@@ -1,0 +1,7 @@
+# El presentador recibe el modelo y la vista por sus interfaces
+
+- **Origen:** SpriteAnimation, 2026-11-02, al revisar la inyección de dependencias del documento explicativo de MVP (tarea 6). El propietario: los parámetros inyectados en el presentador «deben ser el tipo de la interfaz, y eso protege mucho».
+- **Contexto:** el constructor era `Presenter(Model, AnimationView)`: la vista llegaba por su interfaz, pero el modelo por su clase concreta, así que el presentador podía llamar a cualquier método de `Model`, también a `addSprite`.
+- **Opciones:** aplicarlo en el código del documento, hacerlo en otra tarea o solo mencionarlo como buena práctica.
+- **Decisión:** el modelo tiene su interfaz, `AnimationModel`, con solo lo que necesita el presentador (arrancar, dar los sprites, moverlos, cambiar velocidades…), y `Model` la implementa. `addSprite` queda fuera de la interfaz: es de `Model` y solo lo usa `main`. El constructor pasa a ser `Presenter(AnimationModel, AnimationView)`. Los métodos exactos de la interfaz se fijan al aplicarla, con un esqueleto que compile.
+- **Consecuencias:** el compilador impide que el presentador cree animaciones, lo que garantiza en el código «main pide los sprites al modelo, no el presentador». El documento lo explica como programar contra interfaces (la D de SOLID, inversión de dependencias) y lo aprovecha para las pruebas con un modelo falso si encaja. Cambia el constructor de «Interfaces y constructores de la demo».
