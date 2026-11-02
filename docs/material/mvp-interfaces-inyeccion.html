@@ -679,7 +679,7 @@ pre code { background: none; padding: 0; font-size: .82em; white-space: pre; }
 <div class="hoja">
   <main id="contenido" tabindex="-1"><details class="seccion" id="ejemplo" open><summary class="seccion-titulo"><span class="etiqueta">01 / El ejemplo</span><h2>Lo que vamos a construir</h2></summary><div class="seccion-cuerpo"><p class="entradilla">Todo este documento gira alrededor de un solo programa: SpriteAnimation, una ventana con dos animaciones.</p>
 <p>Al ejecutarlo, ves un pato que vuela y una explosión que estalla una y otra vez. Cada una va a su ritmo: el pato, a 8 fotogramas por segundo, y la explosión, a 12. Arriba, un pequeño HUD (las cifras que flotan sobre la escena) muestra tres velocidades: cuántas veces por segundo se pinta la ventana y a qué ritmo avanza cada animación.</p>
-<p>Se maneja con el ratón. Con la rueda sobre una cifra del HUD, la subes o la bajas; sobre un sprite, lo agrandas o lo encoges. Y puedes arrastrar el pato o la explosión a otro sitio: mientras lo llevas, sigue animándose.</p>
+<p>Se maneja con el ratón. Con la rueda sobre una cifra del HUD, la subes o la bajas; sobre un sprite, lo agrandas o lo encoges. La línea del HUD que está bajo el ratón se ilumina en amarillo, para que sepas cuál vas a cambiar. Y puedes arrastrar el pato o la explosión a otro sitio: mientras lo llevas, sigue animándose.</p>
 <figure class="vertical">
 <svg viewBox="0 0 560 350" role="img" style="font-family:var(--fuente-texto);display:block">
 <title>La ventana de SpriteAnimation: arriba, el HUD con la velocidad de pintado y la de cada sprite, que se cambian con la rueda del ratón; abajo, el pato volando, que se puede arrastrar sin que deje de aletear, y la explosión</title>
@@ -704,11 +704,14 @@ html[data-modo="oscuro"] .ej-px{filter:url(#ej-inv)}
 <line x1="20" y1="42" x2="540" y2="42" style="stroke:var(--borde)" stroke-width="1.5"/>
 <text x="40" y="32" font-size="15" font-weight="700" style="fill:var(--oscuro)">SpriteAnimation</text>
 <g style="fill:var(--tenue)"><circle cx="490" cy="26" r="5"/><circle cx="506" cy="26" r="5"/><circle cx="522" cy="26" r="5"/></g>
-<rect x="40" y="58" width="300" height="84" rx="6" style="fill:var(--fondo-suave);stroke:var(--primario)" stroke-width="1.5"/>
-<g font-size="14" style="fill:var(--texto)">
-<text x="54" y="82"><tspan font-weight="700" style="fill:var(--primario)">Pintado</tspan> · 60 veces por segundo</text>
-<text x="54" y="106"><tspan font-weight="700" style="fill:var(--primario)">Pato</tspan> · 8 fotogramas por segundo</text>
-<text x="54" y="130"><tspan font-weight="700" style="fill:var(--primario)">Explosión</tspan> · 12 fotogramas por segundo</text>
+<rect x="40" y="58" width="300" height="84" style="fill:#0a0a14;stroke:#ff3df2" stroke-width="3"/>
+<rect x="45" y="63" width="290" height="74" fill="none" style="stroke:#00e5ff" stroke-width="1"/>
+<rect x="48" y="90" width="284" height="22" style="fill:#ffe600"/>
+<path d="M53 95 l0 11 l7 -5.5 z" style="fill:#000"/>
+<g font-size="14" font-weight="700" font-family="monospace">
+<text x="66" y="82" style="fill:#ffe600">PINTADO<tspan x="160" style="fill:#fff">60 fps</tspan></text>
+<text x="66" y="106" style="fill:#000">PATO<tspan x="168">8 fps</tspan></text>
+<text x="66" y="130" style="fill:#ffe600">EXPLOSIÓN<tspan x="160" style="fill:#fff">12 fps</tspan></text>
 </g>
 <rect x="362" y="66" width="26" height="40" rx="13" style="fill:#fff;stroke:var(--oscuro)" stroke-width="2"/>
 <line x1="375" y1="66" x2="375" y2="82" style="stroke:var(--oscuro)" stroke-width="1.5"/>
@@ -1196,7 +1199,7 @@ public void start() {          // solo arranca
 <text x="60" y="48" font-size="18" style="fill:var(--oscuro)"><tspan font-weight="700">HUD</tspan> · Pato ·</text>
 <text class="a3-ocho" x="176" y="48" font-size="18" font-weight="700" opacity="0" style="fill:var(--oscuro)">8</text>
 <text class="a3-nueve" x="176" y="48" font-size="18" font-weight="700" style="fill:var(--primario)">9</text>
-<text x="194" y="48" font-size="18" style="fill:var(--oscuro)">fotogramas por segundo</text>
+<text x="194" y="48" font-size="18" style="fill:var(--oscuro)">fps</text>
 <rect x="40" y="110" width="480" height="64" rx="10" fill="none" style="stroke:var(--primario)" stroke-width="2"/>
 <text x="60" y="138" font-size="18" font-weight="700" style="fill:var(--primario)">View</text>
 <text x="60" y="162" font-size="15" style="fill:var(--texto-suave)">mouseWheelMoved: ¿sobre qué línea del HUD?</text>

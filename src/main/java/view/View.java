@@ -137,6 +137,6 @@ public class View extends JFrame implements ViewContract {
             }
         }
 
-        this.hud.paint(g, this.renderFps, spriteViews);
+        this.hud.paint(g, this.renderFps, spriteViews, mouseX, mouseY);
     }
 }
