@@ -29,9 +29,13 @@ Dos hojas, cada una con su ritmo. En la demo, la velocidad de pintado y la de ca
 
 ## El material
 
-**[MVP, interfaces e inyección de dependencias](https://jumibot.github.io/SpriteAnimation/docs/material/mvp-interfaces-inyeccion.html)**: el documento para alumnos, con menú y buscador. Explica las tres piezas de MVP, el contrato método a método, quién crea a quién, cómo se monta la aplicación paso a paso, cómo encajan los hilos, un gesto del ratón de principio a fin, los errores frecuentes y ejercicios para practicar.
+**[MVP, interfaces e inyección de dependencias](https://jumibot.github.io/SpriteAnimation/docs/material/mvp-interfaces-inyeccion.html)**: el documento para alumnos, con menú y buscador. Explica las tres piezas de MVP, el contrato método a método, quién crea a quién, cómo se monta la aplicación paso a paso, cómo encajan los hilos, un gesto del ratón de principio a fin, lo que está prohibido en MVP y ejercicios para practicar. Cada capítulo importante acaba con lo que hay que quedarse.
 
 También se puede leer [en Markdown](docs/material/mvp-interfaces-inyeccion.md), sin maquetar.
+
+**[La estructura de la demo](https://jumibot.github.io/SpriteAnimation/docs/material/estructura-demo.html)**: el mapa del código. Los cinco paquetes, qué hace cada clase, quién conoce a quién y las decisiones que dan forma a la arquitectura.
+
+También se puede leer [en Markdown](docs/material/estructura-demo.md), sin maquetar.
 
 ## Ejecutar la demo
 
